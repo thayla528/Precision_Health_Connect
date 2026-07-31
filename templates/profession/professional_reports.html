@@ -1,0 +1,643 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect - Relatórios
+{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+    .reports-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+
+    .page-header {
+        margin-bottom: 32px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 15px;
+        color: #6b7280;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease;
+        border-left: 4px solid #8b5cf6;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+    }
+
+    .stat-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        flex-shrink: 0;
+    }
+
+    .stat-icon.purple {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+    }
+
+    .stat-icon.violet {
+        background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+        color: white;
+    }
+
+    .stat-icon.indigo {
+        background: linear-gradient(135deg, #818cf8, #6366f1);
+        color: white;
+    }
+
+    .stat-icon.fuchsia {
+        background: linear-gradient(135deg, #c084fc, #a855f7);
+        color: white;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1f2937;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .stat-change {
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .stat-change.positive {
+        color: #10b981;
+    }
+
+    .stat-change.negative {
+        color: #ef4444;
+    }
+
+    /* Charts Grid */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.12);
+    }
+
+    .chart-card.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .chart-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chart-title::before {
+        content: '';
+        width: 4px;
+        height: 20px;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border-radius: 2px;
+    }
+
+    .chart-period {
+        font-size: 13px;
+        color: #6b7280;
+        background: #f5f3ff;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+
+    .chart-container.tall {
+        height: 350px;
+    }
+
+    /* Summary Section */
+    .summary-section {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border-radius: 16px;
+        padding: 32px;
+        color: white;
+        margin-top: 32px;
+        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+    }
+
+    .summary-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .summary-item {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .summary-item:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .summary-value {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .summary-label {
+        font-size: 13px;
+        opacity: 0.9;
+        font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .reports-container {
+            padding: 16px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-value {
+            font-size: 26px;
+        }
+
+        .chart-container {
+            height: 250px;
+        }
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="reports-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Relatórios</h1>
+        <p class="page-subtitle">Visualize estatísticas dos seus atendimentos.</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon purple">📅</div>
+            <div class="stat-content">
+                <div class="stat-label">Total de Consultas</div>
+                <div class="stat-value">1.247</div>
+                <div class="stat-change positive">
+                    <span>↑</span> +12,5% vs mês anterior
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon violet">👥</div>
+            <div class="stat-content">
+                <div class="stat-label">Pacientes Novos</div>
+                <div class="stat-value">86</div>
+                <div class="stat-change positive">
+                    <span>↑</span> +8,3% vs mês anterior
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon indigo">📝</div>
+            <div class="stat-content">
+                <div class="stat-label">Receitas Emitidas</div>
+                <div class="stat-value">934</div>
+                <div class="stat-change negative">
+                    <span>↓</span> -3,2% vs mês anterior
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon fuchsia">🧪</div>
+            <div class="stat-content">
+                <div class="stat-label">Exames Solicitados</div>
+                <div class="stat-value">672</div>
+                <div class="stat-change positive">
+                    <span>↑</span> +15,7% vs mês anterior
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+        <!-- Consultas por Mês -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Consultas por Mês</h3>
+                <span class="chart-period">Últimos 12 meses</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="consultasChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Pacientes Atendidos -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Pacientes Atendidos</h3>
+                <span class="chart-period">Últimos 12 meses</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="pacientesChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Exames Solicitados -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Exames Solicitados</h3>
+                <span class="chart-period">Por tipo</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="examesChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Diagnósticos mais Frequentes -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Diagnósticos mais Frequentes</h3>
+                <span class="chart-period">Top 6</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="diagnosticosChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="summary-section">
+        <h3 class="summary-title">
+            <span>📊</span> Resumo do Período
+        </h3>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-value">98,2%</div>
+                <div class="summary-label">Taxa de Comparecimento</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">4,8/5</div>
+                <div class="summary-label">Satisfação dos Pacientes</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">32 min</div>
+                <div class="summary-label">Tempo Médio de Consulta</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">156</div>
+                <div class="summary-label">Retornos Realizados</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Chart.js Configuration
+    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    Chart.defaults.color = '#6b7280';
+
+    // Consultas por Mês (Bar Chart)
+    const consultasCtx = document.getElementById('consultasChart').getContext('2d');
+    new Chart(consultasCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Ago', 'Set', 'Out', 'Nov', 'Dez', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'],
+            datasets: [{
+                label: 'Consultas',
+                data: [98, 105, 112, 95, 88, 102, 110, 118, 125, 115, 122, 127],
+                backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                borderColor: '#8b5cf6',
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Consultas: ' + context.parsed.y;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        stepSize: 20
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Pacientes Atendidos (Line Chart)
+    const pacientesCtx = document.getElementById('pacientesChart').getContext('2d');
+    new Chart(pacientesCtx, {
+        type: 'line',
+        data: {
+            labels: ['Ago', 'Set', 'Out', 'Nov', 'Dez', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'],
+            datasets: [{
+                label: 'Pacientes Atendidos',
+                data: [85, 92, 98, 88, 79, 94, 101, 108, 112, 105, 110, 115],
+                borderColor: '#a78bfa',
+                backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#8b5cf6',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Pacientes: ' + context.parsed.y;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        stepSize: 10
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Exames Solicitados (Doughnut Chart)
+    const examesCtx = document.getElementById('examesChart').getContext('2d');
+    new Chart(examesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Hemograma', 'Glicemia', 'Colesterol', 'Raio-X', 'Eletrocardiograma', 'Outros'],
+            datasets: [{
+                data: [185, 142, 128, 95, 78, 44],
+                backgroundColor: [
+                    '#8b5cf6',
+                    '#a78bfa',
+                    '#c4b5fd',
+                    '#ddd6fe',
+                    '#ede9fe',
+                    '#f5f3ff'
+                ],
+                borderColor: '#fff',
+                borderWidth: 3,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Diagnósticos mais Frequentes (Horizontal Bar Chart)
+    const diagnosticosCtx = document.getElementById('diagnosticosChart').getContext('2d');
+    new Chart(diagnosticosCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Hipertensão', 'Diabetes Tipo 2', 'Dislipidemia', 'Obesidade', 'Ansiedade', 'Dor Lombar'],
+            datasets: [{
+                label: 'Casos',
+                data: [245, 198, 176, 152, 134, 118],
+                backgroundColor: [
+                    'rgba(139, 92, 246, 0.8)',
+                    'rgba(167, 139, 250, 0.8)',
+                    'rgba(196, 181, 253, 0.8)',
+                    'rgba(221, 214, 254, 0.8)',
+                    'rgba(237, 233, 254, 0.8)',
+                    'rgba(245, 243, 255, 0.8)'
+                ],
+                borderColor: [
+                    '#8b5cf6',
+                    '#a78bfa',
+                    '#c4b5fd',
+                    '#ddd6fe',
+                    '#ede9fe',
+                    '#f5f3ff'
+                ],
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Casos: ' + context.parsed.x;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        stepSize: 50
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

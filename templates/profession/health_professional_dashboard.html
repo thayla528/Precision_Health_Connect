@@ -1,0 +1,864 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-white: #FFFFFF;
+        --phc-text: #1F2937;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+    }
+
+    .phc-dashboard {
+        padding: 2rem 1.5rem;
+        background: #FAFAFC;
+        min-height: 100vh;
+    }
+
+    .phc-page-header {
+        margin-bottom: 2rem;
+    }
+
+    .phc-page-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-page-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 2rem;
+    }
+
+    .phc-page-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.95rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* Cards de resumo */
+    .phc-summary-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .phc-summary-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
+    }
+
+    .phc-summary-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--phc-primary), var(--phc-secondary));
+    }
+
+    .phc-summary-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .phc-summary-icon .material-symbols-rounded {
+        font-size: 1.75rem;
+    }
+
+    .phc-summary-label {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .phc-summary-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        line-height: 1.1;
+    }
+
+    .phc-summary-trend {
+        font-size: 0.8rem;
+        color: var(--phc-primary);
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* Seções */
+    .phc-section {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-section-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 1.4rem;
+    }
+
+    .phc-section-action {
+        font-size: 0.85rem;
+        color: var(--phc-primary);
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .phc-section-action:hover {
+        color: var(--phc-secondary);
+    }
+
+    /* Tabela */
+    .phc-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .phc-table thead th {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.85rem 1rem;
+        border: none;
+    }
+
+    .phc-table thead th:first-child {
+        border-radius: 8px 0 0 8px;
+    }
+
+    .phc-table thead th:last-child {
+        border-radius: 0 8px 8px 0;
+    }
+
+    .phc-table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--phc-border);
+        font-size: 0.9rem;
+        color: var(--phc-text);
+        vertical-align: middle;
+    }
+
+    .phc-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .phc-patient-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .phc-patient-name {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-patient-id {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+    }
+
+    .phc-time-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--phc-text);
+        font-weight: 500;
+    }
+
+    .phc-time-cell .material-symbols-rounded {
+        color: var(--phc-secondary);
+        font-size: 1.1rem;
+    }
+
+    .phc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+
+    .phc-badge-confirmed {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+    }
+
+    .phc-badge-pending {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .phc-badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .phc-btn {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        text-decoration: none;
+    }
+
+    .phc-btn:hover {
+        background: var(--phc-secondary);
+        color: white;
+    }
+
+    .phc-btn .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    /* Alertas */
+    .phc-alert-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-left: 4px solid var(--phc-primary);
+        border-radius: 10px;
+        padding: 1.15rem;
+        height: 100%;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .phc-alert-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(139, 92, 246, 0.1);
+    }
+
+    .phc-alert-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .phc-alert-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin-bottom: 0.25rem;
+    }
+
+    .phc-alert-desc {
+        font-size: 0.83rem;
+        color: var(--phc-muted);
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    /* Gráficos */
+    .phc-chart-container {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        height: 100%;
+    }
+
+    .phc-chart-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-chart-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 1.3rem;
+    }
+
+    /* Gráfico de barras */
+    .phc-bar-chart {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        height: 200px;
+        gap: 0.5rem;
+        padding: 0 0.5rem;
+        border-bottom: 1px solid var(--phc-border);
+    }
+
+    .phc-bar-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        height: 100%;
+        justify-content: flex-end;
+    }
+
+    .phc-bar {
+        width: 100%;
+        max-width: 36px;
+        background: linear-gradient(180deg, var(--phc-primary), var(--phc-secondary));
+        border-radius: 6px 6px 0 0;
+        position: relative;
+        transition: opacity 0.2s ease;
+        min-height: 4px;
+    }
+
+    .phc-bar:hover {
+        opacity: 0.85;
+    }
+
+    .phc-bar-value {
+        position: absolute;
+        top: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--phc-primary);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .phc-bar:hover .phc-bar-value {
+        opacity: 1;
+    }
+
+    .phc-bar-label {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        font-weight: 500;
+    }
+
+    /* Gráfico de linha (SVG) */
+    .phc-line-chart {
+        width: 100%;
+        height: 200px;
+    }
+
+    /* Gráfico horizontal */
+    .phc-hbar-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .phc-hbar-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .phc-hbar-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+    }
+
+    .phc-hbar-label {
+        color: var(--phc-text);
+        font-weight: 500;
+    }
+
+    .phc-hbar-value {
+        color: var(--phc-primary);
+        font-weight: 600;
+    }
+
+    .phc-hbar-track {
+        height: 8px;
+        background: var(--phc-light);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .phc-hbar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--phc-primary), var(--phc-secondary));
+        border-radius: 4px;
+        transition: width 0.6s ease;
+    }
+
+    @media (max-width: 768px) {
+        .phc-dashboard { padding: 1.25rem 1rem; }
+        .phc-page-title { font-size: 1.5rem; }
+        .phc-summary-value { font-size: 1.6rem; }
+        .phc-table { font-size: 0.85rem; }
+        .phc-table thead th, .phc-table tbody td { padding: 0.75rem 0.6rem; }
+    }
+</style>
+
+<div class="phc-dashboard">
+    <!-- Cabeçalho -->
+    <div class="phc-page-header">
+        <h1 class="phc-page-title">
+            <span class="material-symbols-rounded">monitoring</span>
+            Dashboard Médico
+        </h1>
+        <p class="phc-page-subtitle">Acompanhe seus pacientes, consultas e atividades clínicas.</p>
+    </div>
+
+    <!-- Cards de Resumo -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="phc-summary-card">
+                <div class="phc-summary-icon">
+                    <span class="material-symbols-rounded">group</span>
+                </div>
+                <div class="phc-summary-label">Pacientes cadastrados</div>
+                <div class="phc-summary-value">248</div>
+                <div class="phc-summary-trend">
+                    <span class="material-symbols-rounded" style="font-size: 1rem;">trending_up</span>
+                    +12 este mês
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="phc-summary-card">
+                <div class="phc-summary-icon">
+                    <span class="material-symbols-rounded">today</span>
+                </div>
+                <div class="phc-summary-label">Consultas hoje</div>
+                <div class="phc-summary-value">12</div>
+                <div class="phc-summary-trend">
+                    <span class="material-symbols-rounded" style="font-size: 1rem;">schedule</span>
+                    3 confirmadas
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="phc-summary-card">
+                <div class="phc-summary-icon">
+                    <span class="material-symbols-rounded">event_available</span>
+                </div>
+                <div class="phc-summary-label">Consultas realizadas no mês</div>
+                <div class="phc-summary-value">186</div>
+                <div class="phc-summary-trend">
+                    <span class="material-symbols-rounded" style="font-size: 1rem;">trending_up</span>
+                    +8% vs. mês anterior
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="phc-summary-card">
+                <div class="phc-summary-icon">
+                    <span class="material-symbols-rounded">description</span>
+                </div>
+                <div class="phc-summary-label">Documentos pendentes</div>
+                <div class="phc-summary-value">7</div>
+                <div class="phc-summary-trend">
+                    <span class="material-symbols-rounded" style="font-size: 1rem;">priority_high</span>
+                    2 urgentes
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pacientes do Dia -->
+    <div class="phc-section">
+        <div class="phc-section-header">
+            <h2 class="phc-section-title">
+                <span class="material-symbols-rounded">assignment_ind</span>
+                Pacientes do Dia
+            </h2>
+            <a href="#" class="phc-section-action">
+                Ver agenda completa
+                <span class="material-symbols-rounded" style="font-size: 1rem;">arrow_forward</span>
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="phc-table">
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Paciente</th>
+                        <th>Motivo</th>
+                        <th>Status</th>
+                        <th class="text-end">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                08:00
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">MS</div>
+                                <div>
+                                    <div class="phc-patient-name">Mariana Souza</div>
+                                    <div class="phc-patient-id">ID #10248</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Consulta de retorno</td>
+                        <td>
+                            <span class="phc-badge phc-badge-confirmed">
+                                <span class="phc-badge-dot"></span>
+                                Confirmada
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="#" class="phc-btn">
+                                <span class="material-symbols-rounded">play_arrow</span>
+                                Abrir atendimento
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                09:30
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">CO</div>
+                                <div>
+                                    <div class="phc-patient-name">Carlos Oliveira</div>
+                                    <div class="phc-patient-id">ID #10312</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Avaliação clínica</td>
+                        <td>
+                            <span class="phc-badge phc-badge-pending">
+                                <span class="phc-badge-dot"></span>
+                                Aguardando
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="#" class="phc-btn">
+                                <span class="material-symbols-rounded">play_arrow</span>
+                                Abrir atendimento
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                11:00
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">AM</div>
+                                <div>
+                                    <div class="phc-patient-name">Ana Martins</div>
+                                    <div class="phc-patient-id">ID #10187</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Resultados de exames</td>
+                        <td>
+                            <span class="phc-badge phc-badge-confirmed">
+                                <span class="phc-badge-dot"></span>
+                                Confirmada
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="#" class="phc-btn">
+                                <span class="material-symbols-rounded">play_arrow</span>
+                                Abrir atendimento
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Alertas Importantes -->
+    <div class="phc-section">
+        <div class="phc-section-header">
+            <h2 class="phc-section-title">
+                <span class="material-symbols-rounded">notifications_active</span>
+                Alertas Importantes
+            </h2>
+            <a href="#" class="phc-section-action">
+                Ver todos
+                <span class="material-symbols-rounded" style="font-size: 1rem;">arrow_forward</span>
+            </a>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <div class="phc-alert-card">
+                    <div class="phc-alert-icon">
+                        <span class="material-symbols-rounded">lab_profile</span>
+                    </div>
+                    <div>
+                        <div class="phc-alert-title">Paciente com exame pendente</div>
+                        <p class="phc-alert-desc">Roberto Lima aguarda resultado de hemograma completo há 3 dias.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="phc-alert-card">
+                    <div class="phc-alert-icon">
+                        <span class="material-symbols-rounded">event_busy</span>
+                    </div>
+                    <div>
+                        <div class="phc-alert-title">Paciente sem retorno agendado</div>
+                        <p class="phc-alert-desc">Juliana Ferreira não possui retorno agendado após última consulta.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="phc-alert-card">
+                    <div class="phc-alert-icon">
+                        <span class="material-symbols-rounded">draw</span>
+                    </div>
+                    <div>
+                        <div class="phc-alert-title">Documento aguardando assinatura</div>
+                        <p class="phc-alert-desc">Atestado médico de Paulo Ribeiro pendente de assinatura digital.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row g-3">
+        <!-- Consultas por mês -->
+        <div class="col-12 col-lg-6">
+            <div class="phc-chart-container">
+                <div class="phc-chart-title">
+                    <span class="material-symbols-rounded">bar_chart</span>
+                    Consultas por mês
+                </div>
+                <div class="phc-bar-chart">
+                    <div class="phc-bar-group">
+                        <div class="phc-bar" style="height: 45%;"><span class="phc-bar-value">98</span></div>
+                        <span class="phc-bar-label">Jan</span>
+                    </div>
+                    <div class="phc-bar-group">
+                        <div class="phc-bar" style="height: 62%;"><span class="phc-bar-value">134</span></div>
+                        <span class="phc-bar-label">Fev</span>
+                    </div>
+                    <div class="phc-bar-group">
+                        <div class="phc-bar" style="height: 55%;"><span class="phc-bar-value">119</span></div>
+                        <span class="phc-bar-label">Mar</span>
+                    </div>
+                    <div class="phc-bar-group">
+                        <div class="phc-bar" style="height: 78%;"><span class="phc-bar-value">168</span></div>
+                        <span class="phc-bar-label">Abr</span>
+                    </div>
+                    <div class="phc-bar-group">
+                        <div class="phc-bar" style="height: 70%;"><span class="phc-bar-value">152</span></div>
+                        <span class="phc-bar-label">Mai</span>
+                    </div>
+                    <div class="phc-bar-group">
+                        <div class="phc-bar" style="height: 86%;"><span class="phc-bar-value">186</span></div>
+                        <span class="phc-bar-label">Jun</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pacientes novos -->
+        <div class="col-12 col-lg-6">
+            <div class="phc-chart-container">
+                <div class="phc-chart-title">
+                    <span class="material-symbols-rounded">person_add</span>
+                    Pacientes novos
+                </div>
+                <svg class="phc-line-chart" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="phcAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.35"/>
+                            <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+                        </linearGradient>
+                        <linearGradient id="phcLineGradient" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#8B5CF6"/>
+                            <stop offset="100%" stop-color="#A78BFA"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Linhas de grade -->
+                    <line x1="0" y1="50" x2="400" y2="50" stroke="#EDE9FE" stroke-width="1"/>
+                    <line x1="0" y1="100" x2="400" y2="100" stroke="#EDE9FE" stroke-width="1"/>
+                    <line x1="0" y1="150" x2="400" y2="150" stroke="#EDE9FE" stroke-width="1"/>
+                    <!-- Área -->
+                    <path d="M 0 160 L 60 130 L 120 140 L 180 95 L 240 110 L 300 70 L 360 85 L 400 50 L 400 200 L 0 200 Z"
+                          fill="url(#phcAreaGradient)"/>
+                    <!-- Linha -->
+                    <path d="M 0 160 L 60 130 L 120 140 L 180 95 L 240 110 L 300 70 L 360 85 L 400 50"
+                          fill="none" stroke="url(#phcLineGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- Pontos -->
+                    <circle cx="0" cy="160" r="4" fill="#8B5CF6"/>
+                    <circle cx="60" cy="130" r="4" fill="#8B5CF6"/>
+                    <circle cx="120" cy="140" r="4" fill="#8B5CF6"/>
+                    <circle cx="180" cy="95" r="4" fill="#8B5CF6"/>
+                    <circle cx="240" cy="110" r="4" fill="#8B5CF6"/>
+                    <circle cx="300" cy="70" r="4" fill="#8B5CF6"/>
+                    <circle cx="360" cy="85" r="4" fill="#8B5CF6"/>
+                    <circle cx="400" cy="50" r="4" fill="#8B5CF6"/>
+                </svg>
+                <div class="d-flex justify-content-between mt-2 px-1">
+                    <small class="text-muted">Jan</small>
+                    <small class="text-muted">Fev</small>
+                    <small class="text-muted">Mar</small>
+                    <small class="text-muted">Abr</small>
+                    <small class="text-muted">Mai</small>
+                    <small class="text-muted">Jun</small>
+                    <small class="text-muted">Jul</small>
+                    <small class="text-muted">Ago</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exames solicitados -->
+        <div class="col-12">
+            <div class="phc-chart-container">
+                <div class="phc-chart-title">
+                    <span class="material-symbols-rounded">biotech</span>
+                    Exames solicitados
+                </div>
+                <div class="phc-hbar-list">
+                    <div class="phc-hbar-item">
+                        <div class="phc-hbar-header">
+                            <span class="phc-hbar-label">Hemograma completo</span>
+                            <span class="phc-hbar-value">142</span>
+                        </div>
+                        <div class="phc-hbar-track">
+                            <div class="phc-hbar-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                    <div class="phc-hbar-item">
+                        <div class="phc-hbar-header">
+                            <span class="phc-hbar-label">Glicemia em jejum</span>
+                            <span class="phc-hbar-value">98</span>
+                        </div>
+                        <div class="phc-hbar-track">
+                            <div class="phc-hbar-fill" style="width: 62%;"></div>
+                        </div>
+                    </div>
+                    <div class="phc-hbar-item">
+                        <div class="phc-hbar-header">
+                            <span class="phc-hbar-label">Colesterol total e frações</span>
+                            <span class="phc-hbar-value">76</span>
+                        </div>
+                        <div class="phc-hbar-track">
+                            <div class="phc-hbar-fill" style="width: 48%;"></div>
+                        </div>
+                    </div>
+                    <div class="phc-hbar-item">
+                        <div class="phc-hbar-header">
+                            <span class="phc-hbar-label">Ureia e creatinina</span>
+                            <span class="phc-hbar-value">54</span>
+                        </div>
+                        <div class="phc-hbar-track">
+                            <div class="phc-hbar-fill" style="width: 34%;"></div>
+                        </div>
+                    </div>
+                    <div class="phc-hbar-item">
+                        <div class="phc-hbar-header">
+                            <span class="phc-hbar-label">TSH e T4 livre</span>
+                            <span class="phc-hbar-value">38</span>
+                        </div>
+                        <div class="phc-hbar-track">
+                            <div class="phc-hbar-fill" style="width: 24%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

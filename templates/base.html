@@ -851,7 +851,7 @@ Usuários
 
 </a>
 
-<a href="#"
+<a href="{{ url_for('web.admin') }}"
 class="nav-link">
 
 <span class="material-symbols-outlined">
@@ -864,7 +864,7 @@ Administradores
 
 
 
-<a href="#"
+<a href="{{ url_for('web.recent_logins') }}"
 class="nav-link">
 
 <span class="material-symbols-outlined">
@@ -875,7 +875,7 @@ history
 
 </a>
 
-<a href="#"
+<a href="{{ url_for('web.logs') }}"
 class="nav-link">
 
 <span class="material-symbols-outlined">
@@ -886,7 +886,7 @@ Logs
 
 </a>
 
-<a href="#"
+<a href="{{ url_for('web.settings') }}"
 class="nav-link">
 
 <span class="material-symbols-outlined">
@@ -897,23 +897,70 @@ Configurações
 
 </a>
 
-
-
 {% elif session.get("role") == "professional" %}
 
 <!-- =====================
 MENU PROFISSIONAL
 ===================== -->
 
-<a href="{{ url_for('web.health_professional_zone') }}"
-class="nav-link">
+<a href="{{ url_for('web.health_professional_dashboard') }}" class="nav-link">
+    <span class="material-symbols-outlined">space_dashboard</span>
+    Dashboard
+</a>
 
-<span class="material-symbols-outlined">
-medical_services
-</span>
+<a href="{{ url_for('web.professional_patients') }}" class="nav-link">
+    <span class="material-symbols-outlined">groups</span>
+    Pacientes
+</a>
 
-Dashboard
+<a href="{{ url_for('web.professional_medical_record') }}" class="nav-link">
+    <span class="material-symbols-outlined">folder_shared</span>
+    Prontuários
+</a>
 
+<a href="{{ url_for('web.professional_calendar') }}" class="nav-link">
+    <span class="material-symbols-outlined">calendar_month</span>
+    Agenda
+</a>
+
+<a href="{{ url_for('web.professional_appointments') }}" class="nav-link">
+    <span class="material-symbols-outlined">event_available</span>
+    Consultas
+</a>
+
+<a href="{{ url_for('web.professional_prescriptions') }}" class="nav-link">
+    <span class="material-symbols-outlined">medication</span>
+    Receitas
+</a>
+
+<a href="{{ url_for('web.professional_exams') }}" class="nav-link">
+    <span class="material-symbols-outlined">lab_profile</span>
+    Exames
+</a>
+
+<a href="{{ url_for('web.professional_messages') }}" class="nav-link">
+    <span class="material-symbols-outlined">forum</span>
+    Mensagens
+</a>
+
+<a href="{{ url_for('web.professional_history') }}" class="nav-link">
+    <span class="material-symbols-outlined">history</span>
+    Histórico
+</a>
+
+<a href="{{ url_for('web.professional_reports') }}" class="nav-link">
+    <span class="material-symbols-outlined">analytics</span>
+    Relatórios
+</a>
+
+<a href="{{ url_for('web.professional_profile') }}" class="nav-link">
+    <span class="material-symbols-outlined">account_circle</span>
+    Meu Perfil
+</a>
+
+<a href="{{ url_for('web.professional_settings') }}" class="nav-link">
+    <span class="material-symbols-outlined">settings</span>
+    Configurações
 </a>
 
 

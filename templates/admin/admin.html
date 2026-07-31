@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+
+{% block title %}
+Administradores | Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<!-- Importação do Material Symbols Rounded -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-bg: #FFFFFF;
+        --phc-hover: #F5F3FF;
+        --phc-text-main: #2D2D2D;
+        --phc-text-sec: #6B7280;
+        --phc-border: #DDD6FE;
+        --phc-btn-hover: #7C3AED;
+    }
+
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+        color: var(--phc-text-main);
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .page-subtitle {
+        color: var(--phc-text-sec);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .card-custom {
+        background-color: var(--phc-bg);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(139, 92, 246, 0.06);
+        padding: 1.5rem;
+    }
+
+    .form-control-custom, .form-select-custom {
+        border: 1px solid var(--phc-border);
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        color: var(--phc-text-main);
+        background-color: var(--phc-bg);
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control-custom:focus, .form-select-custom:focus {
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        background-color: var(--phc-bg);
+        color: var(--phc-text-main);
+    }
+
+    .btn-custom-primary {
+        background-color: var(--phc-primary);
+        border: none;
+        color: white;
+        border-radius: 12px;
+        padding: 0.65rem 1.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-custom-primary:hover {
+        background-color: var(--phc-btn-hover);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+    }
+
+    .btn-custom-secondary {
+        background-color: var(--phc-bg);
+        border: 1.5px solid var(--phc-secondary);
+        color: var(--phc-primary);
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 0.65rem 1.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-custom-secondary:hover {
+        background-color: var(--phc-hover);
+        color: var(--phc-btn-hover);
+        border-color: var(--phc-btn-hover);
+    }
+
+    .btn-action-details {
+        background-color: var(--phc-light);
+        color: var(--phc-primary);
+        border: none;
+        border-radius: 10px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-action-details:hover {
+        background-color: var(--phc-primary);
+        color: white;
+    }
+
+    .btn-action-danger {
+        background-color: #FEE2E2;
+        color: #991B1B;
+        border: none;
+        border-radius: 10px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-action-danger:hover {
+        background-color: #DC2626;
+        color: white;
+    }
+
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 0;
+    }
+
+    .table-custom thead th {
+        background-color: var(--phc-hover);
+        color: var(--phc-text-sec);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border-bottom: 1px solid var(--phc-border);
+        white-space: nowrap;
+    }
+
+    .table-custom thead th:first-child { border-top-left-radius: 12px; }
+    .table-custom thead th:last-child { border-top-right-radius: 12px; }
+
+    .table-custom tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #F3F4F6;
+        vertical-align: middle;
+        color: var(--phc-text-main);
+        font-size: 0.95rem;
+    }
+
+    .table-custom tbody tr:last-child td { border-bottom: none; }
+    .table-custom tbody tr { transition: background-color 0.2s ease; }
+    .table-custom tbody tr:hover { background-color: var(--phc-hover); }
+
+    .admin-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--phc-light);
+    }
+
+    .badge-status {
+        padding: 0.35em 0.8em;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge-active { background-color: #DCFCE7; color: #166534; }
+    .badge-inactive { background-color: #F3F4F6; color: #6B7280; }
+
+    .pagination-custom .page-item .page-link {
+        border: 1px solid var(--phc-border);
+        color: var(--phc-text-sec);
+        background-color: var(--phc-bg);
+        margin: 0 4px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .pagination-custom .page-item .page-link:hover {
+        background-color: var(--phc-hover);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .pagination-custom .page-item.active .page-link {
+        background-color: var(--phc-primary);
+        border-color: var(--phc-primary);
+        color: white;
+    }
+
+    .pagination-custom .page-item.disabled .page-link {
+        background-color: var(--phc-bg);
+        color: #D1D5DB;
+        border-color: #F3F4F6;
+    }
+
+    .material-symbols-rounded {
+        font-size: 20px;
+        vertical-align: middle;
+    }
+
+    /* ===========================
+       MODAL - AJUSTADO (MAIS LARGO E MAIS BAIXO)
+    =========================== */
+    .modal-content-custom {
+        background-color: var(--phc-bg);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(139, 92, 246, 0.15);
+    }
+
+    /* Aumenta a largura máxima do modal */
+    .modal-xl-custom {
+        max-width: 1100px;
+        width: 95%;
+    }
+
+    /* Modal de adicionar admin - tamanho médio */
+    .modal-md-custom {
+        max-width: 650px;
+        width: 95%;
+    }
+
+    .modal-header-custom {
+        border-bottom: 1px solid var(--phc-border);
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body-custom {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-footer-custom {
+        border-top: 1px solid var(--phc-border);
+        padding: 1rem 1.5rem;
+    }
+
+    .section-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--phc-primary);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--phc-light);
+    }
+
+    .detail-label {
+        font-size: 0.75rem;
+        color: var(--phc-text-sec);
+        font-weight: 600;
+        margin-bottom: 0.15rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .detail-value {
+        font-size: 0.95rem;
+        color: var(--phc-text-main);
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+    }
+
+    /* Foto menor para reduzir altura */
+    .modal-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--phc-light);
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-avatar-initials {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        font-weight: 700;
+        border: 3px solid var(--phc-light);
+        margin: 0 auto 0.5rem auto;
+    }
+
+    .modal-user-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+
+    /* Toggle Password Button */
+    .btn-toggle-password {
+        border: 1px solid var(--phc-border);
+        border-left: none;
+        background-color: var(--phc-bg);
+        border-radius: 0 12px 12px 0;
+        color: var(--phc-text-sec);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 1rem;
+    }
+
+    .btn-toggle-password:hover {
+        background-color: var(--phc-hover);
+        color: var(--phc-primary);
+    }
+
+    .input-group .form-control-custom {
+        border-radius: 12px 0 0 12px;
+    }
+
+    .input-group:focus-within .btn-toggle-password {
+        border-color: var(--phc-primary);
+    }
+</style>
+
+<div class="container-fluid py-4">
+
+    <!-- Cabeçalho com Botão de Ação -->
+    <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">Administradores</h1>
+            <p class="page-subtitle">Gerencie os administradores responsáveis pelo sistema.</p>
+        </div>
+        <button class="btn-custom-primary" data-bs-toggle="modal" data-bs-target="#addAdminModal">
+            <span class="material-symbols-rounded">person_add</span>
+            Adicionar Administrador
+        </button>
+    </div>
+
+    <!-- Card Principal com Filtros e Tabela -->
+    <div class="card-custom">
+
+        <!-- Filtros -->
+        <form class="row g-3 mb-4">
+            <div class="col-12 col-md-5 col-lg-5">
+                <div class="input-group">
+                    <input type="text" class="form-control-custom" placeholder="Pesquisar por nome ou e-mail...">
+                    <button class="btn-custom-primary" type="button" style="border-radius: 0 12px 12px 0;">
+                        <span class="material-symbols-rounded">search</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4 col-lg-4">
+                <select class="form-select-custom">
+                    <option selected>Status</option>
+                    <option>Todos</option>
+                    <option>Ativo</option>
+                    <option>Inativo</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-3 col-lg-3 d-flex align-items-end">
+                <button type="button" class="btn-custom-secondary w-100">Limpar Filtros</button>
+            </div>
+        </form>
+
+        <!-- Tabela -->
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Foto</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Último Login</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set admins = [
+                        {"name": "Carlos Henrique Oliveira", "email": "carlos.oliveira@precisionhealth.com", "phone": "(11) 99876-5432", "status": "Ativo", "status_class": "badge-active", "last_login": "31/07/2026 às 08:42", "role": "Administrador Master", "register_date": "12/02/2026", "has_photo": true},
+                        {"name": "Fernanda Alves", "email": "fernanda.alves@precisionhealth.com", "phone": "(61) 93210-9876", "status": "Ativo", "status_class": "badge-active", "last_login": "31/07/2026 às 07:55", "role": "Administrador", "register_date": "12/02/2026", "has_photo": true},
+                        {"name": "Patrícia Gomes", "email": "patricia.gomes@precisionhealth.com", "phone": "(11) 99876-1111", "status": "Ativo", "status_class": "badge-active", "last_login": "31/07/2026 às 09:15", "role": "Administrador", "register_date": "12/02/2026", "has_photo": true},
+                        {"name": "Juliana Rocha Mendes", "email": "juliana.mendes@precisionhealth.com", "phone": "(51) 94321-0987", "status": "Inativo", "status_class": "badge-inactive", "last_login": "10/05/2026 às 11:00", "role": "Administrador", "register_date": "01/05/2026", "has_photo": true},
+                        {"name": "Lucas Martins", "email": "lucas.martins@precisionhealth.com", "phone": "(41) 95432-1098", "status": "Ativo", "status_class": "badge-active", "last_login": "30/07/2026 às 18:20", "role": "Administrador", "register_date": "15/03/2026", "has_photo": false},
+                        {"name": "Gabriel Costa", "email": "gabriel.costa@precisionhealth.com", "phone": "(21) 97654-3210", "status": "Ativo", "status_class": "badge-active", "last_login": "29/07/2026 às 14:30", "role": "Administrador", "register_date": "20/04/2026", "has_photo": false},
+                        {"name": "Amanda Ribeiro", "email": "amanda.ribeiro@precisionhealth.com", "phone": "(31) 96543-2109", "status": "Inativo", "status_class": "badge-inactive", "last_login": "15/06/2026 às 09:30", "role": "Administrador", "register_date": "05/06/2026", "has_photo": true}
+                    ] %}
+
+                    {% for admin in admins %}
+                    <tr>
+                        <td>
+                            {% if admin.has_photo %}
+                                <img src="https://ui-avatars.com/api/?name={{ admin.name | replace(' ', '+') }}&background=8B5CF6&color=fff&size=128" alt="Foto" class="admin-avatar">
+                            {% else %}
+                                <div class="admin-avatar d-flex align-items-center justify-content-center" style="background-color: var(--phc-light); color: var(--phc-primary); font-weight: 700;">
+                                    {{ admin.name.split(' ')[0][0] }}{{ admin.name.split(' ')[-1][0] }}
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td class="fw-semibold">{{ admin.name }}</td>
+                        <td class="text-muted">{{ admin.email }}</td>
+                        <td class="text-muted">{{ admin.phone }}</td>
+                        <td><span class="badge-status {{ admin.status_class }}">{{ admin.status }}</span></td>
+                        <td class="text-muted">{{ admin.last_login }}</td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#adminDetailsModal{{ loop.index }}">
+                                    <span class="material-symbols-rounded">visibility</span> Detalhes
+                                </button>
+                                <button class="btn-action-danger">
+                                    <span class="material-symbols-rounded">block</span> Desativar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginação -->
+        <nav class="mt-4">
+            <ul class="pagination pagination-custom justify-content-end mb-0">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Próximo</a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
+<!-- Modal: Detalhes do Administrador (AJUSTADO - Mais largo e mais baixo) -->
+{% for admin in admins %}
+<div class="modal fade" id="adminDetailsModal{{ loop.index }}" tabindex="-1" aria-labelledby="adminDetailsModalLabel{{ loop.index }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom modal-dialog-centered">
+        <div class="modal-content modal-content-custom">
+
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold" id="adminDetailsModalLabel{{ loop.index }}" style="color: var(--phc-primary);">
+                    Detalhes do Administrador
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body modal-body-custom">
+                <div class="row g-3">
+                    <!-- Coluna Esquerda: Dados Pessoais -->
+                    <div class="col-lg-6">
+                        <div class="section-title">Dados Pessoais</div>
+                        <div class="row g-2">
+                            <div class="col-4 text-center">
+                                {% if admin.has_photo %}
+                                    <img src="https://ui-avatars.com/api/?name={{ admin.name | replace(' ', '+') }}&background=8B5CF6&color=fff&size=256" alt="Foto" class="modal-avatar">
+                                {% else %}
+                                    <div class="modal-avatar-initials">
+                                        {{ admin.name.split(' ')[0][0] }}{{ admin.name.split(' ')[-1][0] }}
+                                    </div>
+                                {% endif %}
+                                <div class="modal-user-name text-break">{{ admin.name }}</div>
+                                <span class="badge-status {{ admin.status_class }} d-inline-block">{{ admin.status }}</span>
+                            </div>
+                            <div class="col-8">
+                                <div class="detail-label">Email</div>
+                                <div class="detail-value text-break">{{ admin.email }}</div>
+
+                                <div class="detail-label">Telefone</div>
+                                <div class="detail-value">{{ admin.phone }}</div>
+
+                                <div class="detail-label">Cargo</div>
+                                <div class="detail-value mb-0">{{ admin.role }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Dados da Conta -->
+                    <div class="col-lg-6">
+                        <div class="section-title">Dados da Conta</div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="detail-label">Data de Cadastro</div>
+                                <div class="detail-value">{{ admin.register_date }}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-label">Último Login</div>
+                                <div class="detail-value">{{ admin.last_login }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value mb-0">
+                                    <span class="badge-status {{ admin.status_class }}">{{ admin.status }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer modal-footer-custom">
+                <button type="button" class="btn-custom-secondary px-4" data-bs-dismiss="modal">Fechar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal: Adicionar Administrador (AJUSTADO - Mais largo e mais baixo) -->
+<div class="modal fade" id="addAdminModal" tabindex="-1" aria-labelledby="addAdminModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md-custom modal-dialog-centered">
+        <div class="modal-content modal-content-custom">
+
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold" id="addAdminModalLabel" style="color: var(--phc-primary);">
+                    Adicionar Administrador
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body modal-body-custom">
+                <form class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="adminName" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: 0.875rem;">Nome Completo</label>
+                            <input type="text" class="form-control-custom w-100" id="adminName" placeholder="Digite o nome completo" required>
+                            <div class="invalid-feedback">Por favor, informe o nome completo.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="adminEmail" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: 0.875rem;">Email</label>
+                            <input type="email" class="form-control-custom w-100" id="adminEmail" placeholder="email@precisionhealth.com" required>
+                            <div class="invalid-feedback">Por favor, informe um email válido.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="adminPhone" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: 0.875rem;">Telefone</label>
+                            <input type="tel" class="form-control-custom w-100" id="adminPhone" placeholder="(11) 99999-9999" required>
+                            <div class="invalid-feedback">Por favor, informe o telefone.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="adminPassword" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: 0.875rem;">Senha</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control-custom" id="adminPassword" placeholder="••••••••" required style="border-radius: 12px 0 0 12px;">
+                                <button class="btn-toggle-password" type="button" onclick="togglePassword('adminPassword', this)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">Por favor, informe a senha.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="adminConfirmPassword" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: 0.875rem;">Confirmar Senha</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control-custom" id="adminConfirmPassword" placeholder="••••••••" required style="border-radius: 12px 0 0 12px;">
+                                <button class="btn-toggle-password" type="button" onclick="togglePassword('adminConfirmPassword', this)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">Por favor, confirme a senha.</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="adminStatus" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: 0.875rem;">Status</label>
+                            <select class="form-select-custom w-100" id="adminStatus" required>
+                                <option value="ativo" selected>Ativo</option>
+                                <option value="inativo">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer modal-footer-custom">
+                <button type="button" class="btn-custom-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn-custom-primary">
+                    <span class="material-symbols-rounded">person_add</span>
+                    Adicionar Administrador
+                </button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Script simples para toggle de senha -->
+<script>
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('.material-symbols-rounded');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.textContent = 'visibility_off';
+        } else {
+            input.type = 'password';
+            icon.textContent = 'visibility';
+        }
+    }
+</script>
+
+{% endblock %}

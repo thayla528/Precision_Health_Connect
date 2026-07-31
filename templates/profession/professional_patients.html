@@ -1,0 +1,987 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-white: #FFFFFF;
+        --phc-text: #1F2937;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+        --phc-bg: #FAFAFC;
+    }
+
+    .phc-patients-page {
+        padding: 2rem 1.5rem;
+        background: var(--phc-bg);
+        min-height: 100vh;
+    }
+
+    .phc-page-header {
+        margin-bottom: 1.75rem;
+    }
+
+    .phc-page-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-page-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 2rem;
+    }
+
+    .phc-page-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.95rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* Filtros */
+    .phc-filters-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-filters-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-filters-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 1.25rem;
+    }
+
+    .phc-filter-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--phc-muted);
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .phc-filter-input,
+    .phc-filter-select {
+        width: 100%;
+        padding: 0.6rem 0.9rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .phc-filter-input:focus,
+    .phc-filter-select:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    }
+
+    .phc-filter-input::placeholder {
+        color: #9CA3AF;
+    }
+
+    .phc-btn-filter {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .phc-btn-filter:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-btn-clear {
+        background: transparent;
+        color: var(--phc-muted);
+        border: 1px solid var(--phc-border);
+        padding: 0.6rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+
+    .phc-btn-clear:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    /* Tabela */
+    .phc-table-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .phc-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-table-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-table-title .material-symbols-rounded {
+        color: var(--phc-primary);
+    }
+
+    .phc-results-count {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .phc-table thead th {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        font-size: 0.76rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.9rem 1.1rem;
+        border: none;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .phc-table tbody td {
+        padding: 1rem 1.1rem;
+        border-bottom: 1px solid var(--phc-border);
+        font-size: 0.9rem;
+        color: var(--phc-text);
+        vertical-align: middle;
+    }
+
+    .phc-table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    .phc-table tbody tr:hover {
+        background: #FAFAFE;
+    }
+
+    .phc-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .phc-photo-cell {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.88rem;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .phc-photo-cell img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .phc-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-name-text {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-name-cpf {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+        margin-top: 0.1rem;
+    }
+
+    .phc-date-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .phc-date-main {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-date-sub {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+    }
+
+    .phc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.76rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .phc-badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .phc-badge-stable {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    .phc-badge-monitoring {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+    }
+
+    .phc-badge-critical {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    .phc-btn-record {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.45rem 0.9rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .phc-btn-record:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-btn-record .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    /* Paginação */
+    .phc-pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-pagination-info {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-pagination-controls {
+        display: flex;
+        gap: 0.35rem;
+    }
+
+    .phc-page-btn {
+        min-width: 34px;
+        height: 34px;
+        border: 1px solid var(--phc-border);
+        background: var(--phc-white);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: var(--phc-text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+    }
+
+    .phc-page-btn:hover:not(:disabled):not(.active) {
+        background: var(--phc-light);
+        border-color: var(--phc-secondary);
+        color: var(--phc-primary);
+    }
+
+    .phc-page-btn.active {
+        background: var(--phc-primary);
+        color: white;
+        border-color: var(--phc-primary);
+    }
+
+    .phc-page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    /* Modal */
+    .phc-modal .modal-content {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .phc-modal-header {
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        padding: 1.5rem;
+        border: none;
+    }
+
+    .phc-modal-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+    }
+
+    .phc-modal-patient-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .phc-modal-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .phc-modal-name {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .phc-modal-subtitle {
+        font-size: 0.88rem;
+        opacity: 0.9;
+        margin: 0.15rem 0 0 0;
+    }
+
+    .phc-modal-body {
+        padding: 1.5rem;
+    }
+
+    .phc-modal-section-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--phc-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--phc-border);
+    }
+
+    .phc-modal-section-title .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    .phc-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .phc-info-label {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .phc-info-value {
+        font-size: 0.95rem;
+        color: var(--phc-text);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .phc-info-value .material-symbols-rounded {
+        font-size: 1.1rem;
+        color: var(--phc-secondary);
+    }
+
+    .phc-tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .phc-tag {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .phc-tag.critical {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    .phc-tag .material-symbols-rounded {
+        font-size: 0.95rem;
+    }
+
+    .phc-modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        background: #FAFAFC;
+    }
+
+    .phc-modal-btn {
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .phc-modal-btn-primary {
+        background: var(--phc-primary);
+        color: white;
+    }
+
+    .phc-modal-btn-primary:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-modal-btn-secondary {
+        background: transparent;
+        color: var(--phc-muted);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-modal-btn-secondary:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    @media (max-width: 992px) {
+        .phc-table-card { overflow-x: auto; }
+        .phc-table { min-width: 900px; }
+    }
+
+    @media (max-width: 768px) {
+        .phc-patients-page { padding: 1.25rem 1rem; }
+        .phc-page-title { font-size: 1.5rem; }
+    }
+</style>
+
+<div class="phc-patients-page">
+    <!-- Cabeçalho -->
+    <div class="phc-page-header">
+        <h1 class="phc-page-title">
+            <span class="material-symbols-rounded">group</span>
+            Pacientes
+        </h1>
+        <p class="phc-page-subtitle">Gerencie os pacientes vinculados ao seu atendimento.</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="phc-filters-card">
+        <div class="phc-filters-title">
+            <span class="material-symbols-rounded">tune</span>
+            Filtros de busca
+        </div>
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <label class="phc-filter-label">Pesquisa</label>
+                <input type="text" class="phc-filter-input" placeholder="Pesquisar por nome ou CPF">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="phc-filter-label">Especialidade</label>
+                <select class="phc-filter-select">
+                    <option value="">Todas</option>
+                    <option>Clínica Geral</option>
+                    <option>Cardiologia</option>
+                    <option>Ortopedia</option>
+                    <option>Pediatria</option>
+                    <option>Dermatologia</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="phc-filter-label">Última consulta</label>
+                <select class="phc-filter-select">
+                    <option value="">Qualquer</option>
+                    <option>Últimos 7 dias</option>
+                    <option>Últimos 30 dias</option>
+                    <option>Últimos 90 dias</option>
+                    <option>Mais de 90 dias</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="phc-filter-label">Status</label>
+                <select class="phc-filter-select">
+                    <option value="">Todos</option>
+                    <option>Estável</option>
+                    <option>Acompanhamento</option>
+                    <option>Crítico</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2 d-flex align-items-end gap-2">
+                <button class="phc-btn-filter">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">search</span>
+                    Buscar
+                </button>
+                <button class="phc-btn-clear d-none d-md-block">Limpar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="phc-table-card">
+        <div class="phc-table-header">
+            <div class="phc-table-title">
+                <span class="material-symbols-rounded">list_alt</span>
+                Lista de Pacientes
+            </div>
+            <div class="phc-results-count">Exibindo 10 de 248 pacientes</div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="phc-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Foto</th>
+                        <th>Nome</th>
+                        <th>Idade</th>
+                        <th>Última Consulta</th>
+                        <th>Próxima Consulta</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="patientsTableBody">
+                    <!-- Linhas geradas via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="phc-pagination">
+            <div class="phc-pagination-info">
+                Mostrando <strong>1-10</strong> de <strong>248</strong> pacientes
+            </div>
+            <div class="phc-pagination-controls">
+                <button class="phc-page-btn" disabled>‹</button>
+                <button class="phc-page-btn active">1</button>
+                <button class="phc-page-btn">2</button>
+                <button class="phc-page-btn">3</button>
+                <button class="phc-page-btn">...</button>
+                <button class="phc-page-btn">25</button>
+                <button class="phc-page-btn">›</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detalhes do Paciente -->
+<div class="modal fade phc-modal" id="patientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div class="phc-modal-patient-info">
+                    <div class="phc-modal-avatar" id="modalAvatar">--</div>
+                    <div>
+                        <h3 class="phc-modal-name" id="modalName">Nome do Paciente</h3>
+                        <p class="phc-modal-subtitle" id="modalSubtitle">Prontuário #00000</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="phc-modal-body">
+                <!-- Dados pessoais -->
+                <div class="phc-modal-section-title">
+                    <span class="material-symbols-rounded">badge</span>
+                    Dados pessoais
+                </div>
+                <div class="phc-info-grid">
+                    <div class="phc-info-item">
+                        <span class="phc-info-label">Nome completo</span>
+                        <span class="phc-info-value" id="modalFullName">—</span>
+                    </div>
+                    <div class="phc-info-item">
+                        <span class="phc-info-label">Idade</span>
+                        <span class="phc-info-value" id="modalAge">—</span>
+                    </div>
+                    <div class="phc-info-item">
+                        <span class="phc-info-label">Sexo</span>
+                        <span class="phc-info-value" id="modalGender">—</span>
+                    </div>
+                    <div class="phc-info-item">
+                        <span class="phc-info-label">Tipo sanguíneo</span>
+                        <span class="phc-info-value" id="modalBlood">—</span>
+                    </div>
+                </div>
+
+                <!-- Contato e convênio -->
+                <div class="phc-modal-section-title">
+                    <span class="material-symbols-rounded">contact_phone</span>
+                    Contato e convênio
+                </div>
+                <div class="phc-info-grid">
+                    <div class="phc-info-item">
+                        <span class="phc-info-label">Telefone</span>
+                        <span class="phc-info-value">
+                            <span class="material-symbols-rounded">phone</span>
+                            <span id="modalPhone">—</span>
+                        </span>
+                    </div>
+                    <div class="phc-info-item">
+                        <span class="phc-info-label">E-mail</span>
+                        <span class="phc-info-value">
+                            <span class="material-symbols-rounded">mail</span>
+                            <span id="modalEmail">—</span>
+                        </span>
+                    </div>
+                    <div class="phc-info-item">
+                        <span class="phc-info-label">Convênio</span>
+                        <span class="phc-info-value">
+                            <span class="material-symbols-rounded">health_and_safety</span>
+                            <span id="modalInsurance">—</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Alergias -->
+                <div class="phc-modal-section-title">
+                    <span class="material-symbols-rounded">warning</span>
+                    Alergias
+                </div>
+                <div class="phc-tag-list" id="modalAllergies" style="margin-bottom: 1.5rem;">
+                    <!-- Tags geradas via JS -->
+                </div>
+
+                <!-- Medicamentos -->
+                <div class="phc-modal-section-title">
+                    <span class="material-symbols-rounded">medication</span>
+                    Medicamentos em uso
+                </div>
+                <div class="phc-tag-list" id="modalMedications">
+                    <!-- Tags geradas via JS -->
+                </div>
+            </div>
+            <div class="phc-modal-footer">
+                <button type="button" class="phc-modal-btn phc-modal-btn-secondary" data-bs-dismiss="modal">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">close</span>
+                    Fechar
+                </button>
+                <button type="button" class="phc-modal-btn phc-modal-btn-primary">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">description</span>
+                    Abrir prontuário completo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dados fictícios dos pacientes
+    const patients = [
+        {
+            initials: 'MS', name: 'Mariana Souza', cpf: '123.456.789-00', age: 34,
+            lastDate: '24/07/2026', lastSub: 'Retorno clínico',
+            nextDate: '15/08/2026', nextSub: '10:00', status: 'stable',
+            fullName: 'Mariana Silva Souza', gender: 'Feminino', blood: 'O+',
+            phone: '(11) 98765-4321', email: 'mariana.souza@email.com',
+            insurance: 'Unimed Nacional',
+            allergies: ['Dipirona', 'Penicilina'],
+            medications: ['Losartana 50mg', 'Metformina 500mg']
+        },
+        {
+            initials: 'CO', name: 'Carlos Oliveira', cpf: '234.567.890-11', age: 52,
+            lastDate: '28/07/2026', lastSub: 'Avaliação cardiológica',
+            nextDate: '05/08/2026', nextSub: '14:30', status: 'monitoring',
+            fullName: 'Carlos Eduardo Oliveira', gender: 'Masculino', blood: 'A+',
+            phone: '(21) 99876-5432', email: 'carlos.oliveira@email.com',
+            insurance: 'Bradesco Saúde',
+            allergies: ['AINEs'],
+            medications: ['Atenolol 50mg', 'AAS 100mg', 'Sinvastatina 20mg']
+        },
+        {
+            initials: 'AM', name: 'Ana Martins', cpf: '345.678.901-22', age: 28,
+            lastDate: '20/07/2026', lastSub: 'Exames laboratoriais',
+            nextDate: '22/08/2026', nextSub: '09:00', status: 'stable',
+            fullName: 'Ana Carolina Martins', gender: 'Feminino', blood: 'B+',
+            phone: '(31) 98888-7777', email: 'ana.martins@email.com',
+            insurance: 'SulAmérica',
+            allergies: ['Nenhuma conhecida'],
+            medications: ['Anticoncepcional']
+        },
+        {
+            initials: 'RL', name: 'Roberto Lima', cpf: '456.789.012-33', age: 67,
+            lastDate: '15/07/2026', lastSub: 'Acompanhamento diabetes',
+            nextDate: '02/08/2026', nextSub: '11:00', status: 'critical',
+            fullName: 'Roberto Almeida Lima', gender: 'Masculino', blood: 'AB-',
+            phone: '(41) 97777-6666', email: 'roberto.lima@email.com',
+            insurance: 'Amil',
+            allergies: ['Sulfas', 'Iodo'],
+            medications: ['Insulina NPH', 'Metformina 850mg', 'Enalapril 10mg', 'AAS 100mg']
+        },
+        {
+            initials: 'JF', name: 'Juliana Ferreira', cpf: '567.890.123-44', age: 41,
+            lastDate: '10/07/2026', lastSub: 'Consulta dermatológica',
+            nextDate: '—', nextSub: 'Não agendada', status: 'monitoring',
+            fullName: 'Juliana Costa Ferreira', gender: 'Feminino', blood: 'O-',
+            phone: '(51) 96666-5555', email: 'juliana.ferreira@email.com',
+            insurance: 'Particular',
+            allergies: ['Látex'],
+            medications: ['Levotiroxina 50mcg']
+        },
+        {
+            initials: 'PR', name: 'Paulo Ribeiro', cpf: '678.901.234-55', age: 58,
+            lastDate: '30/07/2026', lastSub: 'Retorno ortopédico',
+            nextDate: '12/08/2026', nextSub: '15:00', status: 'stable',
+            fullName: 'Paulo Henrique Ribeiro', gender: 'Masculino', blood: 'A-',
+            phone: '(61) 95555-4444', email: 'paulo.ribeiro@email.com',
+            insurance: 'Unimed Regional',
+            allergies: ['Nenhuma conhecida'],
+            medications: ['Omeprazol 20mg']
+        },
+        {
+            initials: 'BS', name: 'Beatriz Santos', cpf: '789.012.345-66', age: 23,
+            lastDate: '25/07/2026', lastSub: 'Check-up anual',
+            nextDate: '25/07/2027', nextSub: '08:30', status: 'stable',
+            fullName: 'Beatriz Almeida Santos', gender: 'Feminino', blood: 'B-',
+            phone: '(71) 94444-3333', email: 'beatriz.santos@email.com',
+            insurance: 'Bradesco Saúde',
+            allergies: ['Poeira', 'Ácaros'],
+            medications: ['Loratadina 10mg (uso contínuo)']
+        },
+        {
+            initials: 'FA', name: 'Fernando Alves', cpf: '890.123.456-77', age: 45,
+            lastDate: '18/07/2026', lastSub: 'Avaliação clínica',
+            nextDate: '08/08/2026', nextSub: '16:00', status: 'monitoring',
+            fullName: 'Fernando Augusto Alves', gender: 'Masculino', blood: 'O+',
+            phone: '(81) 93333-2222', email: 'fernando.alves@email.com',
+            insurance: 'SulAmérica',
+            allergies: ['Dipirona'],
+            medications: ['Atenolol 25mg', 'Hidroclorotiazida 25mg']
+        },
+        {
+            initials: 'LC', name: 'Luciana Costa', cpf: '901.234.567-88', age: 36,
+            lastDate: '22/07/2026', lastSub: 'Acompanhamento gestacional',
+            nextDate: '06/08/2026', nextSub: '10:30', status: 'stable',
+            fullName: 'Luciana Pereira Costa', gender: 'Feminino', blood: 'A+',
+            phone: '(85) 92222-1111', email: 'luciana.costa@email.com',
+            insurance: 'Unimed Nacional',
+            allergies: ['Nenhuma conhecida'],
+            medications: ['Ácido fólico', 'Sulfato ferroso']
+        },
+        {
+            initials: 'GM', name: 'Gustavo Mendes', cpf: '012.345.678-99', age: 71,
+            lastDate: '29/07/2026', lastSub: 'Emergência cardiológica',
+            nextDate: '01/08/2026', nextSub: '09:00', status: 'critical',
+            fullName: 'Gustavo Henrique Mendes', gender: 'Masculino', blood: 'AB+',
+            phone: '(48) 91111-0000', email: 'gustavo.mendes@email.com',
+            insurance: 'Amil',
+            allergies: ['AAS', 'Iodo', 'Penicilina'],
+            medications: ['Warfarina 5mg', 'Carvedilol 12,5mg', 'Furosemida 40mg', 'Digoxina 0,25mg']
+        }
+    ];
+
+    const statusLabels = {
+        stable: { text: 'Estável', class: 'phc-badge-stable' },
+        monitoring: { text: 'Acompanhamento', class: 'phc-badge-monitoring' },
+        critical: { text: 'Crítico', class: 'phc-badge-critical' }
+    };
+
+    // Renderizar tabela
+    function renderTable() {
+        const tbody = document.getElementById('patientsTableBody');
+        tbody.innerHTML = patients.map((p, idx) => `
+            <tr>
+                <td>
+                    <div class="phc-photo-cell">${p.initials}</div>
+                </td>
+                <td>
+                    <div class="phc-name-text">${p.name}</div>
+                    <div class="phc-name-cpf">CPF: ${p.cpf}</div>
+                </td>
+                <td>${p.age} anos</td>
+                <td>
+                    <div class="phc-date-cell">
+                        <span class="phc-date-main">${p.lastDate}</span>
+                        <span class="phc-date-sub">${p.lastSub}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="phc-date-cell">
+                        <span class="phc-date-main">${p.nextDate}</span>
+                        <span class="phc-date-sub">${p.nextSub}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="phc-badge ${statusLabels[p.status].class}">
+                        <span class="phc-badge-dot"></span>
+                        ${statusLabels[p.status].text}
+                    </span>
+                </td>
+                <td class="text-end">
+                    <button class="phc-btn-record" onclick="openPatientModal(${idx})">
+                        <span class="material-symbols-rounded">description</span>
+                        Abrir Prontuário
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Abrir modal com dados do paciente
+    function openPatientModal(idx) {
+        const p = patients[idx];
+        document.getElementById('modalAvatar').textContent = p.initials;
+        document.getElementById('modalName').textContent = p.name;
+        document.getElementById('modalSubtitle').textContent = `Prontuário #${String(10000 + idx).padStart(5, '0')} • ${p.cpf}`;
+        document.getElementById('modalFullName').textContent = p.fullName;
+        document.getElementById('modalAge').textContent = `${p.age} anos`;
+        document.getElementById('modalGender').textContent = p.gender;
+        document.getElementById('modalBlood').textContent = p.blood;
+        document.getElementById('modalPhone').textContent = p.phone;
+        document.getElementById('modalEmail').textContent = p.email;
+        document.getElementById('modalInsurance').textContent = p.insurance;
+
+        // Alergias
+        const allergiesEl = document.getElementById('modalAllergies');
+        allergiesEl.innerHTML = p.allergies.map(a => {
+            const isCritical = a.toLowerCase() !== 'nenhuma conhecida';
+            return `<span class="phc-tag ${isCritical ? 'critical' : ''}">
+                <span class="material-symbols-rounded">${isCritical ? 'warning' : 'check_circle'}</span>
+                ${a}
+            </span>`;
+        }).join('');
+
+        // Medicamentos
+        const medsEl = document.getElementById('modalMedications');
+        medsEl.innerHTML = p.medications.map(m => `
+            <span class="phc-tag">
+                <span class="material-symbols-rounded">medication</span>
+                ${m}
+            </span>
+        `).join('');
+
+        const modal = new bootstrap.Modal(document.getElementById('patientModal'));
+        modal.show();
+    }
+
+    // Inicializar
+    renderTable();
+
+    // Paginação
+    document.querySelectorAll('.phc-page-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!this.disabled && !this.textContent.includes('...')) {
+                document.querySelectorAll('.phc-page-btn').forEach(b => b.classList.remove('active'));
+                if (!isNaN(this.textContent)) {
+                    this.classList.add('active');
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

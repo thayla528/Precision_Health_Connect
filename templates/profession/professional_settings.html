@@ -1,0 +1,713 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect - Configurações
+{% endblock %}
+
+{% block content %}
+<style>
+    .settings-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+
+    .page-header {
+        margin-bottom: 32px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 15px;
+        color: #6b7280;
+    }
+
+    /* Settings Cards */
+    .settings-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        border-left: 4px solid #8b5cf6;
+    }
+
+    .settings-card:hover {
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .card-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .card-description {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 2px;
+    }
+
+    /* Notification Items */
+    .notification-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .notification-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        background: #fafbfc;
+        border-radius: 12px;
+        transition: all 0.2s;
+    }
+
+    .notification-item:hover {
+        background: #f5f3ff;
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-label {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .notification-description {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    /* Custom Switch */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e5e7eb;
+        transition: 0.3s;
+        border-radius: 28px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked + .slider {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+
+    /* Security Section */
+    .security-section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .security-item {
+        padding: 20px;
+        background: #fafbfc;
+        border-radius: 12px;
+        transition: all 0.2s;
+    }
+
+    .security-item:hover {
+        background: #f5f3ff;
+    }
+
+    .security-label {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .password-fields {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .form-input {
+        padding: 10px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .btn-change-password {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 12px;
+        align-self: flex-start;
+    }
+
+    .btn-change-password:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Two Factor */
+    .two-factor-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .two-factor-info {
+        flex: 1;
+    }
+
+    .two-factor-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 8px;
+    }
+
+    .two-factor-status.enabled {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .two-factor-status.disabled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Preferences Section */
+    .preferences-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .preference-item {
+        padding: 20px;
+        background: #fafbfc;
+        border-radius: 12px;
+        transition: all 0.2s;
+    }
+
+    .preference-item:hover {
+        background: #f5f3ff;
+    }
+
+    .preference-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.2s;
+        background: white;
+        cursor: pointer;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    /* Time Slots */
+    .time-slots-container {
+        margin-top: 12px;
+    }
+
+    .time-slots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .time-slot {
+        padding: 10px;
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .time-slot:hover {
+        border-color: #8b5cf6;
+        color: #8b5cf6;
+    }
+
+    .time-slot.active {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+        border-color: #8b5cf6;
+    }
+
+    /* Save Button */
+    .save-section {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .btn-cancel {
+        background: white;
+        color: #6b7280;
+        border: 1px solid #e5e7eb;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #f3f4f6;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+        border: none;
+        padding: 12px 36px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .settings-container {
+            padding: 16px;
+        }
+
+        .settings-card {
+            padding: 20px;
+        }
+
+        .password-fields {
+            grid-template-columns: 1fr;
+        }
+
+        .preferences-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .time-slots-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .save-section {
+            flex-direction: column-reverse;
+        }
+
+        .btn-cancel,
+        .btn-save {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Success Message */
+    .success-message {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+        display: none;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    }
+
+    .success-message.show {
+        display: flex;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<div class="settings-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Configurações</h1>
+        <p class="page-subtitle">Gerencie suas preferências e configurações de conta.</p>
+    </div>
+
+    <!-- Settings Grid -->
+    <div class="settings-grid">
+        <!-- Notifications Card -->
+        <div class="settings-card">
+            <div class="card-header">
+                <div class="card-icon">🔔</div>
+                <div>
+                    <h2 class="card-title">Notificações</h2>
+                    <p class="card-description">Configure quais notificações você deseja receber</p>
+                </div>
+            </div>
+            <div class="notification-list">
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <div class="notification-label">Novas consultas</div>
+                        <div class="notification-description">Receba notificações quando novas consultas forem agendadas</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <div class="notification-label">Mensagens</div>
+                        <div class="notification-description">Receba notificações de novas mensagens dos pacientes</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <div class="notification-label">Resultados de exames</div>
+                        <div class="notification-description">Receba notificações quando resultados de exames estiverem disponíveis</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Card -->
+        <div class="settings-card">
+            <div class="card-header">
+                <div class="card-icon">🔒</div>
+                <div>
+                    <h2 class="card-title">Segurança</h2>
+                    <p class="card-description">Proteja sua conta com senha forte e autenticação adicional</p>
+                </div>
+            </div>
+            <div class="security-section">
+                <!-- Change Password -->
+                <div class="security-item">
+                    <div class="security-label">🔑 Alterar senha</div>
+                    <div class="password-fields">
+                        <div class="form-group">
+                            <label class="form-label">Senha atual</label>
+                            <input type="password" class="form-input" placeholder="Digite sua senha atual">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nova senha</label>
+                            <input type="password" class="form-input" placeholder="Digite a nova senha">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirmar nova senha</label>
+                            <input type="password" class="form-input" placeholder="Confirme a nova senha">
+                        </div>
+                    </div>
+                    <button class="btn-change-password" onclick="changePassword()">Alterar Senha</button>
+                </div>
+
+                <!-- Two Factor Authentication -->
+                <div class="security-item">
+                    <div class="security-label">📱 Autenticação em duas etapas</div>
+                    <div class="two-factor-content">
+                        <div class="two-factor-info">
+                            <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">
+                                Adicione uma camada extra de segurança à sua conta usando um aplicativo autenticador
+                            </p>
+                            <div class="two-factor-status enabled">
+                                <span>✓</span> Ativada
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked id="twoFactorSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences Card -->
+        <div class="settings-card">
+            <div class="card-header">
+                <div class="card-icon">⚙️</div>
+                <div>
+                    <h2 class="card-title">Preferências</h2>
+                    <p class="card-description">Personalize sua experiência no sistema</p>
+                </div>
+            </div>
+            <div class="preferences-grid">
+                <!-- Theme -->
+                <div class="preference-item">
+                    <label class="preference-label">🎨 Tema</label>
+                    <select class="form-select" id="themeSelect">
+                        <option value="light">Claro</option>
+                        <option value="dark">Escuro</option>
+                        <option value="auto">Automático</option>
+                    </select>
+                </div>
+
+                <!-- Language -->
+                <div class="preference-item">
+                    <label class="preference-label">🌐 Idioma</label>
+                    <select class="form-select" id="languageSelect">
+                        <option value="pt-BR">Português (Brasil)</option>
+                        <option value="en-US">English (US)</option>
+                        <option value="es">Español</option>
+                    </select>
+                </div>
+
+                <!-- Time Zone -->
+                <div class="preference-item">
+                    <label class="preference-label">🕐 Fuso Horário</label>
+                    <select class="form-select" id="timezoneSelect">
+                        <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
+                        <option value="America/Manaus">Manaus (GMT-4)</option>
+                        <option value="America/Noronha">Fernando de Noronha (GMT-2)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Available Hours -->
+            <div class="time-slots-container">
+                <label class="preference-label">📅 Horários Disponíveis para Atendimento</label>
+                <p style="font-size: 13px; color: #6b7280; margin-bottom: 12px;">
+                    Selecione os horários em que você está disponível para consultas
+                </p>
+                <div class="time-slots-grid">
+                    <div class="time-slot active" onclick="toggleTimeSlot(this)">08:00 - 09:00</div>
+                    <div class="time-slot active" onclick="toggleTimeSlot(this)">09:00 - 10:00</div>
+                    <div class="time-slot active" onclick="toggleTimeSlot(this)">10:00 - 11:00</div>
+                    <div class="time-slot" onclick="toggleTimeSlot(this)">11:00 - 12:00</div>
+                    <div class="time-slot active" onclick="toggleTimeSlot(this)">14:00 - 15:00</div>
+                    <div class="time-slot active" onclick="toggleTimeSlot(this)">15:00 - 16:00</div>
+                    <div class="time-slot active" onclick="toggleTimeSlot(this)">16:00 - 17:00</div>
+                    <div class="time-slot" onclick="toggleTimeSlot(this)">17:00 - 18:00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Button Section -->
+    <div class="save-section">
+        <button class="btn-cancel" onclick="cancelChanges()">Cancelar</button>
+        <button class="btn-save" onclick="saveSettings()">
+            <span>💾</span> Salvar Configurações
+        </button>
+    </div>
+</div>
+
+<!-- Success Message -->
+<div class="success-message" id="successMessage">
+    <span>✓</span>
+    <span>Configurações salvas com sucesso!</span>
+</div>
+
+<script>
+    // Toggle time slot
+    function toggleTimeSlot(element) {
+        element.classList.toggle('active');
+    }
+
+    // Change password (interface only)
+    function changePassword() {
+        alert('Funcionalidade de alteração de senha (interface apenas)');
+    }
+
+    // Save settings
+    function saveSettings() {
+        // Show success message
+        const successMessage = document.getElementById('successMessage');
+        successMessage.classList.add('show');
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+            successMessage.classList.remove('show');
+        }, 3000);
+        
+        // In a real application, this would send data to the backend
+        console.log('Configurações salvas:', {
+            notifications: {
+                newAppointments: document.querySelectorAll('.notification-item')[0].querySelector('input').checked,
+                messages: document.querySelectorAll('.notification-item')[1].querySelector('input').checked,
+                examResults: document.querySelectorAll('.notification-item')[2].querySelector('input').checked
+            },
+            twoFactor: document.getElementById('twoFactorSwitch').checked,
+            theme: document.getElementById('themeSelect').value,
+            language: document.getElementById('languageSelect').value,
+            timezone: document.getElementById('timezoneSelect').value,
+            availableHours: Array.from(document.querySelectorAll('.time-slot.active')).map(slot => slot.textContent)
+        });
+    }
+
+    // Cancel changes
+    function cancelChanges() {
+        if (confirm('Deseja realmente cancelar as alterações?')) {
+            // Reload page or reset form
+            location.reload();
+        }
+    }
+
+    // Two factor switch change
+    document.getElementById('twoFactorSwitch').addEventListener('change', function() {
+        const statusDiv = this.closest('.two-factor-content').querySelector('.two-factor-status');
+        if (this.checked) {
+            statusDiv.className = 'two-factor-status enabled';
+            statusDiv.innerHTML = '<span>✓</span> Ativada';
+        } else {
+            statusDiv.className = 'two-factor-status disabled';
+            statusDiv.innerHTML = '<span>✗</span> Desativada';
+        }
+    });
+</script>
+{% endblock %}

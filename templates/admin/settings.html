@@ -1,0 +1,670 @@
+{% extends "base.html" %}
+
+{% block title %}
+Configurações | Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<!-- Importação do Material Symbols Rounded -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-bg: #FFFFFF;
+        --phc-hover: #F5F3FF;
+        --phc-text-main: #2D2D2D;
+        --phc-text-sec: #6B7280;
+        --phc-border: #DDD6FE;
+        --phc-btn-hover: #7C3AED;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        color: var(--phc-text-main);
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .page-subtitle {
+        color: var(--phc-text-sec);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    /* Cards */
+    .settings-card {
+        background-color: var(--phc-bg);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(139, 92, 246, 0.06);
+        padding: 1.75rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+
+    .settings-card:hover {
+        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+        border-color: var(--phc-secondary);
+    }
+
+    .card-header-custom {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--phc-border);
+    }
+
+    .card-icon-wrapper {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background-color: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .card-icon-wrapper .material-symbols-rounded {
+        font-size: 24px;
+    }
+
+    .card-title-custom {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--phc-text-main);
+        margin: 0;
+    }
+
+    .card-desc-custom {
+        font-size: 0.8rem;
+        color: var(--phc-text-sec);
+        margin: 0;
+    }
+
+    /* Form Controls */
+    .form-label-custom {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--phc-text-sec);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-bottom: 0.4rem;
+    }
+
+    .form-control-custom, .form-select-custom {
+        border: 1px solid var(--phc-border);
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        color: var(--phc-text-main);
+        background-color: var(--phc-bg);
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control-custom:focus, .form-select-custom:focus {
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        background-color: var(--phc-bg);
+        color: var(--phc-text-main);
+    }
+
+    .form-control-custom[readonly] {
+        background-color: var(--phc-hover);
+        color: var(--phc-text-sec);
+        cursor: not-allowed;
+    }
+
+    /* Switch Custom */
+    .form-check-input:checked {
+        background-color: var(--phc-primary);
+        border-color: var(--phc-primary);
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        border-color: var(--phc-primary);
+    }
+
+    .switch-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid #F3F4F6;
+    }
+
+    .switch-row:last-of-type {
+        border-bottom: none;
+    }
+
+    .switch-label {
+        font-size: 0.9rem;
+        color: var(--phc-text-main);
+        font-weight: 500;
+    }
+
+    /* Botões */
+    .btn-save {
+        background-color: var(--phc-primary);
+        border: none;
+        color: white;
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        margin-top: auto;
+    }
+
+    .btn-save:hover {
+        background-color: var(--phc-btn-hover);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+    }
+
+    .btn-save-all {
+        background-color: var(--phc-primary);
+        border: none;
+        color: white;
+        border-radius: 14px;
+        padding: 0.85rem 2.5rem;
+        font-weight: 700;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-save-all:hover {
+        background-color: var(--phc-btn-hover);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-restore {
+        background-color: var(--phc-bg);
+        border: 1.5px solid var(--phc-secondary);
+        color: var(--phc-primary);
+        border-radius: 14px;
+        padding: 0.85rem 2.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-restore:hover {
+        background-color: var(--phc-hover);
+        color: var(--phc-btn-hover);
+        border-color: var(--phc-btn-hover);
+    }
+
+    /* Paleta de Cores */
+    .color-swatch {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        border: 2px solid var(--phc-border);
+        display: inline-block;
+    }
+
+    .color-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.5rem 0;
+    }
+
+    .color-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--phc-text-main);
+    }
+
+    .color-hex {
+        font-size: 0.8rem;
+        color: var(--phc-text-sec);
+        font-family: monospace;
+    }
+
+    /* Info Grid */
+    .info-grid-item {
+        padding: 0.6rem 0;
+        border-bottom: 1px solid #F3F4F6;
+    }
+
+    .info-grid-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-grid-label {
+        font-size: 0.75rem;
+        color: var(--phc-text-sec);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .info-grid-value {
+        font-size: 0.95rem;
+        color: var(--phc-text-main);
+        font-weight: 500;
+    }
+
+    .material-symbols-rounded {
+        font-size: 20px;
+        vertical-align: middle;
+    }
+</style>
+
+<div class="container-fluid py-4">
+
+    <!-- Cabeçalho -->
+    <div class="page-header">
+        <h1 class="page-title">Configurações</h1>
+        <p class="page-subtitle">Gerencie as configurações gerais da plataforma Precision Health Connect.</p>
+    </div>
+
+    <!-- Grid de Cards -->
+    <div class="row g-4">
+
+        <!-- CARD 1: Informações da Plataforma -->
+        <div class="col-12 col-lg-6">
+            <div class="settings-card">
+                <div class="card-header-custom">
+                    <div class="card-icon-wrapper">
+                        <span class="material-symbols-rounded">health_and_safety</span>
+                    </div>
+                    <div>
+                        <h5 class="card-title-custom">Informações da Plataforma</h5>
+                        <p class="card-desc-custom">Dados gerais de identificação do sistema.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3 flex-grow-1">
+                    <div class="col-12">
+                        <label class="form-label-custom">Nome da Plataforma</label>
+                        <input type="text" class="form-control-custom w-100" value="Precision Health Connect">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Versão</label>
+                        <input type="text" class="form-control-custom w-100" value="2.3.1">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Empresa Responsável</label>
+                        <input type="text" class="form-control-custom w-100" value="Precision Health Technologies">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label-custom">Descrição</label>
+                        <textarea class="form-control-custom w-100" rows="2">Sistema de gerenciamento médico e hospitalar.</textarea>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="button" class="btn-save">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">save</span>
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2: Segurança -->
+        <div class="col-12 col-lg-6">
+            <div class="settings-card">
+                <div class="card-header-custom">
+                    <div class="card-icon-wrapper">
+                        <span class="material-symbols-rounded">security</span>
+                    </div>
+                    <div>
+                        <h5 class="card-title-custom">Segurança</h5>
+                        <p class="card-desc-custom">Políticas de acesso e proteção de contas.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3 flex-grow-1">
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Expiração da Sessão</label>
+                        <select class="form-select-custom w-100">
+                            <option>15 minutos</option>
+                            <option selected>30 minutos</option>
+                            <option>1 hora</option>
+                            <option>2 horas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Senha Mínima (caracteres)</label>
+                        <select class="form-select-custom w-100">
+                            <option>6 caracteres</option>
+                            <option selected>8 caracteres</option>
+                            <option>10 caracteres</option>
+                            <option>12 caracteres</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Máx. Tentativas de Login</label>
+                        <select class="form-select-custom w-100">
+                            <option>3</option>
+                            <option selected>5</option>
+                            <option>7</option>
+                            <option>10</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="switch-row w-100" style="border: none; padding-bottom: 0.6rem;">
+                            <span class="switch-label">Autenticação em 2 etapas</span>
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="button" class="btn-save">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">save</span>
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3: Convites -->
+        <div class="col-12 col-lg-6">
+            <div class="settings-card">
+                <div class="card-header-custom">
+                    <div class="card-icon-wrapper">
+                        <span class="material-symbols-rounded">mail</span>
+                    </div>
+                    <div>
+                        <h5 class="card-title-custom">Convites</h5>
+                        <p class="card-desc-custom">Gerencie as políticas de convite do sistema.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3 flex-grow-1">
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Validade Padrão</label>
+                        <select class="form-select-custom w-100">
+                            <option>3 dias</option>
+                            <option selected>7 dias</option>
+                            <option>14 dias</option>
+                            <option>30 dias</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Máx. Convites Ativos</label>
+                        <input type="number" class="form-control-custom w-100" value="100">
+                    </div>
+                    <div class="col-12">
+                        <div class="switch-row">
+                            <span class="switch-label">Reenviar convites automaticamente</span>
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="button" class="btn-save">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">save</span>
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 4: Uploads -->
+        <div class="col-12 col-lg-6">
+            <div class="settings-card">
+                <div class="card-header-custom">
+                    <div class="card-icon-wrapper">
+                        <span class="material-symbols-rounded">upload_file</span>
+                    </div>
+                    <div>
+                        <h5 class="card-title-custom">Uploads</h5>
+                        <p class="card-desc-custom">Configurações de envio de arquivos.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3 flex-grow-1">
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Tamanho Máximo</label>
+                        <select class="form-select-custom w-100">
+                            <option>5 MB</option>
+                            <option>10 MB</option>
+                            <option selected>20 MB</option>
+                            <option>50 MB</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-custom">Tipos Permitidos</label>
+                        <input type="text" class="form-control-custom w-100" value="PDF, JPG, PNG" readonly>
+                    </div>
+                    <div class="col-12">
+                        <div class="switch-row">
+                            <span class="switch-label">Permitir upload de imagens</span>
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </div>
+                        <div class="switch-row">
+                            <span class="switch-label">Permitir upload de PDFs</span>
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="button" class="btn-save">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">save</span>
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 5: Notificações -->
+        <div class="col-12 col-lg-6">
+            <div class="settings-card">
+                <div class="card-header-custom">
+                    <div class="card-icon-wrapper">
+                        <span class="material-symbols-rounded">notifications</span>
+                    </div>
+                    <div>
+                        <h5 class="card-title-custom">Notificações</h5>
+                        <p class="card-desc-custom">Alertas e comunicações por e-mail.</p>
+                    </div>
+                </div>
+
+                <div class="flex-grow-1">
+                    <div class="switch-row">
+                        <span class="switch-label">E-mail ao cadastrar usuário</span>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" checked>
+                        </div>
+                    </div>
+                    <div class="switch-row">
+                        <span class="switch-label">E-mail ao aceitar convite</span>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" checked>
+                        </div>
+                    </div>
+                    <div class="switch-row">
+                        <span class="switch-label">E-mail ao criar administrador</span>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" checked>
+                        </div>
+                    </div>
+                    <div class="switch-row">
+                        <span class="switch-label">Alertas de segurança</span>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" checked>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="button" class="btn-save">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">save</span>
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 6: Aparência -->
+        <div class="col-12 col-lg-6">
+            <div class="settings-card">
+                <div class="card-header-custom">
+                    <div class="card-icon-wrapper">
+                        <span class="material-symbols-rounded">palette</span>
+                    </div>
+                    <div>
+                        <h5 class="card-title-custom">Aparência</h5>
+                        <p class="card-desc-custom">Tema oficial do sistema (somente visualização).</p>
+                    </div>
+                </div>
+
+                <div class="flex-grow-1">
+                    <p class="text-muted mb-3" style="font-size: 0.85rem;">
+                        O tema oficial do Precision Health Connect utiliza tons de lilás e branco. As cores não podem ser alteradas.
+                    </p>
+
+                    <div class="color-item">
+                        <div class="color-swatch" style="background-color: #8B5CF6;"></div>
+                        <div>
+                            <div class="color-name">Cor Principal</div>
+                            <div class="color-hex">#8B5CF6</div>
+                        </div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-swatch" style="background-color: #A78BFA;"></div>
+                        <div>
+                            <div class="color-name">Cor Secundária</div>
+                            <div class="color-hex">#A78BFA</div>
+                        </div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-swatch" style="background-color: #EDE9FE;"></div>
+                        <div>
+                            <div class="color-name">Lilás Claro</div>
+                            <div class="color-hex">#EDE9FE</div>
+                        </div>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-swatch" style="background-color: #FFFFFF;"></div>
+                        <div>
+                            <div class="color-name">Branco</div>
+                            <div class="color-hex">#FFFFFF</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <span class="text-muted" style="font-size: 0.8rem;">
+                        <span class="material-symbols-rounded" style="font-size: 16px;">lock</span>
+                        Tema protegido — sem permissão de edição.
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 7: Informações do Sistema (Largura total) -->
+        <div class="col-12">
+            <div class="settings-card">
+                <div class="card-header-custom">
+                    <div class="card-icon-wrapper">
+                        <span class="material-symbols-rounded">info</span>
+                    </div>
+                    <div>
+                        <h5 class="card-title-custom">Informações do Sistema</h5>
+                        <p class="card-desc-custom">Dados técnicos do ambiente de execução.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="info-grid-item" style="border: none; padding: 0;">
+                            <div class="info-grid-label">Versão do Sistema</div>
+                            <div class="info-grid-value">2.3.1</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="info-grid-item" style="border: none; padding: 0;">
+                            <div class="info-grid-label">Banco de Dados</div>
+                            <div class="info-grid-value">SQLite 3.42</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="info-grid-item" style="border: none; padding: 0;">
+                            <div class="info-grid-label">Framework</div>
+                            <div class="info-grid-value">Flask 3.1</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="info-grid-item" style="border: none; padding: 0;">
+                            <div class="info-grid-label">Última Atualização</div>
+                            <div class="info-grid-value">31/07/2026</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="info-grid-item" style="border: none; padding: 0;">
+                            <div class="info-grid-label">Ambiente</div>
+                            <div class="info-grid-value">
+                                <span class="badge" style="background-color: #DCFCE7; color: #166534; font-size: 0.75rem; font-weight: 600;">Produção</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="info-grid-item" style="border: none; padding: 0;">
+                            <div class="info-grid-label">Python</div>
+                            <div class="info-grid-value">3.12.4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Botões Globais -->
+    <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-3 mt-5 mb-4">
+        <button type="button" class="btn-save-all">
+            <span class="material-symbols-rounded">save</span>
+            Salvar Todas as Configurações
+        </button>
+        <button type="button" class="btn-restore">
+            <span class="material-symbols-rounded">restore</span>
+            Restaurar Configurações Padrão
+        </button>
+    </div>
+
+</div>
+
+{% endblock %}

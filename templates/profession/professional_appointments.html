@@ -1,0 +1,981 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect - Consultas
+{% endblock %}
+
+{% block content %}
+<style>
+    .appointments-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+
+    .page-header {
+        margin-bottom: 32px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 15px;
+        color: #6b7280;
+    }
+
+    /* Filters */
+    .filters-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .filters-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 16px;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .filter-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .filter-input,
+    .filter-select {
+        padding: 10px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    .filter-input:focus,
+    .filter-select:focus {
+        outline: none;
+        border-color: #1e6fd9;
+        box-shadow: 0 0 0 3px rgba(30, 111, 217, 0.1);
+    }
+
+    .btn-filter {
+        background: #1e6fd9;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-filter:hover {
+        background: #1557ab;
+        transform: translateY(-1px);
+    }
+
+    /* Table */
+    .table-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .table-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .table-count {
+        background: #e8f1fb;
+        color: #1e6fd9;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .appointments-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .appointments-table thead {
+        background: #f9fafb;
+    }
+
+    .appointments-table th {
+        padding: 14px 20px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .appointments-table td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: #1f2937;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .appointments-table tbody tr {
+        transition: background 0.2s;
+    }
+
+    .appointments-table tbody tr:hover {
+        background: #f9fafb;
+    }
+
+    .appointments-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Patient Info */
+    .patient-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1e6fd9, #1557ab);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .patient-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .patient-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .patient-cpf {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .status-agendada {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-confirmada {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-finalizada {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .status-cancelada {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Action Button */
+    .btn-start {
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-start:hover {
+        background: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-start:disabled {
+        background: #d1d5db;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Modal */
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #1e6fd9, #1557ab);
+        color: white;
+        border-radius: 12px 12px 0 0;
+        padding: 20px 24px;
+    }
+
+    .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .patient-info-card {
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .patient-info-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .patient-info-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1e6fd9, #1557ab);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 24px;
+    }
+
+    .patient-info-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .patient-info-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .info-label {
+        font-size: 11px;
+        color: #6b7280;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 14px;
+        color: #1f2937;
+        font-weight: 500;
+    }
+
+    .consultation-reason {
+        background: #fef3c7;
+        border-left: 4px solid #f59e0b;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .reason-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #92400e;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .reason-text {
+        font-size: 15px;
+        color: #1f2937;
+        line-height: 1.5;
+    }
+
+    .observation-group {
+        margin-bottom: 20px;
+    }
+
+    .observation-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .observation-textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+        min-height: 120px;
+        transition: all 0.2s;
+    }
+
+    .observation-textarea:focus {
+        outline: none;
+        border-color: #1e6fd9;
+        box-shadow: 0 0 0 3px rgba(30, 111, 217, 0.1);
+    }
+
+    .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+        border-radius: 0 0 12px 12px;
+    }
+
+    .btn-finish {
+        background: #1e6fd9;
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-finish:hover {
+        background: #1557ab;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(30, 111, 217, 0.3);
+    }
+
+    .btn-cancel {
+        background: white;
+        color: #6b7280;
+        border: 1px solid #e5e7eb;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-right: 12px;
+    }
+
+    .btn-cancel:hover {
+        background: #f3f4f6;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .filters-row {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .btn-filter {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .appointments-container {
+            padding: 16px;
+        }
+
+        .filters-row {
+            grid-template-columns: 1fr;
+        }
+
+        .appointments-table {
+            font-size: 13px;
+        }
+
+        .appointments-table th,
+        .appointments-table td {
+            padding: 12px 10px;
+        }
+
+        .patient-info-details {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6b7280;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    .empty-state-text {
+        font-size: 16px;
+        font-weight: 500;
+    }
+</style>
+
+<div class="appointments-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Consultas</h1>
+        <p class="page-subtitle">Visualize e gerencie seus atendimentos.</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="filters-row">
+            <div class="filter-group">
+                <label class="filter-label">Pesquisar Paciente</label>
+                <input type="text" class="filter-input" id="searchPatient" placeholder="Digite o nome do paciente...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">Todas</option>
+                    <option value="agendada">Agendada</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="finalizada">Finalizada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Data</label>
+                <input type="date" class="filter-input" id="filterDate">
+            </div>
+            <button class="btn-filter" onclick="applyFilters()">
+                <span>🔍</span> Filtrar
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-header">
+            <h2 class="table-title">Lista de Consultas</h2>
+            <span class="table-count" id="appointmentsCount">15 consultas</span>
+        </div>
+        <table class="appointments-table">
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Data</th>
+                    <th>Horário</th>
+                    <th>Motivo</th>
+                    <th>Status</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="appointmentsTableBody">
+                <tr data-status="confirmada" data-date="2026-07-31" data-patient="Maria Aparecida da Silva">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">MA</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Maria Aparecida da Silva</span>
+                                <span class="patient-cpf">CPF: ***.***.***-42</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>31/07/2026</td>
+                    <td>09:00</td>
+                    <td>Retorno de acompanhamento</td>
+                    <td><span class="status-badge status-confirmada">Confirmada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Maria Aparecida da Silva', '***.***.***-42', '54 anos', 'Feminino', 'O+', 'Retorno de acompanhamento')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="agendada" data-date="2026-07-31" data-patient="João Carlos Mendes">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">JM</div>
+                            <div class="patient-details">
+                                <span class="patient-name">João Carlos Mendes</span>
+                                <span class="patient-cpf">CPF: ***.***.***-78</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>31/07/2026</td>
+                    <td>10:30</td>
+                    <td>Consulta de rotina</td>
+                    <td><span class="status-badge status-agendada">Agendada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('João Carlos Mendes', '***.***.***-78', '45 anos', 'Masculino', 'A+', 'Consulta de rotina')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="confirmada" data-date="2026-07-31" data-patient="Ana Paula Rodrigues">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">AP</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Ana Paula Rodrigues</span>
+                                <span class="patient-cpf">CPF: ***.***.***-15</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>31/07/2026</td>
+                    <td>14:00</td>
+                    <td>Avaliação de exames</td>
+                    <td><span class="status-badge status-confirmada">Confirmada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Ana Paula Rodrigues', '***.***.***-15', '32 anos', 'Feminino', 'B-', 'Avaliação de exames')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="finalizada" data-date="2026-07-30" data-patient="Pedro Henrique Santos">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">PH</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Pedro Henrique Santos</span>
+                                <span class="patient-cpf">CPF: ***.***.***-92</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>30/07/2026</td>
+                    <td>08:30</td>
+                    <td>Primeira consulta</td>
+                    <td><span class="status-badge status-finalizada">Finalizada</span></td>
+                    <td>
+                        <button class="btn-start" disabled>
+                            ✓ Concluído
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="cancelada" data-date="2026-07-30" data-patient="Carla Beatriz Oliveira">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">CO</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Carla Beatriz Oliveira</span>
+                                <span class="patient-cpf">CPF: ***.***.***-33</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>30/07/2026</td>
+                    <td>11:00</td>
+                    <td>Retorno médico</td>
+                    <td><span class="status-badge status-cancelada">Cancelada</span></td>
+                    <td>
+                        <button class="btn-start" disabled>
+                            ✗ Cancelada
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="confirmada" data-date="2026-08-01" data-patient="Roberto Almeida Costa">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">RC</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Roberto Almeida Costa</span>
+                                <span class="patient-cpf">CPF: ***.***.***-56</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>01/08/2026</td>
+                    <td>09:30</td>
+                    <td>Check-up anual</td>
+                    <td><span class="status-badge status-confirmada">Confirmada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Roberto Almeida Costa', '***.***.***-56', '58 anos', 'Masculino', 'O-', 'Check-up anual')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="agendada" data-date="2026-08-01" data-patient="Fernanda Lima Souza">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">FS</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Fernanda Lima Souza</span>
+                                <span class="patient-cpf">CPF: ***.***.***-21</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>01/08/2026</td>
+                    <td>15:00</td>
+                    <td>Acompanhamento pré-natal</td>
+                    <td><span class="status-badge status-agendada">Agendada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Fernanda Lima Souza', '***.***.***-21', '28 anos', 'Feminino', 'A+', 'Acompanhamento pré-natal')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="finalizada" data-date="2026-07-29" data-patient="Lucas Martins Pereira">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">LP</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Lucas Martins Pereira</span>
+                                <span class="patient-cpf">CPF: ***.***.***-67</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>29/07/2026</td>
+                    <td>10:00</td>
+                    <td>Consulta de retorno</td>
+                    <td><span class="status-badge status-finalizada">Finalizada</span></td>
+                    <td>
+                        <button class="btn-start" disabled>
+                            ✓ Concluído
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="confirmada" data-date="2026-08-02" data-patient="Juliana Ferreira Gomes">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">JF</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Juliana Ferreira Gomes</span>
+                                <span class="patient-cpf">CPF: ***.***.***-89</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>02/08/2026</td>
+                    <td>13:30</td>
+                    <td>Avaliação cardiológica</td>
+                    <td><span class="status-badge status-confirmada">Confirmada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Juliana Ferreira Gomes', '***.***.***-89', '62 anos', 'Feminino', 'AB+', 'Avaliação cardiológica')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="agendada" data-date="2026-08-02" data-patient="Marcos Vinícius Ribeiro">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">MR</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Marcos Vinícius Ribeiro</span>
+                                <span class="patient-cpf">CPF: ***.***.***-44</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>02/08/2026</td>
+                    <td>16:00</td>
+                    <td>Consulta dermatológica</td>
+                    <td><span class="status-badge status-agendada">Agendada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Marcos Vinícius Ribeiro', '***.***.***-44', '38 anos', 'Masculino', 'B+', 'Consulta dermatológica')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="finalizada" data-date="2026-07-28" data-patient="Patrícia Andrade Lima">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">PA</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Patrícia Andrade Lima</span>
+                                <span class="patient-cpf">CPF: ***.***.***-73</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>28/07/2026</td>
+                    <td>09:00</td>
+                    <td>Exame de rotina</td>
+                    <td><span class="status-badge status-finalizada">Finalizada</span></td>
+                    <td>
+                        <button class="btn-start" disabled>
+                            ✓ Concluído
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="confirmada" data-date="2026-08-03" data-patient="Eduardo Santos Nunes">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">EN</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Eduardo Santos Nunes</span>
+                                <span class="patient-cpf">CPF: ***.***.***-18</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>03/08/2026</td>
+                    <td>11:30</td>
+                    <td>Retorno endocrinológico</td>
+                    <td><span class="status-badge status-confirmada">Confirmada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Eduardo Santos Nunes', '***.***.***-18', '51 anos', 'Masculino', 'O+', 'Retorno endocrinológico')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="agendada" data-date="2026-08-03" data-patient="Camila Torres Barbosa">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">CT</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Camila Torres Barbosa</span>
+                                <span class="patient-cpf">CPF: ***.***.***-95</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>03/08/2026</td>
+                    <td>14:30</td>
+                    <td>Consulta ginecológica</td>
+                    <td><span class="status-badge status-agendada">Agendada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Camila Torres Barbosa', '***.***.***-95', '29 anos', 'Feminino', 'A-', 'Consulta ginecológica')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="cancelada" data-date="2026-07-27" data-patient="Ricardo Oliveira Mendes">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">RO</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Ricardo Oliveira Mendes</span>
+                                <span class="patient-cpf">CPF: ***.***.***-62</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>27/07/2026</td>
+                    <td>10:30</td>
+                    <td>Avaliação ortopédica</td>
+                    <td><span class="status-badge status-cancelada">Cancelada</span></td>
+                    <td>
+                        <button class="btn-start" disabled>
+                            ✗ Cancelada
+                        </button>
+                    </td>
+                </tr>
+                <tr data-status="confirmada" data-date="2026-08-04" data-patient="Sandra Cristina Alves">
+                    <td>
+                        <div class="patient-info">
+                            <div class="patient-avatar">SA</div>
+                            <div class="patient-details">
+                                <span class="patient-name">Sandra Cristina Alves</span>
+                                <span class="patient-cpf">CPF: ***.***.***-37</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>04/08/2026</td>
+                    <td>15:30</td>
+                    <td>Consulta de acompanhamento</td>
+                    <td><span class="status-badge status-confirmada">Confirmada</span></td>
+                    <td>
+                        <button class="btn-start" onclick="openAppointmentModal('Sandra Cristina Alves', '***.***.***-37', '47 anos', 'Feminino', 'B+', 'Consulta de acompanhamento')">
+                            ▶ Iniciar
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Atendimento do Paciente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Patient Info Card -->
+                <div class="patient-info-card">
+                    <div class="patient-info-header">
+                        <div class="patient-info-avatar" id="modalPatientAvatar">MA</div>
+                        <div>
+                            <div class="patient-info-name" id="modalPatientName">Maria Aparecida da Silva</div>
+                        </div>
+                    </div>
+                    <div class="patient-info-details">
+                        <div class="info-item">
+                            <span class="info-label">CPF</span>
+                            <span class="info-value" id="modalPatientCPF">***.***.***-42</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Idade</span>
+                            <span class="info-value" id="modalPatientAge">54 anos</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Sexo</span>
+                            <span class="info-value" id="modalPatientGender">Feminino</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Tipo Sanguíneo</span>
+                            <span class="info-value" id="modalPatientBlood">O+</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consultation Reason -->
+                <div class="consultation-reason">
+                    <div class="reason-label">Motivo da Consulta</div>
+                    <div class="reason-text" id="modalConsultationReason">Retorno de acompanhamento</div>
+                </div>
+
+                <!-- Observation Area -->
+                <div class="observation-group">
+                    <label class="observation-label">Observações do Atendimento</label>
+                    <textarea class="observation-textarea" id="observationText" placeholder="Registre as observações clínicas, diagnósticos, condutas e orientações..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn-finish" onclick="finishAppointment()">Finalizar Atendimento</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Apply filters
+    function applyFilters() {
+        const searchTerm = document.getElementById('searchPatient').value.toLowerCase();
+        const statusFilter = document.getElementById('filterStatus').value;
+        const dateFilter = document.getElementById('filterDate').value;
+        
+        const rows = document.querySelectorAll('#appointmentsTableBody tr');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const patientName = row.getAttribute('data-patient').toLowerCase();
+            const status = row.getAttribute('data-status');
+            const date = row.getAttribute('data-date');
+            
+            const matchesSearch = patientName.includes(searchTerm);
+            const matchesStatus = !statusFilter || status === statusFilter;
+            const matchesDate = !dateFilter || date === dateFilter;
+            
+            if (matchesSearch && matchesStatus && matchesDate) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('appointmentsCount').textContent = `${visibleCount} consulta${visibleCount !== 1 ? 's' : ''}`;
+    }
+
+    // Open appointment modal
+    function openAppointmentModal(name, cpf, age, gender, bloodType, reason) {
+        const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+        
+        document.getElementById('modalPatientAvatar').textContent = initials;
+        document.getElementById('modalPatientName').textContent = name;
+        document.getElementById('modalPatientCPF').textContent = cpf;
+        document.getElementById('modalPatientAge').textContent = age;
+        document.getElementById('modalPatientGender').textContent = gender;
+        document.getElementById('modalPatientBlood').textContent = bloodType;
+        document.getElementById('modalConsultationReason').textContent = reason;
+        document.getElementById('observationText').value = '';
+        
+        const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+        modal.show();
+    }
+
+    // Finish appointment
+    function finishAppointment() {
+        const observation = document.getElementById('observationText').value.trim();
+        
+        if (!observation) {
+            alert('Por favor, preencha as observações do atendimento antes de finalizar.');
+            return;
+        }
+        
+        // In a real application, this would send data to the backend
+        alert('Atendimento finalizado com sucesso!\n\nObservações registradas:\n' + observation);
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('appointmentModal'));
+        modal.hide();
+    }
+
+    // Real-time search
+    document.getElementById('searchPatient').addEventListener('input', applyFilters);
+    document.getElementById('filterStatus').addEventListener('change', applyFilters);
+    document.getElementById('filterDate').addEventListener('change', applyFilters);
+</script>
+{% endblock %}

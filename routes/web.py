@@ -332,24 +332,230 @@ def users():
         "admin/users.html"
     )
 
+@web_bp.route("/admin/admin")
+def admin():
+
+    return render_template(
+        "admin/admin.html"
+    )
+
+@web_bp.route("/admin/recent_logins")
+def recent_logins():
+
+    return render_template(
+        "admin/recent_logins.html"
+    )
+
 @web_bp.route("/professional")
 def health_professional_zone():
 
     if session.get("role") != "professional":
         abort(403)
 
+    return redirect(
+        url_for("web.health_professional_dashboard")
+    )
+
+@web_bp.route("/admin/logs")
+def logs():
+
+    return render_template(
+        "admin/logs.html"
+    )
+
+
+@web_bp.route("/admin/settings")
+def settings():
+    return render_template(
+        "admin/settings.html"
+    )
+
+
+# ============================
+# DASHBOARD PROFISSIONAL
+# ============================
+
+@web_bp.route("/profession/health_professional_dashboard")
+def health_professional_dashboard():
+
+    if session.get("role") != "professional":
+        abort(403)
 
     stats = {
         "total_patients": 0,
         "today_appointments": 0,
-        "pending_docs": 0,
-        "important_alerts": 0
+        "completed_appointments": 0,
+        "pending_documents": 0
     }
 
+    return render_template(
+        "profession/health_professional_dashboard.html",
+        stats=stats
+    )
+
+
+# ============================
+# PACIENTES
+# ============================
+
+@web_bp.route("/profession/patients")
+def professional_patients():
+
+    if session.get("role") != "professional":
+        abort(403)
 
     return render_template(
-        "profession/health_professional_zone.html",
-        stats=stats
+        "profession/professional_patients.html"
+    )
+
+
+# ============================
+# PRONTUÁRIO MÉDICO
+# ============================
+
+@web_bp.route("/profession/medical-record")
+def professional_medical_record():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_medical_record.html"
+    )
+
+
+# ============================
+# AGENDA MÉDICA
+# ============================
+
+@web_bp.route("/profession/calendar")
+def professional_calendar():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_calendar.html"
+    )
+
+
+# ============================
+# CONSULTAS
+# ============================
+
+@web_bp.route("/profession/appointments")
+def professional_appointments():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_appointments.html"
+    )
+
+
+# ============================
+# RECEITAS
+# ============================
+
+@web_bp.route("/profession/prescriptions")
+def professional_prescriptions():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_prescriptions.html"
+    )
+
+
+# ============================
+# EXAMES
+# ============================
+
+@web_bp.route("/profession/exams")
+def professional_exams():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_exams.html"
+    )
+
+
+# ============================
+# MENSAGENS
+# ============================
+
+@web_bp.route("/profession/messages")
+def professional_messages():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_messages.html"
+    )
+
+
+# ============================
+# HISTÓRICO
+# ============================
+
+@web_bp.route("/profession/history")
+def professional_history():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_history.html"
+    )
+
+
+# ============================
+# RELATÓRIOS
+# ============================
+
+@web_bp.route("/profession/reports")
+def professional_reports():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_reports.html"
+    )
+
+
+# ============================
+# PERFIL PROFISSIONAL
+# ============================
+
+@web_bp.route("/profession/profile")
+def professional_profile():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_profile.html"
+    )
+
+
+# ============================
+# CONFIGURAÇÕES
+# ============================
+
+@web_bp.route("/profession/settings")
+def professional_settings():
+
+    if session.get("role") != "professional":
+        abort(403)
+
+    return render_template(
+        "profession/professional_settings.html"
     )
 
 @web_bp.route("/patient/medical_record")

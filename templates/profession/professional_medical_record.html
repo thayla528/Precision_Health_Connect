@@ -1,0 +1,1007 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect
+{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    :root {
+        /* Paleta de cores Precision Health Connect */
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-white: #FFFFFF;
+        --phc-text: #1F2937;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+        --phc-bg: #FAFAFC;
+
+        /* Mapeamento para as variáveis do layout existente (compatibilidade) */
+        --primary: var(--phc-primary);
+        --primary-dark: #7C3AED; /* Tom mais escuro derivado para estados de hover/active */
+        --primary-light: var(--phc-light);
+        --secondary: var(--phc-secondary);
+        --bg: var(--phc-bg);
+        --card-bg: var(--phc-white);
+        --text: var(--phc-text);
+        --text-light: var(--phc-muted);
+        --border: var(--phc-border);
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 24px;
+    }
+
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    /* Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .page-title::before {
+        content: '';
+        width: 6px;
+        height: 28px;
+        background: var(--primary);
+        border-radius: 3px;
+    }
+
+    .btn-back {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+        background: var(--primary-light);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    /* Patient Card */
+    .patient-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .patient-photo {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 36px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .patient-info {
+        flex: 1;
+        min-width: 240px;
+    }
+
+    .patient-name {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+    }
+
+    .patient-details {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .detail-value {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .blood-type {
+        background: #fef2f2;
+        color: #dc2626;
+        padding: 2px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .insurance-badge {
+        background: var(--primary-light);
+        color: var(--primary);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    /* Tabs */
+    .tabs-container {
+        background: var(--card-bg);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .tabs-header {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+        background: #fafbfc;
+    }
+
+    .tab-button {
+        padding: 16px 22px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-light);
+        white-space: nowrap;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .tab-button:hover {
+        color: var(--primary);
+        background: var(--primary-light);
+    }
+
+    .tab-button.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: var(--card-bg);
+        font-weight: 600;
+    }
+
+    .tab-content {
+        padding: 28px;
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section Header */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Tables */
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card-bg);
+    }
+
+    .data-table thead {
+        background: #f9fafb;
+    }
+
+    .data-table th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+        padding: 14px 16px;
+        font-size: 14px;
+        color: var(--text);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .data-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .data-table tbody tr:hover {
+        background: #f9fafb;
+    }
+
+    /* Evolution Cards */
+    .evolution-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .evolution-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--primary);
+        border-radius: 10px;
+        padding: 18px 20px;
+        transition: all 0.2s;
+    }
+
+    .evolution-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateX(2px);
+    }
+
+    .evolution-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .evolution-date {
+        font-size: 13px;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+
+    .evolution-professional {
+        background: var(--primary-light);
+        color: var(--primary);
+        padding: 4px 12px;
+        border-radius: 14px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .evolution-description {
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--text);
+    }
+
+    /* Personal Data Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+    }
+
+    .info-item {
+        background: #f9fafb;
+        padding: 14px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+
+    .info-label {
+        font-size: 12px;
+        color: var(--text-light);
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 15px;
+        color: var(--text);
+        font-weight: 500;
+    }
+
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+        display: flex;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .modal {
+        background: var(--card-bg);
+        border-radius: 14px;
+        width: 100%;
+        max-width: 560px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-lg);
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-light);
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+        background: #f3f4f6;
+        color: var(--text);
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 6px;
+    }
+
+    .form-label .required {
+        color: #dc2626;
+    }
+
+    .form-input,
+    .form-textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        transition: all 0.2s;
+        background: var(--card-bg);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+        font-family: inherit;
+    }
+
+    .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        background: #f9fafb;
+        border-radius: 0 0 14px 14px;
+    }
+
+    .btn-secondary {
+        background: var(--card-bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+        background: #f3f4f6;
+    }
+
+    /* Status badges */
+    .status-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        body { padding: 12px; }
+        .patient-card { padding: 18px; gap: 16px; }
+        .patient-photo { width: 72px; height: 72px; font-size: 28px; }
+        .patient-name { font-size: 18px; }
+        .insurance-badge { margin-left: 0; }
+        .tab-button { padding: 14px 16px; font-size: 13px; }
+        .tab-content { padding: 20px 16px; }
+        .data-table { font-size: 13px; }
+        .data-table th, .data-table td { padding: 10px 8px; }
+    }
+</style>
+
+<div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Prontuário do Paciente</h1>
+
+    </div>
+
+    <!-- Patient Card -->
+    <div class="patient-card">
+        <div class="patient-photo">MA</div>
+        <div class="patient-info">
+            <h2 class="patient-name">Maria Aparecida da Silva</h2>
+            <div class="patient-details">
+                <div class="detail-item">
+                    <span class="detail-label">Idade</span>
+                    <span class="detail-value">54 anos</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Sexo</span>
+                    <span class="detail-value">Feminino</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Tipo Sanguíneo</span>
+                    <span class="detail-value"><span class="blood-type">O+</span></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Convênio</span>
+                    <span class="detail-value">Unimed Nacional</span>
+                </div>
+            </div>
+        </div>
+        <div class="insurance-badge">✓ Ativo</div>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="tabs-container">
+        <div class="tabs-header">
+            <button class="tab-button active" data-tab="dados">📋 Dados Pessoais</button>
+            <button class="tab-button" data-tab="historico">📜 Histórico</button>
+            <button class="tab-button" data-tab="consultas">🗓️ Consultas</button>
+            <button class="tab-button" data-tab="diagnosticos">🔬 Diagnósticos</button>
+            <button class="tab-button" data-tab="exames">🧪 Exames</button>
+            <button class="tab-button" data-tab="medicamentos">💊 Medicamentos</button>
+            <button class="tab-button" data-tab="evolucao">📝 Evolução Clínica</button>
+        </div>
+
+        <!-- Dados Pessoais -->
+        <div class="tab-content active" id="dados">
+            <div class="section-header">
+                <h3 class="section-title">Dados Pessoais</h3>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Nome Completo</div>
+                    <div class="info-value">Maria Aparecida da Silva</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Data de Nascimento</div>
+                    <div class="info-value">15/03/1972</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">CPF</div>
+                    <div class="info-value">***.***.***-42</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">RG</div>
+                    <div class="info-value">12.345.678-9</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Telefone</div>
+                    <div class="info-value">(11) 98765-4321</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">E-mail</div>
+                    <div class="info-value">maria.silva@email.com</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Endereço</div>
+                    <div class="info-value">Rua das Flores, 123 - São Paulo/SP</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Estado Civil</div>
+                    <div class="info-value">Casada</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Profissão</div>
+                    <div class="info-value">Professora</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Contato de Emergência</div>
+                    <div class="info-value">João Silva - (11) 91234-5678</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico -->
+        <div class="tab-content" id="historico">
+            <div class="section-header">
+                <h3 class="section-title">Histórico Clínico</h3>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Alergias Conhecidas</div>
+                    <div class="info-value">Dipirona, Penicilina</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Doenças Crônicas</div>
+                    <div class="info-value">Hipertensão arterial, Diabetes tipo 2</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Cirurgias Anteriores</div>
+                    <div class="info-value">Apendicectomia (1995)</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Histórico Familiar</div>
+                    <div class="info-value">Pai - Cardiopatia; Mãe - Diabetes</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Tabagismo</div>
+                    <div class="info-value">Nega</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Etilismo</div>
+                    <div class="info-value">Social</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consultas -->
+        <div class="tab-content" id="consultas">
+            <div class="section-header">
+                <h3 class="section-title">Consultas Realizadas</h3>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Profissional</th>
+                        <th>Especialidade</th>
+                        <th>Motivo</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>31/07/2026</td>
+                        <td>Dr. Carlos Henrique</td>
+                        <td>Clínica Geral</td>
+                        <td>Retorno de acompanhamento</td>
+                        <td><span class="status-badge status-active">Realizada</span></td>
+                    </tr>
+                    <tr>
+                        <td>15/06/2026</td>
+                        <td>Dra. Ana Beatriz</td>
+                        <td>Cardiologia</td>
+                        <td>Avaliação de pressão arterial</td>
+                        <td><span class="status-badge status-active">Realizada</span></td>
+                    </tr>
+                    <tr>
+                        <td>22/04/2026</td>
+                        <td>Dr. Roberto Mendes</td>
+                        <td>Endocrinologia</td>
+                        <td>Controle glicêmico</td>
+                        <td><span class="status-badge status-active">Realizada</span></td>
+                    </tr>
+                    <tr>
+                        <td>10/08/2026</td>
+                        <td>Dra. Patrícia Lima</td>
+                        <td>Oftalmologia</td>
+                        <td>Exame de rotina</td>
+                        <td><span class="status-badge status-pending">Agendada</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Diagnósticos -->
+        <div class="tab-content" id="diagnosticos">
+            <div class="section-header">
+                <h3 class="section-title">Diagnósticos</h3>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Diagnóstico</th>
+                        <th>CID</th>
+                        <th>Responsável</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>31/07/2026</td>
+                        <td>Hipertensão arterial sistólica</td>
+                        <td>I10</td>
+                        <td>Dr. Carlos Henrique</td>
+                    </tr>
+                    <tr>
+                        <td>15/06/2026</td>
+                        <td>Diabetes mellitus tipo 2</td>
+                        <td>E11</td>
+                        <td>Dra. Ana Beatriz</td>
+                    </tr>
+                    <tr>
+                        <td>22/04/2026</td>
+                        <td>Dislipidemia mista</td>
+                        <td>E78.2</td>
+                        <td>Dr. Roberto Mendes</td>
+                    </tr>
+                    <tr>
+                        <td>10/02/2025</td>
+                        <td>Obesidade grau I</td>
+                        <td>E66.0</td>
+                        <td>Dr. Roberto Mendes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Exames -->
+        <div class="tab-content" id="exames">
+            <div class="section-header">
+                <h3 class="section-title">Exames</h3>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Exame</th>
+                        <th>Data</th>
+                        <th>Resultado</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hemograma completo</td>
+                        <td>30/07/2026</td>
+                        <td>Dentro dos parâmetros normais</td>
+                        <td><span class="status-badge status-active">Normal</span></td>
+                    </tr>
+                    <tr>
+                        <td>Glicemia em jejum</td>
+                        <td>30/07/2026</td>
+                        <td>128 mg/dL</td>
+                        <td><span class="status-badge status-pending">Atenção</span></td>
+                    </tr>
+                    <tr>
+                        <td>Hemoglobina glicada</td>
+                        <td>30/07/2026</td>
+                        <td>7,2%</td>
+                        <td><span class="status-badge status-pending">Atenção</span></td>
+                    </tr>
+                    <tr>
+                        <td>Eletrocardiograma</td>
+                        <td>15/06/2026</td>
+                        <td>Ritmo sinusal regular</td>
+                        <td><span class="status-badge status-active">Normal</span></td>
+                    </tr>
+                    <tr>
+                        <td>Perfil lipídico</td>
+                        <td>22/04/2026</td>
+                        <td>LDL: 142 mg/dL</td>
+                        <td><span class="status-badge status-pending">Atenção</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Medicamentos -->
+        <div class="tab-content" id="medicamentos">
+            <div class="section-header">
+                <h3 class="section-title">Medicamentos em Uso</h3>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Medicamento</th>
+                        <th>Dosagem</th>
+                        <th>Frequência</th>
+                        <th>Prescrito por</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Losartana</td>
+                        <td>50 mg</td>
+                        <td>1x ao dia</td>
+                        <td>Dr. Carlos Henrique</td>
+                    </tr>
+                    <tr>
+                        <td>Metformina</td>
+                        <td>850 mg</td>
+                        <td>2x ao dia</td>
+                        <td>Dr. Roberto Mendes</td>
+                    </tr>
+                    <tr>
+                        <td>Sinvastatina</td>
+                        <td>20 mg</td>
+                        <td>1x ao dia (noite)</td>
+                        <td>Dra. Ana Beatriz</td>
+                    </tr>
+                    <tr>
+                        <td>Ácido acetilsalicílico</td>
+                        <td>100 mg</td>
+                        <td>1x ao dia</td>
+                        <td>Dra. Ana Beatriz</td>
+                    </tr>
+                    <tr>
+                        <td>Vitamina D3</td>
+                        <td>2000 UI</td>
+                        <td>1x ao dia</td>
+                        <td>Dr. Roberto Mendes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Evolução Clínica -->
+        <div class="tab-content" id="evolucao">
+            <div class="section-header">
+                <h3 class="section-title">Evolução Clínica</h3>
+                <button class="btn-primary" onclick="openModal()">
+                    <span>＋</span> Adicionar evolução
+                </button>
+            </div>
+            <div class="evolution-list">
+                <div class="evolution-card">
+                    <div class="evolution-header">
+                        <span class="evolution-date">31/07/2026</span>
+                        <span class="evolution-professional">Dr. Carlos Henrique</span>
+                    </div>
+                    <p class="evolution-description">
+                        Paciente apresentou melhora clínica significativa após ajuste da medicação anti-hipertensiva.
+                        Relata redução das cefaleias e melhora da qualidade do sono. Pressão arterial aferida:
+                        128/82 mmHg. Mantém boa adesão ao tratamento e dieta orientada. Segue acompanhamento
+                        trimestral com exames de controle.
+                    </p>
+                </div>
+                <div class="evolution-card">
+                    <div class="evolution-header">
+                        <span class="evolution-date">15/06/2026</span>
+                        <span class="evolution-professional">Dra. Ana Beatriz</span>
+                    </div>
+                    <p class="evolution-description">
+                        Paciente compareceu à consulta de cardiologia para avaliação de controle pressórico.
+                        Exames complementares estáveis. Eletrocardiograma sem alterações significativas.
+                        Orientada sobre manutenção de atividade física regular e redução do consumo de sódio.
+                        Sem queixas cardiovasculares no momento.
+                    </p>
+                </div>
+                <div class="evolution-card">
+                    <div class="evolution-header">
+                        <span class="evolution-date">22/04/2026</span>
+                        <span class="evolution-professional">Dr. Roberto Mendes</span>
+                    </div>
+                    <p class="evolution-description">
+                        Paciente em acompanhamento endocrinológico para controle glicêmico.
+                        Hemoglobina glicada em leve elevação (7,2%). Reforçada orientação nutricional
+                        e importância da atividade física. Mantida a dose atual de Metformina com
+                        reavaliação em 90 dias.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Nova Evolução Clínica</h3>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Descrição <span class="required">*</span></label>
+                <textarea class="form-textarea" placeholder="Descreva a evolução clínica do paciente..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Diagnóstico</label>
+                <input type="text" class="form-input" placeholder="Informe o diagnóstico (CID, se aplicável)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Observações</label>
+                <textarea class="form-textarea" placeholder="Observações adicionais, orientações, condutas..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button class="btn-primary" onclick="closeModal()">Salvar Evolução</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab navigation
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.getAttribute('data-tab');
+
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            button.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Modal functions
+    function openModal() {
+        document.getElementById('modalOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('modalOverlay').addEventListener('click', (e) => {
+        if (e.target.id === 'modalOverlay') {
+            closeModal();
+        }
+    });
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}

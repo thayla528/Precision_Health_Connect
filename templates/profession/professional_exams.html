@@ -1,0 +1,1379 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-white: #FFFFFF;
+        --phc-text: #1F2937;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+        --phc-bg: #FAFAFC;
+    }
+
+    .phc-exams-page {
+        padding: 2rem 1.5rem;
+        background: var(--phc-bg);
+        min-height: 100vh;
+    }
+
+    .phc-page-header {
+        margin-bottom: 1.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .phc-page-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-page-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 2rem;
+    }
+
+    .phc-page-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.95rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* Botões */
+    .phc-btn {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        text-decoration: none;
+    }
+
+    .phc-btn:hover {
+        background: var(--phc-secondary);
+        color: white;
+    }
+
+    .phc-btn-outline {
+        background: var(--phc-white);
+        color: var(--phc-primary);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-btn-outline:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-btn .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    /* Cards de estatísticas */
+    .phc-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-stat-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.35rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .phc-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
+    }
+
+    .phc-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--phc-primary), var(--phc-secondary));
+    }
+
+    .phc-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.85rem;
+    }
+
+    .phc-stat-label {
+        font-size: 0.82rem;
+        color: var(--phc-muted);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .phc-stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        line-height: 1.1;
+    }
+
+    .phc-stat-trend {
+        font-size: 0.78rem;
+        color: var(--phc-primary);
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .phc-stat-trend .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    /* Filtros */
+    .phc-filters-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-filter-label {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--phc-muted);
+        margin-bottom: 0.35rem;
+        display: block;
+    }
+
+    .phc-filter-input,
+    .phc-filter-select {
+        width: 100%;
+        padding: 0.55rem 0.85rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.86rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .phc-filter-input:focus,
+    .phc-filter-select:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    }
+
+    /* Tabela */
+    .phc-table-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .phc-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-table-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-table-title .material-symbols-rounded {
+        color: var(--phc-primary);
+    }
+
+    .phc-results-count {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .phc-table thead th {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        font-size: 0.74rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.9rem 1.1rem;
+        border: none;
+        text-align: left;
+    }
+
+    .phc-table tbody td {
+        padding: 1rem 1.1rem;
+        border-bottom: 1px solid var(--phc-border);
+        font-size: 0.9rem;
+        color: var(--phc-text);
+        vertical-align: middle;
+    }
+
+    .phc-table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    .phc-table tbody tr:hover {
+        background: #FAFAFE;
+    }
+
+    .phc-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Célula paciente */
+    .phc-patient-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .phc-patient-name {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-patient-id {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+    }
+
+    /* Célula exame */
+    .phc-exam-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .phc-exam-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .phc-exam-icon .material-symbols-rounded {
+        font-size: 1.25rem;
+    }
+
+    .phc-exam-name {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-exam-detail {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        margin-top: 0.1rem;
+    }
+
+    /* Data */
+    .phc-date-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .phc-date-main {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-date-sub {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+    }
+
+    /* Badges */
+    .phc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.76rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .phc-badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .phc-badge-requested {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .phc-badge-in-progress {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+    }
+
+    .phc-badge-completed {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    /* Resultado */
+    .phc-result-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: var(--phc-primary);
+        font-weight: 500;
+        font-size: 0.85rem;
+        text-decoration: none;
+        padding: 0.35rem 0.7rem;
+        background: var(--phc-light);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .phc-result-link:hover {
+        background: var(--phc-primary);
+        color: white;
+    }
+
+    .phc-result-link .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    .phc-result-pending {
+        color: var(--phc-muted);
+        font-size: 0.82rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .phc-result-pending .material-symbols-rounded {
+        font-size: 1rem;
+        color: var(--phc-secondary);
+    }
+
+    /* Paginação */
+    .phc-pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-pagination-info {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-pagination-controls {
+        display: flex;
+        gap: 0.35rem;
+    }
+
+    .phc-page-btn {
+        min-width: 34px;
+        height: 34px;
+        border: 1px solid var(--phc-border);
+        background: var(--phc-white);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: var(--phc-text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+    }
+
+    .phc-page-btn:hover:not(:disabled):not(.active) {
+        background: var(--phc-light);
+        border-color: var(--phc-secondary);
+        color: var(--phc-primary);
+    }
+
+    .phc-page-btn.active {
+        background: var(--phc-primary);
+        color: white;
+        border-color: var(--phc-primary);
+    }
+
+    .phc-page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    /* Modal */
+    .phc-modal .modal-content {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .phc-modal-header {
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        padding: 1.5rem;
+        border: none;
+    }
+
+    .phc-modal-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+    }
+
+    .phc-modal-header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .phc-modal-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .phc-modal-icon .material-symbols-rounded {
+        font-size: 1.75rem;
+    }
+
+    .phc-modal-title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .phc-modal-subtitle {
+        font-size: 0.88rem;
+        opacity: 0.9;
+        margin: 0.15rem 0 0 0;
+    }
+
+    .phc-modal-body {
+        padding: 1.5rem;
+    }
+
+    .phc-form-group {
+        margin-bottom: 1.15rem;
+    }
+
+    .phc-form-label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin-bottom: 0.4rem;
+    }
+
+    .phc-form-label .required {
+        color: #DC2626;
+        margin-left: 0.15rem;
+    }
+
+    .phc-form-control {
+        width: 100%;
+        padding: 0.6rem 0.9rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        font-family: inherit;
+    }
+
+    .phc-form-control:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    }
+
+    .phc-form-control::placeholder {
+        color: #9CA3AF;
+    }
+
+    textarea.phc-form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .phc-form-hint {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        margin-top: 0.3rem;
+    }
+
+    /* Tipos de exame em cards */
+    .phc-exam-type-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.65rem;
+    }
+
+    .phc-exam-type-option {
+        position: relative;
+    }
+
+    .phc-exam-type-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .phc-exam-type-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.85rem 0.5rem;
+        border: 1.5px solid var(--phc-border);
+        border-radius: 10px;
+        background: var(--phc-white);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+
+    .phc-exam-type-label:hover {
+        border-color: var(--phc-secondary);
+        background: #FAFAFE;
+    }
+
+    .phc-exam-type-option input:checked + .phc-exam-type-label {
+        border-color: var(--phc-primary);
+        background: var(--phc-light);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    }
+
+    .phc-exam-type-label .material-symbols-rounded {
+        font-size: 1.5rem;
+        color: var(--phc-primary);
+    }
+
+    .phc-exam-type-label span:last-child {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        background: #FAFAFC;
+    }
+
+    .phc-modal-btn {
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .phc-modal-btn-primary {
+        background: var(--phc-primary);
+        color: white;
+    }
+
+    .phc-modal-btn-primary:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-modal-btn-secondary {
+        background: transparent;
+        color: var(--phc-muted);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-modal-btn-secondary:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    @media (max-width: 992px) {
+        .phc-table-card { overflow-x: auto; }
+        .phc-table { min-width: 880px; }
+    }
+
+    @media (max-width: 768px) {
+        .phc-exams-page { padding: 1.25rem 1rem; }
+        .phc-page-title { font-size: 1.5rem; }
+        .phc-modal-body { padding: 1.25rem; }
+        .phc-exam-type-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+</style>
+
+<div class="phc-exams-page">
+    <!-- Cabeçalho -->
+    <div class="phc-page-header">
+        <div>
+            <h1 class="phc-page-title">
+                <span class="material-symbols-rounded">biotech</span>
+                Exames
+            </h1>
+            <p class="phc-page-subtitle">Solicite e acompanhe exames dos pacientes.</p>
+        </div>
+        <button class="phc-btn" data-bs-toggle="modal" data-bs-target="#requestExamModal">
+            <span class="material-symbols-rounded">add</span>
+            Solicitar Exame
+        </button>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="phc-stats-grid">
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">lab_profile</span>
+            </div>
+            <div class="phc-stat-label">Total de solicitações</div>
+            <div class="phc-stat-value">287</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">trending_up</span>
+                +24 este mês
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">pending</span>
+            </div>
+            <div class="phc-stat-label">Solicitados</div>
+            <div class="phc-stat-value">18</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">schedule</span>
+                Aguardando coleta
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">hourglass_top</span>
+            </div>
+            <div class="phc-stat-label">Em andamento</div>
+            <div class="phc-stat-value">12</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">autorenew</span>
+                Processando
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">task_alt</span>
+            </div>
+            <div class="phc-stat-label">Concluídos</div>
+            <div class="phc-stat-value">257</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">check_circle</span>
+                Resultados disponíveis
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="phc-filters-card">
+        <div class="row g-3">
+            <div class="col-12 col-md-5">
+                <label class="phc-filter-label">Pesquisar</label>
+                <input type="text" class="phc-filter-input" placeholder="Nome do paciente ou tipo de exame...">
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="phc-filter-label">Tipo de exame</label>
+                <select class="phc-filter-select">
+                    <option value="">Todos</option>
+                    <option>Hemograma</option>
+                    <option>Raio-X</option>
+                    <option>Ressonância</option>
+                    <option>Ultrassom</option>
+                    <option>Tomografia</option>
+                    <option>Eletrocardiograma</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="phc-filter-label">Status</label>
+                <select class="phc-filter-select">
+                    <option value="">Todos</option>
+                    <option>Solicitado</option>
+                    <option>Realizando</option>
+                    <option>Concluído</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-2 d-flex align-items-end">
+                <button class="phc-btn w-100" style="justify-content: center;">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">search</span>
+                    Filtrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="phc-table-card">
+        <div class="phc-table-header">
+            <h2 class="phc-table-title">
+                <span class="material-symbols-rounded">list_alt</span>
+                Solicitações de Exames
+            </h2>
+            <div class="phc-results-count">Exibindo 10 de 287 solicitações</div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="phc-table">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Exame</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">MS</div>
+                                <div>
+                                    <div class="phc-patient-name">Mariana Souza</div>
+                                    <div class="phc-patient-id">ID #10248</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">bloodtype</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Hemograma completo</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00287</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">31/07/2026</span>
+                                <span class="phc-date-sub">09:15</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-completed">
+                                <span class="phc-badge-dot"></span>
+                                Concluído
+                            </span>
+                        </td>
+                        <td>
+                            <a href="#" class="phc-result-link">
+                                <span class="material-symbols-rounded">description</span>
+                                Ver resultado
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">CO</div>
+                                <div>
+                                    <div class="phc-patient-name">Carlos Oliveira</div>
+                                    <div class="phc-patient-id">ID #10312</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">monitoring</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Eletrocardiograma</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00286</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">31/07/2026</span>
+                                <span class="phc-date-sub">08:30</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-in-progress">
+                                <span class="phc-badge-dot"></span>
+                                Realizando
+                            </span>
+                        </td>
+                        <td>
+                            <span class="phc-result-pending">
+                                <span class="material-symbols-rounded">hourglass_empty</span>
+                                Aguardando
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">AM</div>
+                                <div>
+                                    <div class="phc-patient-name">Ana Martins</div>
+                                    <div class="phc-patient-id">ID #10187</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">pregnancy</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Ultrassom abdominal</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00285</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">30/07/2026</span>
+                                <span class="phc-date-sub">14:45</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-completed">
+                                <span class="phc-badge-dot"></span>
+                                Concluído
+                            </span>
+                        </td>
+                        <td>
+                            <a href="#" class="phc-result-link">
+                                <span class="material-symbols-rounded">description</span>
+                                Ver resultado
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">RL</div>
+                                <div>
+                                    <div class="phc-patient-name">Roberto Lima</div>
+                                    <div class="phc-patient-id">ID #10421</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">grid_on</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Tomografia de tórax</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00284</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">30/07/2026</span>
+                                <span class="phc-date-sub">10:20</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-requested">
+                                <span class="phc-badge-dot"></span>
+                                Solicitado
+                            </span>
+                        </td>
+                        <td>
+                            <span class="phc-result-pending">
+                                <span class="material-symbols-rounded">hourglass_empty</span>
+                                Aguardando coleta
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">JF</div>
+                                <div>
+                                    <div class="phc-patient-name">Juliana Ferreira</div>
+                                    <div class="phc-patient-id">ID #10509</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">scan</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Ressonância magnética</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00283</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">29/07/2026</span>
+                                <span class="phc-date-sub">16:10</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-completed">
+                                <span class="phc-badge-dot"></span>
+                                Concluído
+                            </span>
+                        </td>
+                        <td>
+                            <a href="#" class="phc-result-link">
+                                <span class="material-symbols-rounded">description</span>
+                                Ver resultado
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">PR</div>
+                                <div>
+                                    <div class="phc-patient-name">Paulo Ribeiro</div>
+                                    <div class="phc-patient-id">ID #10287</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">image_search</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Raio-X de joelho</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00282</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">29/07/2026</span>
+                                <span class="phc-date-sub">11:30</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-completed">
+                                <span class="phc-badge-dot"></span>
+                                Concluído
+                            </span>
+                        </td>
+                        <td>
+                            <a href="#" class="phc-result-link">
+                                <span class="material-symbols-rounded">description</span>
+                                Ver resultado
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">BS</div>
+                                <div>
+                                    <div class="phc-patient-name">Beatriz Santos</div>
+                                    <div class="phc-patient-id">ID #10356</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">bloodtype</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Hemograma completo</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00281</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">28/07/2026</span>
+                                <span class="phc-date-sub">15:20</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-in-progress">
+                                <span class="phc-badge-dot"></span>
+                                Realizando
+                            </span>
+                        </td>
+                        <td>
+                            <span class="phc-result-pending">
+                                <span class="material-symbols-rounded">hourglass_empty</span>
+                                Aguardando
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">GM</div>
+                                <div>
+                                    <div class="phc-patient-name">Gustavo Mendes</div>
+                                    <div class="phc-patient-id">ID #10198</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">monitoring</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Eletrocardiograma</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00280</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">28/07/2026</span>
+                                <span class="phc-date-sub">09:40</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-completed">
+                                <span class="phc-badge-dot"></span>
+                                Concluído
+                            </span>
+                        </td>
+                        <td>
+                            <a href="#" class="phc-result-link">
+                                <span class="material-symbols-rounded">description</span>
+                                Ver resultado
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">FA</div>
+                                <div>
+                                    <div class="phc-patient-name">Fernando Alves</div>
+                                    <div class="phc-patient-id">ID #10402</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">pregnancy</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Ultrassom transabdominal</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00279</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">27/07/2026</span>
+                                <span class="phc-date-sub">13:55</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-requested">
+                                <span class="phc-badge-dot"></span>
+                                Solicitado
+                            </span>
+                        </td>
+                        <td>
+                            <span class="phc-result-pending">
+                                <span class="material-symbols-rounded">hourglass_empty</span>
+                                Aguardando coleta
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">LC</div>
+                                <div>
+                                    <div class="phc-patient-name">Luciana Costa</div>
+                                    <div class="phc-patient-id">ID #10455</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-exam-cell">
+                                <div class="phc-exam-icon">
+                                    <span class="material-symbols-rounded">scan</span>
+                                </div>
+                                <div>
+                                    <div class="phc-exam-name">Ressonância de coluna</div>
+                                    <div class="phc-exam-detail">Solicitação #EX-00278</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">26/07/2026</span>
+                                <span class="phc-date-sub">10:05</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-completed">
+                                <span class="phc-badge-dot"></span>
+                                Concluído
+                            </span>
+                        </td>
+                        <td>
+                            <a href="#" class="phc-result-link">
+                                <span class="material-symbols-rounded">description</span>
+                                Ver resultado
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="phc-pagination">
+            <div class="phc-pagination-info">
+                Mostrando <strong>1-10</strong> de <strong>287</strong> solicitações
+            </div>
+            <div class="phc-pagination-controls">
+                <button class="phc-page-btn" disabled>‹</button>
+                <button class="phc-page-btn active">1</button>
+                <button class="phc-page-btn">2</button>
+                <button class="phc-page-btn">3</button>
+                <button class="phc-page-btn">...</button>
+                <button class="phc-page-btn">29</button>
+                <button class="phc-page-btn">›</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Solicitar Exame -->
+<div class="modal fade phc-modal" id="requestExamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div class="phc-modal-header-content">
+                    <div class="phc-modal-icon">
+                        <span class="material-symbols-rounded">biotech</span>
+                    </div>
+                    <div>
+                        <h3 class="phc-modal-title">Nova Solicitação de Exame</h3>
+                        <p class="phc-modal-subtitle">Preencha os dados para solicitar um exame ao paciente</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="phc-modal-body">
+                <form id="examRequestForm">
+                    <div class="phc-form-group">
+                        <label class="phc-form-label" for="examPatientSelect">
+                            Paciente <span class="required">*</span>
+                        </label>
+                        <select class="phc-form-control" id="examPatientSelect" required>
+                            <option value="">Selecione o paciente...</option>
+                            <option>Mariana Souza — ID #10248</option>
+                            <option>Carlos Oliveira — ID #10312</option>
+                            <option>Ana Martins — ID #10187</option>
+                            <option>Roberto Lima — ID #10421</option>
+                            <option>Juliana Ferreira — ID #10509</option>
+                            <option>Paulo Ribeiro — ID #10287</option>
+                            <option>Beatriz Santos — ID #10356</option>
+                            <option>Gustavo Mendes — ID #10198</option>
+                            <option>Fernando Alves — ID #10402</option>
+                            <option>Luciana Costa — ID #10455</option>
+                        </select>
+                    </div>
+
+                    <div class="phc-form-group">
+                        <label class="phc-form-label">
+                            Tipo de exame <span class="required">*</span>
+                        </label>
+                        <div class="phc-exam-type-grid">
+                            <div class="phc-exam-type-option">
+                                <input type="radio" name="examType" id="examHemograma" value="hemograma" required>
+                                <label class="phc-exam-type-label" for="examHemograma">
+                                    <span class="material-symbols-rounded">bloodtype</span>
+                                    <span>Hemograma</span>
+                                </label>
+                            </div>
+                            <div class="phc-exam-type-option">
+                                <input type="radio" name="examType" id="examRaioX" value="raio-x">
+                                <label class="phc-exam-type-label" for="examRaioX">
+                                    <span class="material-symbols-rounded">image_search</span>
+                                    <span>Raio-X</span>
+                                </label>
+                            </div>
+                            <div class="phc-exam-type-option">
+                                <input type="radio" name="examType" id="examRessonancia" value="ressonancia">
+                                <label class="phc-exam-type-label" for="examRessonancia">
+                                    <span class="material-symbols-rounded">scan</span>
+                                    <span>Ressonância</span>
+                                </label>
+                            </div>
+                            <div class="phc-exam-type-option">
+                                <input type="radio" name="examType" id="examUltrassom" value="ultrassom">
+                                <label class="phc-exam-type-label" for="examUltrassom">
+                                    <span class="material-symbols-rounded">pregnancy</span>
+                                    <span>Ultrassom</span>
+                                </label>
+                            </div>
+                            <div class="phc-exam-type-option">
+                                <input type="radio" name="examType" id="examTomografia" value="tomografia">
+                                <label class="phc-exam-type-label" for="examTomografia">
+                                    <span class="material-symbols-rounded">grid_on</span>
+                                    <span>Tomografia</span>
+                                </label>
+                            </div>
+                            <div class="phc-exam-type-option">
+                                <input type="radio" name="examType" id="examEcg" value="ecg">
+                                <label class="phc-exam-type-label" for="examEcg">
+                                    <span class="material-symbols-rounded">monitoring</span>
+                                    <span>Eletrocardiograma</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="phc-form-group">
+                        <label class="phc-form-label" for="examObservations">
+                            Observações
+                        </label>
+                        <textarea class="phc-form-control" id="examObservations" placeholder="Informe detalhes clínicos, região a ser examinada, histórico relevante ou orientações especiais..."></textarea>
+                        <div class="phc-form-hint">Ex: paciente relata dor lombar há 3 semanas; avaliar possível hérnia de disco L4-L5</div>
+                    </div>
+
+                    <div class="phc-form-group">
+                        <label class="phc-form-label" for="examUrgency">
+                            Prioridade
+                        </label>
+                        <select class="phc-form-control" id="examUrgency">
+                            <option>Rotina</option>
+                            <option>Prioridade</option>
+                            <option>Urgente</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="phc-modal-footer">
+                <button type="button" class="phc-modal-btn phc-modal-btn-secondary" data-bs-dismiss="modal">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">close</span>
+                    Cancelar
+                </button>
+                <button type="button" class="phc-modal-btn phc-modal-btn-primary">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">send</span>
+                    Enviar solicitação
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Paginação
+    document.querySelectorAll('.phc-page-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!this.disabled && !this.textContent.includes('...')) {
+                document.querySelectorAll('.phc-page-btn').forEach(b => b.classList.remove('active'));
+                if (!isNaN(this.textContent)) {
+                    this.classList.add('active');
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

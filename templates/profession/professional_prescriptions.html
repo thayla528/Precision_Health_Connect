@@ -1,0 +1,1502 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-white: #FFFFFF;
+        --phc-text: #1F2937;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+        --phc-bg: #FAFAFC;
+    }
+
+    .phc-prescriptions-page {
+        padding: 2rem 1.5rem;
+        background: var(--phc-bg);
+        min-height: 100vh;
+    }
+
+    .phc-page-header {
+        margin-bottom: 1.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .phc-page-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-page-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 2rem;
+    }
+
+    .phc-page-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.95rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* Botões */
+    .phc-btn {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        text-decoration: none;
+    }
+
+    .phc-btn:hover {
+        background: var(--phc-secondary);
+        color: white;
+    }
+
+    .phc-btn-outline {
+        background: var(--phc-white);
+        color: var(--phc-primary);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-btn-outline:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-btn .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    /* Cards de estatísticas */
+    .phc-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-stat-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.35rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .phc-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
+    }
+
+    .phc-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--phc-primary), var(--phc-secondary));
+    }
+
+    .phc-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.85rem;
+    }
+
+    .phc-stat-label {
+        font-size: 0.82rem;
+        color: var(--phc-muted);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .phc-stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        line-height: 1.1;
+    }
+
+    .phc-stat-trend {
+        font-size: 0.78rem;
+        color: var(--phc-primary);
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .phc-stat-trend .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    /* Filtros */
+    .phc-filters-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-filter-label {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--phc-muted);
+        margin-bottom: 0.35rem;
+        display: block;
+    }
+
+    .phc-filter-input,
+    .phc-filter-select {
+        width: 100%;
+        padding: 0.55rem 0.85rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.86rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .phc-filter-input:focus,
+    .phc-filter-select:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    }
+
+    /* Tabela */
+    .phc-table-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .phc-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-table-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-table-title .material-symbols-rounded {
+        color: var(--phc-primary);
+    }
+
+    .phc-results-count {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .phc-table thead th {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        font-size: 0.74rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.9rem 1.1rem;
+        border: none;
+        text-align: left;
+    }
+
+    .phc-table tbody td {
+        padding: 1rem 1.1rem;
+        border-bottom: 1px solid var(--phc-border);
+        font-size: 0.9rem;
+        color: var(--phc-text);
+        vertical-align: middle;
+    }
+
+    .phc-table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    .phc-table tbody tr:hover {
+        background: #FAFAFE;
+    }
+
+    .phc-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Célula paciente */
+    .phc-patient-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .phc-patient-name {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-patient-id {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+    }
+
+    /* Célula medicamento */
+    .phc-med-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .phc-med-name {
+        font-weight: 500;
+        color: var(--phc-text);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .phc-med-name .material-symbols-rounded {
+        font-size: 1.05rem;
+        color: var(--phc-secondary);
+    }
+
+    .phc-med-dosage {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+    }
+
+    /* Data */
+    .phc-date-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .phc-date-main {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-date-sub {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+    }
+
+    /* Badges */
+    .phc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.76rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .phc-badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .phc-badge-issued {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    .phc-badge-pending {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .phc-badge-renewed {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+    }
+
+    .phc-badge-cancelled {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    /* Ações */
+    .phc-actions-cell {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+    }
+
+    .phc-action-btn {
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        border: 1px solid var(--phc-border);
+        background: var(--phc-white);
+        color: var(--phc-muted);
+        font-size: 0.78rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .phc-action-btn .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    .phc-action-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .phc-action-btn.view:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-action-btn.pdf {
+        background: var(--phc-primary);
+        color: white;
+        border-color: var(--phc-primary);
+    }
+
+    .phc-action-btn.pdf:hover {
+        background: var(--phc-secondary);
+        border-color: var(--phc-secondary);
+        color: white;
+    }
+
+    /* Paginação */
+    .phc-pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-pagination-info {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-pagination-controls {
+        display: flex;
+        gap: 0.35rem;
+    }
+
+    .phc-page-btn {
+        min-width: 34px;
+        height: 34px;
+        border: 1px solid var(--phc-border);
+        background: var(--phc-white);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: var(--phc-text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+    }
+
+    .phc-page-btn:hover:not(:disabled):not(.active) {
+        background: var(--phc-light);
+        border-color: var(--phc-secondary);
+        color: var(--phc-primary);
+    }
+
+    .phc-page-btn.active {
+        background: var(--phc-primary);
+        color: white;
+        border-color: var(--phc-primary);
+    }
+
+    .phc-page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    /* Modal */
+    .phc-modal .modal-content {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .phc-modal-header {
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        padding: 1.5rem;
+        border: none;
+    }
+
+    .phc-modal-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+    }
+
+    .phc-modal-header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .phc-modal-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .phc-modal-icon .material-symbols-rounded {
+        font-size: 1.75rem;
+    }
+
+    .phc-modal-title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .phc-modal-subtitle {
+        font-size: 0.88rem;
+        opacity: 0.9;
+        margin: 0.15rem 0 0 0;
+    }
+
+    .phc-modal-body {
+        padding: 1.5rem;
+    }
+
+    .phc-form-group {
+        margin-bottom: 1.15rem;
+    }
+
+    .phc-form-label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin-bottom: 0.4rem;
+    }
+
+    .phc-form-label .required {
+        color: #DC2626;
+        margin-left: 0.15rem;
+    }
+
+    .phc-form-control {
+        width: 100%;
+        padding: 0.6rem 0.9rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        font-family: inherit;
+    }
+
+    .phc-form-control:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    }
+
+    .phc-form-control::placeholder {
+        color: #9CA3AF;
+    }
+
+    textarea.phc-form-control {
+        resize: vertical;
+        min-height: 90px;
+    }
+
+    .phc-form-hint {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        margin-top: 0.3rem;
+    }
+
+    .phc-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .phc-modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        background: #FAFAFC;
+    }
+
+    .phc-modal-btn {
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .phc-modal-btn-primary {
+        background: var(--phc-primary);
+        color: white;
+    }
+
+    .phc-modal-btn-primary:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-modal-btn-secondary {
+        background: transparent;
+        color: var(--phc-muted);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-modal-btn-secondary:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    /* Modal Visualizar */
+    .phc-view-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-view-section-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--phc-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--phc-border);
+    }
+
+    .phc-view-section-title .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    .phc-view-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .phc-view-item-label {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 0.2rem;
+    }
+
+    .phc-view-item-value {
+        font-size: 0.95rem;
+        color: var(--phc-text);
+        font-weight: 500;
+    }
+
+    .phc-prescription-preview {
+        background: var(--phc-light);
+        border: 1px dashed var(--phc-secondary);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        font-size: 0.88rem;
+        color: var(--phc-text);
+        line-height: 1.6;
+    }
+
+    @media (max-width: 992px) {
+        .phc-table-card { overflow-x: auto; }
+        .phc-table { min-width: 880px; }
+    }
+
+    @media (max-width: 768px) {
+        .phc-prescriptions-page { padding: 1.25rem 1rem; }
+        .phc-page-title { font-size: 1.5rem; }
+        .phc-form-row { grid-template-columns: 1fr; }
+        .phc-modal-body { padding: 1.25rem; }
+    }
+</style>
+
+<div class="phc-prescriptions-page">
+    <!-- Cabeçalho -->
+    <div class="phc-page-header">
+        <div>
+            <h1 class="phc-page-title">
+                <span class="material-symbols-rounded">prescriptions</span>
+                Receitas Digitais
+            </h1>
+            <p class="phc-page-subtitle">Crie e gerencie receitas dos pacientes.</p>
+        </div>
+        <button class="phc-btn" data-bs-toggle="modal" data-bs-target="#createPrescriptionModal">
+            <span class="material-symbols-rounded">add</span>
+            Nova Receita
+        </button>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="phc-stats-grid">
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">receipt_long</span>
+            </div>
+            <div class="phc-stat-label">Total de receitas</div>
+            <div class="phc-stat-value">342</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">trending_up</span>
+                +18 este mês
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">today</span>
+            </div>
+            <div class="phc-stat-label">Emitidas hoje</div>
+            <div class="phc-stat-value">7</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">check_circle</span>
+                Todas validadas
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">pending</span>
+            </div>
+            <div class="phc-stat-label">Pendentes</div>
+            <div class="phc-stat-value">4</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">schedule</span>
+                Aguardando assinatura
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">autorenew</span>
+            </div>
+            <div class="phc-stat-label">Renovações</div>
+            <div class="phc-stat-value">23</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">trending_up</span>
+                +5 esta semana
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="phc-filters-card">
+        <div class="row g-3">
+            <div class="col-12 col-md-5">
+                <label class="phc-filter-label">Pesquisar</label>
+                <input type="text" class="phc-filter-input" placeholder="Nome do paciente ou medicamento...">
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="phc-filter-label">Status</label>
+                <select class="phc-filter-select">
+                    <option value="">Todos</option>
+                    <option>Emitida</option>
+                    <option>Pendente</option>
+                    <option>Renovada</option>
+                    <option>Cancelada</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="phc-filter-label">Período</label>
+                <select class="phc-filter-select">
+                    <option value="">Qualquer</option>
+                    <option>Hoje</option>
+                    <option>Últimos 7 dias</option>
+                    <option>Últimos 30 dias</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-2 d-flex align-items-end">
+                <button class="phc-btn w-100" style="justify-content: center;">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">search</span>
+                    Filtrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="phc-table-card">
+        <div class="phc-table-header">
+            <h2 class="phc-table-title">
+                <span class="material-symbols-rounded">list_alt</span>
+                Receitas Emitidas
+            </h2>
+            <div class="phc-results-count">Exibindo 8 de 342 receitas</div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="phc-table">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Medicamento</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th class="text-end">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">MS</div>
+                                <div>
+                                    <div class="phc-patient-name">Mariana Souza</div>
+                                    <div class="phc-patient-id">ID #10248</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-med-cell">
+                                <div class="phc-med-name">
+                                    <span class="material-symbols-rounded">medication</span>
+                                    Losartana 50mg
+                                </div>
+                                <div class="phc-med-dosage">1 comprimido • 2x ao dia • 30 dias</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">31/07/2026</span>
+                                <span class="phc-date-sub">14:32</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-issued">
+                                <span class="phc-badge-dot"></span>
+                                Emitida
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn view" onclick="openViewModal(0)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                    Visualizar
+                                </button>
+                                <button class="phc-action-btn pdf">
+                                    <span class="material-symbols-rounded">picture_as_pdf</span>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">CO</div>
+                                <div>
+                                    <div class="phc-patient-name">Carlos Oliveira</div>
+                                    <div class="phc-patient-id">ID #10312</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-med-cell">
+                                <div class="phc-med-name">
+                                    <span class="material-symbols-rounded">medication</span>
+                                    Metformina 500mg
+                                </div>
+                                <div class="phc-med-dosage">1 comprimido • 2x ao dia • 60 dias</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">31/07/2026</span>
+                                <span class="phc-date-sub">11:45</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-issued">
+                                <span class="phc-badge-dot"></span>
+                                Emitida
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn view" onclick="openViewModal(1)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                    Visualizar
+                                </button>
+                                <button class="phc-action-btn pdf">
+                                    <span class="material-symbols-rounded">picture_as_pdf</span>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">AM</div>
+                                <div>
+                                    <div class="phc-patient-name">Ana Martins</div>
+                                    <div class="phc-patient-id">ID #10187</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-med-cell">
+                                <div class="phc-med-name">
+                                    <span class="material-symbols-rounded">medication</span>
+                                    Amoxicilina 500mg
+                                </div>
+                                <div class="phc-med-dosage">1 cápsula • 3x ao dia • 7 dias</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">30/07/2026</span>
+                                <span class="phc-date-sub">16:20</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-pending">
+                                <span class="phc-badge-dot"></span>
+                                Pendente
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn view" onclick="openViewModal(2)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                    Visualizar
+                                </button>
+                                <button class="phc-action-btn pdf">
+                                    <span class="material-symbols-rounded">picture_as_pdf</span>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">RL</div>
+                                <div>
+                                    <div class="phc-patient-name">Roberto Lima</div>
+                                    <div class="phc-patient-id">ID #10421</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-med-cell">
+                                <div class="phc-med-name">
+                                    <span class="material-symbols-rounded">medication</span>
+                                    Atorvastatina 20mg
+                                </div>
+                                <div class="phc-med-dosage">1 comprimido • 1x ao dia • 90 dias</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">30/07/2026</span>
+                                <span class="phc-date-sub">10:15</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-renewed">
+                                <span class="phc-badge-dot"></span>
+                                Renovada
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn view" onclick="openViewModal(3)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                    Visualizar
+                                </button>
+                                <button class="phc-action-btn pdf">
+                                    <span class="material-symbols-rounded">picture_as_pdf</span>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">JF</div>
+                                <div>
+                                    <div class="phc-patient-name">Juliana Ferreira</div>
+                                    <div class="phc-patient-id">ID #10509</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-med-cell">
+                                <div class="phc-med-name">
+                                    <span class="material-symbols-rounded">medication</span>
+                                    Omeprazol 20mg
+                                </div>
+                                <div class="phc-med-dosage">1 cápsula • 1x ao dia • 14 dias</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">29/07/2026</span>
+                                <span class="phc-date-sub">09:30</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-issued">
+                                <span class="phc-badge-dot"></span>
+                                Emitida
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn view" onclick="openViewModal(4)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                    Visualizar
+                                </button>
+                                <button class="phc-action-btn pdf">
+                                    <span class="material-symbols-rounded">picture_as_pdf</span>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">PR</div>
+                                <div>
+                                    <div class="phc-patient-name">Paulo Ribeiro</div>
+                                    <div class="phc-patient-id">ID #10287</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-med-cell">
+                                <div class="phc-med-name">
+                                    <span class="material-symbols-rounded">medication</span>
+                                    Dipirona 500mg
+                                </div>
+                                <div class="phc-med-dosage">1 comprimido • 4x ao dia • 5 dias</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">28/07/2026</span>
+                                <span class="phc-date-sub">15:50</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-cancelled">
+                                <span class="phc-badge-dot"></span>
+                                Cancelada
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn view" onclick="openViewModal(5)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                    Visualizar
+                                </button>
+                                <button class="phc-action-btn pdf">
+                                    <span class="material-symbols-rounded">picture_as_pdf</span>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">BS</div>
+                                <div>
+                                    <div class="phc-patient-name">Beatriz Santos</div>
+                                    <div class="phc-patient-id">ID #10356</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-med-cell">
+                                <div class="phc-med-name">
+                                    <span class="material-symbols-rounded">medication</span>
+                                    Loratadina 10mg
+                                </div>
+                                <div class="phc-med-dosage">1 comprimido • 1x ao dia • 30 dias</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">27/07/2026</span>
+                                <span class="phc-date-sub">13:10</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-issued">
+                                <span class="phc-badge-dot"></span>
+                                Emitida
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn view" onclick="openViewModal(6)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                    Visualizar
+                                </button>
+                                <button class="phc-action-btn pdf">
+                                    <span class="material-symbols-rounded">picture_as_pdf</span>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">GM</div>
+                                <div>
+                                    <div class="phc-patient-name">Gustavo Mendes</div>
+                                    <div class="phc-patient-id">ID #10198</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-med-cell">
+                                <div class="phc-med-name">
+                                    <span class="material-symbols-rounded">medication</span>
+                                    Warfarina 5mg
+                                </div>
+                                <div class="phc-med-dosage">1 comprimido • 1x ao dia • 30 dias</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-date-cell">
+                                <span class="phc-date-main">26/07/2026</span>
+                                <span class="phc-date-sub">17:25</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="phc-badge phc-badge-renewed">
+                                <span class="phc-badge-dot"></span>
+                                Renovada
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn view" onclick="openViewModal(7)">
+                                    <span class="material-symbols-rounded">visibility</span>
+                                    Visualizar
+                                </button>
+                                <button class="phc-action-btn pdf">
+                                    <span class="material-symbols-rounded">picture_as_pdf</span>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="phc-pagination">
+            <div class="phc-pagination-info">
+                Mostrando <strong>1-8</strong> de <strong>342</strong> receitas
+            </div>
+            <div class="phc-pagination-controls">
+                <button class="phc-page-btn" disabled>‹</button>
+                <button class="phc-page-btn active">1</button>
+                <button class="phc-page-btn">2</button>
+                <button class="phc-page-btn">3</button>
+                <button class="phc-page-btn">...</button>
+                <button class="phc-page-btn">43</button>
+                <button class="phc-page-btn">›</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Criar Receita -->
+<div class="modal fade phc-modal" id="createPrescriptionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div class="phc-modal-header-content">
+                    <div class="phc-modal-icon">
+                        <span class="material-symbols-rounded">prescriptions</span>
+                    </div>
+                    <div>
+                        <h3 class="phc-modal-title">Criar Receita</h3>
+                        <p class="phc-modal-subtitle">Preencha os dados para gerar uma nova receita digital</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="phc-modal-body">
+                <form id="prescriptionForm">
+                    <div class="phc-form-group">
+                        <label class="phc-form-label" for="patientSelect">
+                            Paciente <span class="required">*</span>
+                        </label>
+                        <select class="phc-form-control" id="patientSelect" required>
+                            <option value="">Selecione o paciente...</option>
+                            <option>Mariana Souza — ID #10248</option>
+                            <option>Carlos Oliveira — ID #10312</option>
+                            <option>Ana Martins — ID #10187</option>
+                            <option>Roberto Lima — ID #10421</option>
+                            <option>Juliana Ferreira — ID #10509</option>
+                            <option>Paulo Ribeiro — ID #10287</option>
+                            <option>Beatriz Santos — ID #10356</option>
+                            <option>Gustavo Mendes — ID #10198</option>
+                        </select>
+                    </div>
+
+                    <div class="phc-form-group">
+                        <label class="phc-form-label" for="medicationInput">
+                            Medicamento <span class="required">*</span>
+                        </label>
+                        <input type="text" class="phc-form-control" id="medicationInput" placeholder="Ex: Losartana 50mg" required>
+                        <div class="phc-form-hint">Informe o nome comercial e a concentração</div>
+                    </div>
+
+                    <div class="phc-form-row">
+                        <div class="phc-form-group">
+                            <label class="phc-form-label" for="dosageInput">
+                                Dosagem <span class="required">*</span>
+                            </label>
+                            <input type="text" class="phc-form-control" id="dosageInput" placeholder="Ex: 1 comprimido" required>
+                        </div>
+                        <div class="phc-form-group">
+                            <label class="phc-form-label" for="frequencySelect">
+                                Frequência <span class="required">*</span>
+                            </label>
+                            <select class="phc-form-control" id="frequencySelect" required>
+                                <option value="">Selecione...</option>
+                                <option>1x ao dia</option>
+                                <option>2x ao dia</option>
+                                <option>3x ao dia</option>
+                                <option>4x ao dia</option>
+                                <option>De 6 em 6 horas</option>
+                                <option>De 8 em 8 horas</option>
+                                <option>De 12 em 12 horas</option>
+                                <option>Em jejum</option>
+                                <option>Antes de dormir</option>
+                                <option>Sob demanda</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="phc-form-row">
+                        <div class="phc-form-group">
+                            <label class="phc-form-label" for="durationInput">
+                                Duração do tratamento <span class="required">*</span>
+                            </label>
+                            <input type="text" class="phc-form-control" id="durationInput" placeholder="Ex: 30 dias" required>
+                        </div>
+                        <div class="phc-form-group">
+                            <label class="phc-form-label" for="typeSelect">
+                                Tipo de receita
+                            </label>
+                            <select class="phc-form-control" id="typeSelect">
+                                <option>Simples</option>
+                                <option>Controle especial — Branco (2 vias)</option>
+                                <option>Controle especial — Amarela (A)</option>
+                                <option>Controle especial — Azul (B)</option>
+                                <option>Antimicrobiano</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="phc-form-group">
+                        <label class="phc-form-label" for="instructionsInput">
+                            Orientações
+                        </label>
+                        <textarea class="phc-form-control" id="instructionsInput" placeholder="Informe orientações adicionais ao paciente..."></textarea>
+                        <div class="phc-form-hint">Ex: tomar com abundância de água, evitar exposição solar, retornar em 15 dias</div>
+                    </div>
+                </form>
+            </div>
+            <div class="phc-modal-footer">
+                <button type="button" class="phc-modal-btn phc-modal-btn-secondary" data-bs-dismiss="modal">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">close</span>
+                    Cancelar
+                </button>
+                <button type="button" class="phc-modal-btn phc-modal-btn-primary">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">description</span>
+                    Gerar Receita
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Visualizar Receita -->
+<div class="modal fade phc-modal" id="viewPrescriptionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div class="phc-modal-header-content">
+                    <div class="phc-modal-icon">
+                        <span class="material-symbols-rounded">description</span>
+                    </div>
+                    <div>
+                        <h3 class="phc-modal-title" id="viewModalTitle">Detalhes da Receita</h3>
+                        <p class="phc-modal-subtitle" id="viewModalSubtitle">Receita #REC-00000</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="phc-modal-body">
+                <div class="phc-view-section">
+                    <div class="phc-view-section-title">
+                        <span class="material-symbols-rounded">badge</span>
+                        Dados do paciente
+                    </div>
+                    <div class="phc-view-grid">
+                        <div>
+                            <div class="phc-view-item-label">Paciente</div>
+                            <div class="phc-view-item-value" id="viewPatient">—</div>
+                        </div>
+                        <div>
+                            <div class="phc-view-item-label">ID</div>
+                            <div class="phc-view-item-value" id="viewPatientId">—</div>
+                        </div>
+                        <div>
+                            <div class="phc-view-item-label">Data de emissão</div>
+                            <div class="phc-view-item-value" id="viewDate">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phc-view-section">
+                    <div class="phc-view-section-title">
+                        <span class="material-symbols-rounded">medication</span>
+                        Prescrição
+                    </div>
+                    <div class="phc-view-grid">
+                        <div>
+                            <div class="phc-view-item-label">Medicamento</div>
+                            <div class="phc-view-item-value" id="viewMedication">—</div>
+                        </div>
+                        <div>
+                            <div class="phc-view-item-label">Dosagem</div>
+                            <div class="phc-view-item-value" id="viewDosage">—</div>
+                        </div>
+                        <div>
+                            <div class="phc-view-item-label">Frequência</div>
+                            <div class="phc-view-item-value" id="viewFrequency">—</div>
+                        </div>
+                        <div>
+                            <div class="phc-view-item-label">Duração</div>
+                            <div class="phc-view-item-value" id="viewDuration">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phc-view-section">
+                    <div class="phc-view-section-title">
+                        <span class="material-symbols-rounded">info</span>
+                        Orientações
+                    </div>
+                    <div class="phc-prescription-preview" id="viewInstructions">
+                        —
+                    </div>
+                </div>
+            </div>
+            <div class="phc-modal-footer">
+                <button type="button" class="phc-modal-btn phc-modal-btn-secondary" data-bs-dismiss="modal">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">close</span>
+                    Fechar
+                </button>
+                <button type="button" class="phc-modal-btn phc-modal-btn-primary">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">picture_as_pdf</span>
+                    Gerar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dados das receitas
+    const prescriptions = [
+        {
+            patient: 'Mariana Souza', patientId: '#10248',
+            date: '31/07/2026 às 14:32',
+            medication: 'Losartana 50mg', dosage: '1 comprimido',
+            frequency: '2x ao dia', duration: '30 dias',
+            instructions: 'Tomar pela manhã e à noite, preferencialmente com água. Monitorar pressão arterial diariamente. Retornar em 30 dias para reavaliação.'
+        },
+        {
+            patient: 'Carlos Oliveira', patientId: '#10312',
+            date: '31/07/2026 às 11:45',
+            medication: 'Metformina 500mg', dosage: '1 comprimido',
+            frequency: '2x ao dia', duration: '60 dias',
+            instructions: 'Tomar junto às refeições para evitar desconforto gastrointestinal. Realizar glicemia capilar em jejum semanalmente. Retornar em 60 dias com exames.'
+        },
+        {
+            patient: 'Ana Martins', patientId: '#10187',
+            date: '30/07/2026 às 16:20',
+            medication: 'Amoxicilina 500mg', dosage: '1 cápsula',
+            frequency: '3x ao dia', duration: '7 dias',
+            instructions: 'Tomar de 8 em 8 horas, sem interrupção. Em caso de reação alérgica (erupções cutâneas, inchaço), suspender imediatamente e procurar atendimento.'
+        },
+        {
+            patient: 'Roberto Lima', patientId: '#10421',
+            date: '30/07/2026 às 10:15',
+            medication: 'Atorvastatina 20mg', dosage: '1 comprimido',
+            frequency: '1x ao dia', duration: '90 dias',
+            instructions: 'Tomar à noite, antes de dormir. Evitar consumo excessivo de álcool. Realizar perfil lipídico em 90 dias.'
+        },
+        {
+            patient: 'Juliana Ferreira', patientId: '#10509',
+            date: '29/07/2026 às 09:30',
+            medication: 'Omeprazol 20mg', dosage: '1 cápsula',
+            frequency: '1x ao dia', duration: '14 dias',
+            instructions: 'Tomar em jejum, 30 minutos antes do café da manhã. Evitar alimentos gordurosos, cafeína e bebidas alcoólicas durante o tratamento.'
+        },
+        {
+            patient: 'Paulo Ribeiro', patientId: '#10287',
+            date: '28/07/2026 às 15:50',
+            medication: 'Dipirona 500mg', dosage: '1 comprimido',
+            frequency: '4x ao dia', duration: '5 dias',
+            instructions: 'Receita cancelada pelo profissional. Substituída por prescrição alternativa.'
+        },
+        {
+            patient: 'Beatriz Santos', patientId: '#10356',
+            date: '27/07/2026 às 13:10',
+            medication: 'Loratadina 10mg', dosage: '1 comprimido',
+            frequency: '1x ao dia', duration: '30 dias',
+            instructions: 'Tomar pela manhã. Pode causar sonolência em alguns pacientes. Evitar exposição a alérgenos conhecidos.'
+        },
+        {
+            patient: 'Gustavo Mendes', patientId: '#10198',
+            date: '26/07/2026 às 17:25',
+            medication: 'Warfarina 5mg', dosage: '1 comprimido',
+            frequency: '1x ao dia', duration: '30 dias',
+            instructions: 'Medicamento de controle especial. Manter horário fixo. Realizar exames de TP/INR semanalmente. Evitar alimentos ricos em vitamina K em excesso. Comunicar qualquer sangramento.'
+        }
+    ];
+
+    // Abrir modal de visualização
+    function openViewModal(idx) {
+        const p = prescriptions[idx];
+        document.getElementById('viewModalTitle').textContent = `Receita de ${p.medication}`;
+        document.getElementById('viewModalSubtitle').textContent = `Receita #REC-${String(10000 + idx).padStart(5, '0')}`;
+        document.getElementById('viewPatient').textContent = p.patient;
+        document.getElementById('viewPatientId').textContent = `ID ${p.patientId}`;
+        document.getElementById('viewDate').textContent = p.date;
+        document.getElementById('viewMedication').textContent = p.medication;
+        document.getElementById('viewDosage').textContent = p.dosage;
+        document.getElementById('viewFrequency').textContent = p.frequency;
+        document.getElementById('viewDuration').textContent = p.duration;
+        document.getElementById('viewInstructions').textContent = p.instructions;
+
+        const modal = new bootstrap.Modal(document.getElementById('viewPrescriptionModal'));
+        modal.show();
+    }
+
+    // Paginação
+    document.querySelectorAll('.phc-page-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!this.disabled && !this.textContent.includes('...')) {
+                document.querySelectorAll('.phc-page-btn').forEach(b => b.classList.remove('active'));
+                if (!isNaN(this.textContent)) {
+                    this.classList.add('active');
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

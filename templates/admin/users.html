@@ -6,7 +6,7 @@ Usuários | Precision Health Connect
 
 {% block content %}
 
-<!-- Importação do Material Symbols Rounded (garante o funcionamento dos ícones) -->
+<!-- Importação do Material Symbols Rounded -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
 <style>
@@ -47,7 +47,6 @@ Usuários | Precision Health Connect
         padding: 1.5rem;
     }
 
-    /* Inputs e Selects */
     .form-control-custom, .form-select-custom {
         border: 1px solid var(--phc-border);
         border-radius: 12px;
@@ -65,11 +64,6 @@ Usuários | Precision Health Connect
         color: var(--phc-text-main);
     }
 
-    .form-control-custom::placeholder {
-        color: #9CA3AF;
-    }
-
-    /* Botões */
     .btn-custom-primary {
         background-color: var(--phc-primary);
         border: none;
@@ -123,7 +117,6 @@ Usuários | Precision Health Connect
         color: white;
     }
 
-    /* Tabela */
     .table-custom {
         width: 100%;
         border-collapse: separate;
@@ -143,13 +136,8 @@ Usuários | Precision Health Connect
         white-space: nowrap;
     }
 
-    .table-custom thead th:first-child {
-        border-top-left-radius: 12px;
-    }
-
-    .table-custom thead th:last-child {
-        border-top-right-radius: 12px;
-    }
+    .table-custom thead th:first-child { border-top-left-radius: 12px; }
+    .table-custom thead th:last-child { border-top-right-radius: 12px; }
 
     .table-custom tbody td {
         padding: 1rem;
@@ -159,19 +147,10 @@ Usuários | Precision Health Connect
         font-size: 0.95rem;
     }
 
-    .table-custom tbody tr:last-child td {
-        border-bottom: none;
-    }
+    .table-custom tbody tr:last-child td { border-bottom: none; }
+    .table-custom tbody tr { transition: background-color 0.2s ease; }
+    .table-custom tbody tr:hover { background-color: var(--phc-hover); }
 
-    .table-custom tbody tr {
-        transition: background-color 0.2s ease;
-    }
-
-    .table-custom tbody tr:hover {
-        background-color: var(--phc-hover);
-    }
-
-    /* Avatar */
     .user-avatar {
         width: 40px;
         height: 40px;
@@ -191,10 +170,8 @@ Usuários | Precision Health Connect
         justify-content: center;
         font-weight: 700;
         font-size: 0.9rem;
-        border: 2px solid var(--phc-bg);
     }
 
-    /* Badges */
     .badge-type {
         padding: 0.35em 0.8em;
         border-radius: 20px;
@@ -215,10 +192,9 @@ Usuários | Precision Health Connect
         white-space: nowrap;
     }
 
-    .badge-active { background-color: #DCFCE7; color: #166534; } /* Mantido verde suave para clareza de status, ou usar lilás se preferir estritamente: #EDE9FE e #5B21B6 */
+    .badge-active { background-color: #DCFCE7; color: #166534; }
     .badge-inactive { background-color: #F3F4F6; color: #6B7280; }
 
-    /* Paginação */
     .pagination-custom .page-item .page-link {
         border: 1px solid var(--phc-border);
         color: var(--phc-text-sec);
@@ -251,10 +227,98 @@ Usuários | Precision Health Connect
         font-size: 20px;
         vertical-align: middle;
     }
+
+    /* ===========================
+       MODAL - AJUSTADO (MAIS LARGO E MAIS BAIXO)
+    =========================== */
+    .modal-content-custom {
+        background-color: var(--phc-bg);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(139, 92, 246, 0.15);
+    }
+
+    /* Aumenta a largura máxima do modal */
+    .modal-xl-custom {
+        max-width: 1100px;
+        width: 95%;
+    }
+
+    .modal-header-custom {
+        border-bottom: 1px solid var(--phc-border);
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body-custom {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-footer-custom {
+        border-top: 1px solid var(--phc-border);
+        padding: 1rem 1.5rem;
+    }
+
+    .section-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--phc-primary);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--phc-light);
+    }
+
+    .detail-label {
+        font-size: 0.75rem;
+        color: var(--phc-text-sec);
+        font-weight: 600;
+        margin-bottom: 0.15rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .detail-value {
+        font-size: 0.95rem;
+        color: var(--phc-text-main);
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+    }
+
+    /* Foto menor para reduzir altura */
+    .modal-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--phc-light);
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-avatar-initials {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        font-weight: 700;
+        border: 3px solid var(--phc-light);
+        margin: 0 auto 0.5rem auto;
+    }
+
+    .modal-user-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
 </style>
 
 <div class="container-fluid py-4">
-    
+
     <!-- Cabeçalho -->
     <div class="page-header">
         <h1 class="page-title">Usuários</h1>
@@ -263,7 +327,7 @@ Usuários | Precision Health Connect
 
     <!-- Card Principal -->
     <div class="card-custom">
-        
+
         <!-- Filtros -->
         <form class="row g-3 mb-4">
             <div class="col-12 col-md-5 col-lg-4">
@@ -274,7 +338,7 @@ Usuários | Precision Health Connect
                     </button>
                 </div>
             </div>
-            
+
             <div class="col-12 col-md-3 col-lg-3">
                 <select class="form-select-custom">
                     <option selected>Tipo de usuário</option>
@@ -284,7 +348,7 @@ Usuários | Precision Health Connect
                     <option>Paciente</option>
                 </select>
             </div>
-            
+
             <div class="col-12 col-md-3 col-lg-3">
                 <select class="form-select-custom">
                     <option selected>Status</option>
@@ -314,174 +378,42 @@ Usuários | Precision Health Connect
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Usuário 1 -->
+                    {% set users = [
+                        {"name": "Carlos Henrique Oliveira", "email": "carlos.oliveira@precisionhealth.com", "type": "Administrador", "type_class": "badge-admin", "status": "Ativo", "status_class": "badge-active", "phone": "(11) 99876-5432", "dob": "15/03/1985", "cpf": "123.456.789-00", "sex": "Masculino", "register_date": "12/02/2026", "last_login": "31/07/2026 às 08:42", "invite_code": "PREC-2026-X9", "invited_by": "Sistema", "has_photo": true},
+                        {"name": "Mariana Souza Lima", "email": "mariana.lima@precisionhealth.com", "type": "Profissional", "type_class": "badge-prof", "status": "Ativo", "status_class": "badge-active", "phone": "(11) 98765-4321", "dob": "22/07/1990", "cpf": "987.654.321-00", "sex": "Feminino", "register_date": "15/03/2026", "last_login": "30/07/2026 às 14:15", "invite_code": "PREC-2026-A1", "invited_by": "Carlos Henrique Oliveira", "has_photo": true},
+                        {"name": "Pedro Henrique Costa", "email": "pedro.costa@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Inativo", "status_class": "badge-inactive", "phone": "(21) 97654-3210", "dob": "10/11/1995", "cpf": "456.789.123-00", "sex": "Masculino", "register_date": "05/06/2026", "last_login": "15/06/2026 às 09:30", "invite_code": "PREC-2026-B2", "invited_by": "Mariana Souza Lima", "has_photo": false},
+                        {"name": "Ana Beatriz Martins", "email": "ana.martins@precisionhealth.com", "type": "Profissional", "type_class": "badge-prof", "status": "Ativo", "status_class": "badge-active", "phone": "(31) 96543-2109", "dob": "05/09/1988", "cpf": "321.654.987-00", "sex": "Feminino", "register_date": "20/04/2026", "last_login": "31/07/2026 às 10:05", "invite_code": "PREC-2026-C3", "invited_by": "Carlos Henrique Oliveira", "has_photo": true},
+                        {"name": "Lucas Almeida Ferreira", "email": "lucas.ferreira@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Ativo", "status_class": "badge-active", "phone": "(41) 95432-1098", "dob": "18/01/2000", "cpf": "654.321.987-00", "sex": "Masculino", "register_date": "10/07/2026", "last_login": "29/07/2026 às 18:20", "invite_code": "PREC-2026-D4", "invited_by": "Ana Beatriz Martins", "has_photo": false},
+                        {"name": "Juliana Rocha Mendes", "email": "juliana.mendes@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Inativo", "status_class": "badge-inactive", "phone": "(51) 94321-0987", "dob": "30/04/1992", "cpf": "789.123.456-00", "sex": "Feminino", "register_date": "01/05/2026", "last_login": "10/05/2026 às 11:00", "invite_code": "PREC-2026-E5", "invited_by": "Sistema", "has_photo": true},
+                        {"name": "Fernanda Alves", "email": "fernanda.alves@precisionhealth.com", "type": "Administrador", "type_class": "badge-admin", "status": "Ativo", "status_class": "badge-active", "phone": "(61) 93210-9876", "dob": "12/12/1980", "cpf": "147.258.369-00", "sex": "Feminino", "register_date": "12/02/2026", "last_login": "31/07/2026 às 07:55", "invite_code": "PREC-2026-F6", "invited_by": "Sistema", "has_photo": true},
+                        {"name": "Ricardo Santos", "email": "ricardo.santos@precisionhealth.com", "type": "Profissional", "type_class": "badge-prof", "status": "Ativo", "status_class": "badge-active", "phone": "(71) 92109-8765", "dob": "25/08/1987", "cpf": "369.258.147-00", "sex": "Masculino", "register_date": "15/03/2026", "last_login": "28/07/2026 às 16:40", "invite_code": "PREC-2026-G7", "invited_by": "Fernanda Alves", "has_photo": false},
+                        {"name": "Camila Dias", "email": "camila.dias@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Ativo", "status_class": "badge-active", "phone": "(81) 91098-7654", "dob": "14/06/1998", "cpf": "258.147.369-00", "sex": "Feminino", "register_date": "22/07/2026", "last_login": "30/07/2026 às 20:10", "invite_code": "PREC-2026-H8", "invited_by": "Ricardo Santos", "has_photo": true},
+                        {"name": "Bruno Costa", "email": "bruno.costa@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Inativo", "status_class": "badge-inactive", "phone": "(91) 90987-6543", "dob": "03/03/1994", "cpf": "951.753.852-00", "sex": "Masculino", "register_date": "15/06/2026", "last_login": "01/07/2026 às 12:30", "invite_code": "PREC-2026-I9", "invited_by": "Sistema", "has_photo": false},
+                        {"name": "Patrícia Gomes", "email": "patricia.gomes@precisionhealth.com", "type": "Administrador", "type_class": "badge-admin", "status": "Ativo", "status_class": "badge-active", "phone": "(11) 99876-1111", "dob": "20/10/1983", "cpf": "753.951.456-00", "sex": "Feminino", "register_date": "12/02/2026", "last_login": "31/07/2026 às 09:15", "invite_code": "PREC-2026-J0", "invited_by": "Sistema", "has_photo": true},
+                        {"name": "Felipe Nascimento", "email": "felipe.nascimento@precisionhealth.com", "type": "Profissional", "type_class": "badge-prof", "status": "Ativo", "status_class": "badge-active", "phone": "(11) 98765-2222", "dob": "08/05/1991", "cpf": "159.357.456-00", "sex": "Masculino", "register_date": "10/07/2026", "last_login": "25/07/2026 às 08:00", "invite_code": "PREC-2026-K1", "invited_by": "Patrícia Gomes", "has_photo": false}
+                    ] %}
+
+                    {% for user in users %}
                     <tr>
-                        <td><img src="https://ui-avatars.com/api/?name=Carlos+Henrique&background=8B5CF6&color=fff" alt="Foto" class="user-avatar"></td>
-                        <td class="fw-semibold">Carlos Henrique Oliveira</td>
-                        <td class="text-muted">carlos.oliveira@precisionhealth.com</td>
-                        <td><span class="badge-type badge-admin">Administrador</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">31/07/2026 08:42</td>
+                        <td>
+                            {% if user.has_photo %}
+                                <img src="https://ui-avatars.com/api/?name={{ user.name | replace(' ', '+') }}&background=8B5CF6&color=fff&size=128" alt="Foto" class="user-avatar">
+                            {% else %}
+                                <div class="user-initials">{{ user.name.split(' ')[0][0] }}{{ user.name.split(' ')[-1][0] }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="fw-semibold">{{ user.name }}</td>
+                        <td class="text-muted">{{ user.email }}</td>
+                        <td><span class="badge-type {{ user.type_class }}">{{ user.type }}</span></td>
+                        <td><span class="badge-status {{ user.status_class }}">{{ user.status }}</span></td>
+                        <td class="text-muted">{{ user.last_login }}</td>
                         <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
+                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal{{ loop.index }}">
                                 <span class="material-symbols-rounded">visibility</span> Detalhes
                             </button>
                         </td>
                     </tr>
-                    <!-- Usuário 2 -->
-                    <tr>
-                        <td><img src="https://ui-avatars.com/api/?name=Mariana+Souza&background=A78BFA&color=fff" alt="Foto" class="user-avatar"></td>
-                        <td class="fw-semibold">Mariana Souza Lima</td>
-                        <td class="text-muted">mariana.lima@precisionhealth.com</td>
-                        <td><span class="badge-type badge-prof">Profissional</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">30/07/2026 14:15</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 3 -->
-                    <tr>
-                        <td><div class="user-initials">PC</div></td>
-                        <td class="fw-semibold">Pedro Henrique Costa</td>
-                        <td class="text-muted">pedro.costa@email.com</td>
-                        <td><span class="badge-type badge-patient">Paciente</span></td>
-                        <td><span class="badge-status badge-inactive">Inativo</span></td>
-                        <td class="text-muted">15/06/2026 09:30</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 4 -->
-                    <tr>
-                        <td><img src="https://ui-avatars.com/api/?name=Ana+Beatriz&background=A78BFA&color=fff" alt="Foto" class="user-avatar"></td>
-                        <td class="fw-semibold">Ana Beatriz Martins</td>
-                        <td class="text-muted">ana.martins@precisionhealth.com</td>
-                        <td><span class="badge-type badge-prof">Profissional</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">31/07/2026 10:05</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 5 -->
-                    <tr>
-                        <td><div class="user-initials">LA</div></td>
-                        <td class="fw-semibold">Lucas Almeida Ferreira</td>
-                        <td class="text-muted">lucas.ferreira@email.com</td>
-                        <td><span class="badge-type badge-patient">Paciente</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">29/07/2026 18:20</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 6 -->
-                    <tr>
-                        <td><img src="https://ui-avatars.com/api/?name=Juliana+Rocha&background=EDE9FE&color=5B21B6" alt="Foto" class="user-avatar"></td>
-                        <td class="fw-semibold">Juliana Rocha Mendes</td>
-                        <td class="text-muted">juliana.mendes@email.com</td>
-                        <td><span class="badge-type badge-patient">Paciente</span></td>
-                        <td><span class="badge-status badge-inactive">Inativo</span></td>
-                        <td class="text-muted">10/05/2026 11:00</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 7 -->
-                    <tr>
-                        <td><img src="https://ui-avatars.com/api/?name=Fernanda+Alves&background=8B5CF6&color=fff" alt="Foto" class="user-avatar"></td>
-                        <td class="fw-semibold">Fernanda Alves</td>
-                        <td class="text-muted">fernanda.alves@precisionhealth.com</td>
-                        <td><span class="badge-type badge-admin">Administrador</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">31/07/2026 07:55</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 8 -->
-                    <tr>
-                        <td><div class="user-initials">RS</div></td>
-                        <td class="fw-semibold">Ricardo Santos</td>
-                        <td class="text-muted">ricardo.santos@precisionhealth.com</td>
-                        <td><span class="badge-type badge-prof">Profissional</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">28/07/2026 16:40</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 9 -->
-                    <tr>
-                        <td><img src="https://ui-avatars.com/api/?name=Camila+Dias&background=EDE9FE&color=5B21B6" alt="Foto" class="user-avatar"></td>
-                        <td class="fw-semibold">Camila Dias</td>
-                        <td class="text-muted">camila.dias@email.com</td>
-                        <td><span class="badge-type badge-patient">Paciente</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">30/07/2026 20:10</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 10 -->
-                    <tr>
-                        <td><div class="user-initials">BC</div></td>
-                        <td class="fw-semibold">Bruno Costa</td>
-                        <td class="text-muted">bruno.costa@email.com</td>
-                        <td><span class="badge-type badge-patient">Paciente</span></td>
-                        <td><span class="badge-status badge-inactive">Inativo</span></td>
-                        <td class="text-muted">01/07/2026 12:30</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 11 -->
-                    <tr>
-                        <td><img src="https://ui-avatars.com/api/?name=Patricia+Gomes&background=8B5CF6&color=fff" alt="Foto" class="user-avatar"></td>
-                        <td class="fw-semibold">Patrícia Gomes</td>
-                        <td class="text-muted">patricia.gomes@precisionhealth.com</td>
-                        <td><span class="badge-type badge-admin">Administrador</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">31/07/2026 09:15</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Usuário 12 -->
-                    <tr>
-                        <td><div class="user-initials">FN</div></td>
-                        <td class="fw-semibold">Felipe Nascimento</td>
-                        <td class="text-muted">felipe.nascimento@precisionhealth.com</td>
-                        <td><span class="badge-type badge-prof">Profissional</span></td>
-                        <td><span class="badge-status badge-active">Ativo</span></td>
-                        <td class="text-muted">25/07/2026 08:00</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -503,5 +435,94 @@ Usuários | Precision Health Connect
 
     </div>
 </div>
+
+<!-- Modais de Detalhes (Gerados dinamicamente para cada usuário) -->
+{% for user in users %}
+<div class="modal fade" id="userDetailsModal{{ loop.index }}" tabindex="-1" aria-labelledby="userDetailsModalLabel{{ loop.index }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom modal-dialog-centered">
+        <div class="modal-content modal-content-custom">
+
+            <!-- Cabeçalho do Modal -->
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold" id="userDetailsModalLabel{{ loop.index }}" style="color: var(--phc-primary);">
+                    Detalhes do Usuário
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <!-- Corpo do Modal -->
+            <div class="modal-body modal-body-custom">
+
+                <div class="row g-3">
+                    <!-- Coluna Esquerda: Dados Pessoais -->
+                    <div class="col-lg-6">
+                        <div class="section-title">Dados Pessoais</div>
+                        <div class="row g-2">
+                            <div class="col-4 text-center">
+                                {% if user.has_photo %}
+                                    <img src="https://ui-avatars.com/api/?name={{ user.name | replace(' ', '+') }}&background=8B5CF6&color=fff&size=256" alt="Foto" class="modal-avatar">
+                                {% else %}
+                                    <div class="modal-avatar-initials">
+                                        {{ user.name.split(' ')[0][0] }}{{ user.name.split(' ')[-1][0] }}
+                                    </div>
+                                {% endif %}
+                                <div class="modal-user-name text-break">{{ user.name }}</div>
+                                <span class="badge-type {{ user.type_class }} d-inline-block">{{ user.type }}</span>
+                                <span class="badge-status {{ user.status_class }} d-inline-block ms-1">{{ user.status }}</span>
+                            </div>
+                            <div class="col-8">
+                                <div class="detail-label">Email</div>
+                                <div class="detail-value text-break">{{ user.email }}</div>
+
+                                <div class="detail-label">Telefone</div>
+                                <div class="detail-value">{{ user.phone }}</div>
+
+                                <div class="detail-label">Data de Nascimento</div>
+                                <div class="detail-value">{{ user.dob }}</div>
+
+                                <div class="detail-label">CPF</div>
+                                <div class="detail-value">{{ user.cpf }}</div>
+
+                                <div class="detail-label">Sexo</div>
+                                <div class="detail-value mb-0">{{ user.sex }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Dados da Conta -->
+                    <div class="col-lg-6">
+                        <div class="section-title">Dados da Conta</div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="detail-label">Data de Cadastro</div>
+                                <div class="detail-value">{{ user.register_date }}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-label">Último Login</div>
+                                <div class="detail-value">{{ user.last_login }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label">Convite Utilizado</div>
+                                <div class="detail-value" style="font-family: monospace; background: var(--phc-hover); padding: 4px 8px; border-radius: 6px; display: inline-block;">{{ user.invite_code }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label">Administrador Responsável</div>
+                                <div class="detail-value mb-0">{{ user.invited_by }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Rodapé do Modal -->
+            <div class="modal-footer modal-footer-custom">
+                <button type="button" class="btn-custom-secondary px-4" data-bs-dismiss="modal">Fechar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 {% endblock %}

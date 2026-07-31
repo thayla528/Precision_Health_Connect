@@ -1,0 +1,1161 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-white: #FFFFFF;
+        --phc-text: #1F2937;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+        --phc-bg: #FAFAFC;
+    }
+
+    .phc-calendar-page {
+        padding: 2rem 1.5rem;
+        background: var(--phc-bg);
+        min-height: 100vh;
+    }
+
+    .phc-page-header {
+        margin-bottom: 1.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .phc-page-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-page-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 2rem;
+    }
+
+    .phc-page-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.95rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    .phc-header-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .phc-btn {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.15s ease;
+        text-decoration: none;
+    }
+
+    .phc-btn:hover {
+        background: var(--phc-secondary);
+        color: white;
+    }
+
+    .phc-btn-outline {
+        background: var(--phc-white);
+        color: var(--phc-primary);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-btn-outline:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-btn .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    /* Card base */
+    .phc-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .phc-card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-card-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-card-title .material-symbols-rounded {
+        color: var(--phc-primary);
+    }
+
+    .phc-card-body {
+        padding: 1.5rem;
+    }
+
+    /* Navegação do calendário */
+    .phc-calendar-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-nav-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid var(--phc-border);
+        background: var(--phc-white);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .phc-nav-btn:hover {
+        background: var(--phc-light);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-month-label {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        min-width: 160px;
+        text-align: center;
+        text-transform: capitalize;
+    }
+
+    .phc-view-toggle {
+        display: inline-flex;
+        background: var(--phc-light);
+        border-radius: 8px;
+        padding: 0.2rem;
+    }
+
+    .phc-view-btn {
+        padding: 0.4rem 0.85rem;
+        border: none;
+        background: transparent;
+        color: var(--phc-muted);
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.2s ease;
+    }
+
+    .phc-view-btn.active {
+        background: var(--phc-white);
+        color: var(--phc-primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .phc-view-btn .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    /* Calendário */
+    .phc-calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.35rem;
+    }
+
+    .phc-weekday {
+        text-align: center;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--phc-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.6rem 0;
+    }
+
+    .phc-day {
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: var(--phc-white);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0.5rem 0.25rem;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+        min-height: 72px;
+    }
+
+    .phc-day:hover:not(.empty) {
+        background: var(--phc-light);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-day.empty {
+        background: transparent;
+        cursor: default;
+    }
+
+    .phc-day-number {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        line-height: 1;
+    }
+
+    .phc-day.today .phc-day-number {
+        background: var(--phc-primary);
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .phc-day.selected {
+        background: var(--phc-light);
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
+    }
+
+    .phc-day.has-events::after {
+        content: '';
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--phc-primary);
+    }
+
+    .phc-day.has-events.many::after {
+        width: 22px;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--phc-primary), var(--phc-secondary));
+    }
+
+    .phc-day.weekend .phc-day-number {
+        color: var(--phc-muted);
+    }
+
+    /* Legenda */
+    .phc-legend {
+        display: flex;
+        gap: 1.25rem;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+    }
+
+    .phc-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: var(--phc-muted);
+    }
+
+    .phc-legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .phc-legend-dot.today { background: var(--phc-primary); }
+    .phc-legend-dot.event { background: var(--phc-primary); width: 6px; height: 6px; }
+    .phc-legend-dot.selected { background: var(--phc-light); border: 1.5px solid var(--phc-primary); }
+
+    /* Resumo do dia */
+    .phc-day-summary {
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        padding: 1.25rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .phc-day-summary-date {
+        font-size: 0.82rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .phc-day-summary-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin: 0.15rem 0 0 0;
+    }
+
+    .phc-day-summary-stats {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .phc-stat-item {
+        text-align: center;
+    }
+
+    .phc-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .phc-stat-label {
+        font-size: 0.72rem;
+        opacity: 0.9;
+        margin-top: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Tabela de consultas */
+    .phc-appointments-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .phc-appointments-table thead th {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        font-size: 0.74rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.85rem 1rem;
+        border: none;
+        text-align: left;
+    }
+
+    .phc-appointments-table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--phc-border);
+        font-size: 0.9rem;
+        color: var(--phc-text);
+        vertical-align: middle;
+    }
+
+    .phc-appointments-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .phc-appointments-table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    .phc-appointments-table tbody tr:hover {
+        background: #FAFAFE;
+    }
+
+    .phc-time-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+        color: var(--phc-primary);
+        font-size: 0.95rem;
+    }
+
+    .phc-time-cell .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    .phc-patient-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-patient-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.82rem;
+        flex-shrink: 0;
+    }
+
+    .phc-patient-name {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-patient-id {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+    }
+
+    .phc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.76rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .phc-badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .phc-badge-confirmed {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    .phc-badge-pending {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .phc-badge-cancelled {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    /* Botões de ação */
+    .phc-actions-cell {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+    }
+
+    .phc-action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid var(--phc-border);
+        background: var(--phc-white);
+        color: var(--phc-muted);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .phc-action-btn .material-symbols-rounded {
+        font-size: 1.05rem;
+    }
+
+    .phc-action-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .phc-action-btn.confirm:hover {
+        background: #DCFCE7;
+        color: #166534;
+        border-color: #86EFAC;
+    }
+
+    .phc-action-btn.cancel:hover {
+        background: #FEE2E2;
+        color: #991B1B;
+        border-color: #FCA5A5;
+    }
+
+    .phc-action-btn.reschedule:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-action-btn.start {
+        background: var(--phc-primary);
+        color: white;
+        border-color: var(--phc-primary);
+        width: auto;
+        padding: 0 0.75rem;
+        gap: 0.3rem;
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+
+    .phc-action-btn.start:hover {
+        background: var(--phc-secondary);
+        border-color: var(--phc-secondary);
+        color: white;
+    }
+
+    /* Tooltip */
+    .phc-action-btn[data-tooltip]::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--phc-text);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .phc-action-btn[data-tooltip]:hover::before {
+        opacity: 1;
+    }
+
+    /* Próximos compromissos (sidebar) */
+    .phc-upcoming-item {
+        display: flex;
+        gap: 0.85rem;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--phc-border);
+    }
+
+    .phc-upcoming-item:last-child {
+        border-bottom: none;
+    }
+
+    .phc-upcoming-time {
+        min-width: 60px;
+        text-align: center;
+        padding: 0.5rem;
+        background: var(--phc-light);
+        border-radius: 8px;
+        color: var(--phc-primary);
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .phc-upcoming-time small {
+        display: block;
+        font-size: 0.68rem;
+        font-weight: 500;
+        opacity: 0.8;
+        margin-top: 0.15rem;
+    }
+
+    .phc-upcoming-info {
+        flex: 1;
+    }
+
+    .phc-upcoming-name {
+        font-weight: 500;
+        color: var(--phc-text);
+        font-size: 0.92rem;
+    }
+
+    .phc-upcoming-reason {
+        font-size: 0.8rem;
+        color: var(--phc-muted);
+        margin-top: 0.15rem;
+    }
+
+    @media (max-width: 992px) {
+        .phc-day { min-height: 60px; padding: 0.35rem 0.15rem; }
+        .phc-day-number { font-size: 0.82rem; }
+    }
+
+    @media (max-width: 768px) {
+        .phc-calendar-page { padding: 1.25rem 1rem; }
+        .phc-page-title { font-size: 1.5rem; }
+        .phc-card-body { padding: 1rem; }
+        .phc-day { min-height: 48px; }
+        .phc-day.has-events::after { bottom: 5px; width: 4px; height: 4px; }
+        .phc-day.has-events.many::after { width: 14px; }
+        .phc-appointments-table { font-size: 0.82rem; }
+        .phc-appointments-table thead th,
+        .phc-appointments-table tbody td { padding: 0.75rem 0.5rem; }
+        .phc-patient-avatar { width: 32px; height: 32px; font-size: 0.72rem; }
+        .phc-action-btn.start { padding: 0 0.5rem; font-size: 0.72rem; }
+    }
+</style>
+
+<div class="phc-calendar-page">
+    <!-- Cabeçalho -->
+    <div class="phc-page-header">
+        <div>
+            <h1 class="phc-page-title">
+                <span class="material-symbols-rounded">calendar_month</span>
+                Agenda Médica
+            </h1>
+            <p class="phc-page-subtitle">Organize seus atendimentos e acompanhe sua rotina de consultas.</p>
+        </div>
+        <div class="phc-header-actions">
+            <button class="phc-btn phc-btn-outline">
+                <span class="material-symbols-rounded">add</span>
+                Nova Consulta
+            </button>
+            <button class="phc-btn">
+                <span class="material-symbols-rounded">event_available</span>
+                Agendar Atendimento
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Calendário -->
+        <div class="col-12 col-lg-7 col-xl-8">
+            <div class="phc-card">
+                <div class="phc-card-header">
+                    <div class="phc-calendar-nav">
+                        <button class="phc-nav-btn" title="Mês anterior">
+                            <span class="material-symbols-rounded">chevron_left</span>
+                        </button>
+                        <div class="phc-month-label">Julho 2026</div>
+                        <button class="phc-nav-btn" title="Próximo mês">
+                            <span class="material-symbols-rounded">chevron_right</span>
+                        </button>
+                        <button class="phc-nav-btn" title="Hoje" style="margin-left: 0.25rem; width: auto; padding: 0 0.75rem; font-size: 0.82rem; font-weight: 500;">
+                            Hoje
+                        </button>
+                    </div>
+                    <div class="phc-view-toggle">
+                        <button class="phc-view-btn active">
+                            <span class="material-symbols-rounded">calendar_view_month</span>
+                            Mês
+                        </button>
+                        <button class="phc-view-btn">
+                            <span class="material-symbols-rounded">view_week</span>
+                            Semana
+                        </button>
+                        <button class="phc-view-btn">
+                            <span class="material-symbols-rounded">view_day</span>
+                            Dia
+                        </button>
+                    </div>
+                </div>
+                <div class="phc-card-body">
+                    <div class="phc-calendar-grid">
+                        <!-- Cabeçalho dos dias da semana -->
+                        <div class="phc-weekday">Dom</div>
+                        <div class="phc-weekday">Seg</div>
+                        <div class="phc-weekday">Ter</div>
+                        <div class="phc-weekday">Qua</div>
+                        <div class="phc-weekday">Qui</div>
+                        <div class="phc-weekday">Sex</div>
+                        <div class="phc-weekday">Sáb</div>
+
+                        <!-- Julho 2026 começa na quarta-feira -->
+                        <!-- Semana 1 -->
+                        <div class="phc-day empty"></div>
+                        <div class="phc-day empty"></div>
+                        <div class="phc-day has-events"><span class="phc-day-number">1</span></div>
+                        <div class="phc-day"><span class="phc-day-number">2</span></div>
+                        <div class="phc-day has-events many"><span class="phc-day-number">3</span></div>
+                        <div class="phc-day"><span class="phc-day-number">4</span></div>
+                        <div class="phc-day weekend"><span class="phc-day-number">5</span></div>
+
+                        <!-- Semana 2 -->
+                        <div class="phc-day weekend"><span class="phc-day-number">6</span></div>
+                        <div class="phc-day has-events"><span class="phc-day-number">7</span></div>
+                        <div class="phc-day"><span class="phc-day-number">8</span></div>
+                        <div class="phc-day has-events"><span class="phc-day-number">9</span></div>
+                        <div class="phc-day has-events many"><span class="phc-day-number">10</span></div>
+                        <div class="phc-day"><span class="phc-day-number">11</span></div>
+                        <div class="phc-day weekend"><span class="phc-day-number">12</span></div>
+
+                        <!-- Semana 3 -->
+                        <div class="phc-day weekend"><span class="phc-day-number">13</span></div>
+                        <div class="phc-day has-events many"><span class="phc-day-number">14</span></div>
+                        <div class="phc-day"><span class="phc-day-number">15</span></div>
+                        <div class="phc-day has-events"><span class="phc-day-number">16</span></div>
+                        <div class="phc-day has-events many"><span class="phc-day-number">17</span></div>
+                        <div class="phc-day"><span class="phc-day-number">18</span></div>
+                        <div class="phc-day weekend"><span class="phc-day-number">19</span></div>
+
+                        <!-- Semana 4 -->
+                        <div class="phc-day weekend"><span class="phc-day-number">20</span></div>
+                        <div class="phc-day has-events many"><span class="phc-day-number">21</span></div>
+                        <div class="phc-day"><span class="phc-day-number">22</span></div>
+                        <div class="phc-day has-events"><span class="phc-day-number">23</span></div>
+                        <div class="phc-day has-events many"><span class="phc-day-number">24</span></div>
+                        <div class="phc-day"><span class="phc-day-number">25</span></div>
+                        <div class="phc-day weekend"><span class="phc-day-number">26</span></div>
+
+                        <!-- Semana 5 -->
+                        <div class="phc-day weekend"><span class="phc-day-number">27</span></div>
+                        <div class="phc-day has-events many"><span class="phc-day-number">28</span></div>
+                        <div class="phc-day has-events"><span class="phc-day-number">29</span></div>
+                        <div class="phc-day has-events many"><span class="phc-day-number">30</span></div>
+                        <div class="phc-day today selected has-events many"><span class="phc-day-number">31</span></div>
+                        <div class="phc-day empty"></div>
+                        <div class="phc-day empty"></div>
+                    </div>
+                </div>
+                <div class="phc-legend">
+                    <div class="phc-legend-item">
+                        <span class="phc-legend-dot today"></span>
+                        Hoje
+                    </div>
+                    <div class="phc-legend-item">
+                        <span class="phc-legend-dot selected"></span>
+                        Selecionado
+                    </div>
+                    <div class="phc-legend-item">
+                        <span class="phc-legend-dot event"></span>
+                        Com consultas
+                    </div>
+                    <div class="phc-legend-item">
+                        <span class="material-symbols-rounded" style="font-size: 1rem; color: var(--phc-primary);">radio_button_checked</span>
+                        Dia cheio
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agenda do dia -->
+        <div class="col-12 col-lg-5 col-xl-4">
+            <!-- Resumo do dia -->
+            <div class="phc-day-summary">
+                <div>
+                    <div class="phc-day-summary-date">Sexta-feira</div>
+                    <h2 class="phc-day-summary-title">31 de Julho</h2>
+                </div>
+                <div class="phc-day-summary-stats">
+                    <div class="phc-stat-item">
+                        <div class="phc-stat-value">12</div>
+                        <div class="phc-stat-label">Consultas</div>
+                    </div>
+                    <div class="phc-stat-item">
+                        <div class="phc-stat-value">9</div>
+                        <div class="phc-stat-label">Confirmadas</div>
+                    </div>
+                    <div class="phc-stat-item">
+                        <div class="phc-stat-value">3</div>
+                        <div class="phc-stat-label">Pendentes</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Próximos compromissos -->
+            <div class="phc-card">
+                <div class="phc-card-header">
+                    <h3 class="phc-card-title">
+                        <span class="material-symbols-rounded">event_note</span>
+                        Próximos compromissos
+                    </h3>
+                    <a href="#" class="phc-btn phc-btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                        Ver todos
+                    </a>
+                </div>
+                <div class="phc-card-body" style="padding: 0.75rem 1.5rem;">
+                    <div class="phc-upcoming-item">
+                        <div class="phc-upcoming-time">
+                            14:00
+                            <small>45 min</small>
+                        </div>
+                        <div class="phc-upcoming-info">
+                            <div class="phc-upcoming-name">Renata Almeida</div>
+                            <div class="phc-upcoming-reason">Acompanhamento cardiológico</div>
+                        </div>
+                    </div>
+                    <div class="phc-upcoming-item">
+                        <div class="phc-upcoming-time">
+                            15:30
+                            <small>30 min</small>
+                        </div>
+                        <div class="phc-upcoming-info">
+                            <div class="phc-upcoming-name">Eduardo Nunes</div>
+                            <div class="phc-upcoming-reason">Retorno pós-cirúrgico</div>
+                        </div>
+                    </div>
+                    <div class="phc-upcoming-item">
+                        <div class="phc-upcoming-time">
+                            17:00
+                            <small>40 min</small>
+                        </div>
+                        <div class="phc-upcoming-info">
+                            <div class="phc-upcoming-name">Camila Torres</div>
+                            <div class="phc-upcoming-reason">Primeira consulta</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de consultas do dia -->
+    <div class="phc-card mt-3">
+        <div class="phc-card-header">
+            <h3 class="phc-card-title">
+                <span class="material-symbols-rounded">assignment_ind</span>
+                Consultas do dia — 31 de Julho
+            </h3>
+            <div class="d-flex gap-2">
+                <button class="phc-btn phc-btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">
+                    <span class="material-symbols-rounded" style="font-size: 1rem;">download</span>
+                    Exportar
+                </button>
+                <button class="phc-btn" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">
+                    <span class="material-symbols-rounded" style="font-size: 1rem;">add</span>
+                    Adicionar
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="phc-appointments-table">
+                <thead>
+                    <tr>
+                        <th style="width: 110px;">Horário</th>
+                        <th>Paciente</th>
+                        <th>Motivo</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                08:00
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">JS</div>
+                                <div>
+                                    <div class="phc-patient-name">João Silva</div>
+                                    <div class="phc-patient-id">ID #10248</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Consulta de rotina</td>
+                        <td>
+                            <span class="phc-badge phc-badge-confirmed">
+                                <span class="phc-badge-dot"></span>
+                                Confirmada
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
+                                    <span class="material-symbols-rounded">check</span>
+                                </button>
+                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
+                                    <span class="material-symbols-rounded">event_repeat</span>
+                                </button>
+                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
+                                    <span class="material-symbols-rounded">close</span>
+                                </button>
+                                <button class="phc-action-btn start">
+                                    <span class="material-symbols-rounded">play_arrow</span>
+                                    Iniciar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                09:30
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">MS</div>
+                                <div>
+                                    <div class="phc-patient-name">Maria Souza</div>
+                                    <div class="phc-patient-id">ID #10312</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Retorno</td>
+                        <td>
+                            <span class="phc-badge phc-badge-pending">
+                                <span class="phc-badge-dot"></span>
+                                Aguardando
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
+                                    <span class="material-symbols-rounded">check</span>
+                                </button>
+                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
+                                    <span class="material-symbols-rounded">event_repeat</span>
+                                </button>
+                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
+                                    <span class="material-symbols-rounded">close</span>
+                                </button>
+                                <button class="phc-action-btn start">
+                                    <span class="material-symbols-rounded">play_arrow</span>
+                                    Iniciar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                10:30
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">CO</div>
+                                <div>
+                                    <div class="phc-patient-name">Carlos Oliveira</div>
+                                    <div class="phc-patient-id">ID #10187</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Avaliação</td>
+                        <td>
+                            <span class="phc-badge phc-badge-confirmed">
+                                <span class="phc-badge-dot"></span>
+                                Confirmada
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
+                                    <span class="material-symbols-rounded">check</span>
+                                </button>
+                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
+                                    <span class="material-symbols-rounded">event_repeat</span>
+                                </button>
+                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
+                                    <span class="material-symbols-rounded">close</span>
+                                </button>
+                                <button class="phc-action-btn start">
+                                    <span class="material-symbols-rounded">play_arrow</span>
+                                    Iniciar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                11:45
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">PF</div>
+                                <div>
+                                    <div class="phc-patient-name">Patrícia Ferreira</div>
+                                    <div class="phc-patient-id">ID #10421</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Exames laboratoriais</td>
+                        <td>
+                            <span class="phc-badge phc-badge-confirmed">
+                                <span class="phc-badge-dot"></span>
+                                Confirmada
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
+                                    <span class="material-symbols-rounded">check</span>
+                                </button>
+                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
+                                    <span class="material-symbols-rounded">event_repeat</span>
+                                </button>
+                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
+                                    <span class="material-symbols-rounded">close</span>
+                                </button>
+                                <button class="phc-action-btn start">
+                                    <span class="material-symbols-rounded">play_arrow</span>
+                                    Iniciar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                14:00
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">RA</div>
+                                <div>
+                                    <div class="phc-patient-name">Renata Almeida</div>
+                                    <div class="phc-patient-id">ID #10509</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Acompanhamento cardiológico</td>
+                        <td>
+                            <span class="phc-badge phc-badge-pending">
+                                <span class="phc-badge-dot"></span>
+                                Aguardando
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
+                                    <span class="material-symbols-rounded">check</span>
+                                </button>
+                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
+                                    <span class="material-symbols-rounded">event_repeat</span>
+                                </button>
+                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
+                                    <span class="material-symbols-rounded">close</span>
+                                </button>
+                                <button class="phc-action-btn start">
+                                    <span class="material-symbols-rounded">play_arrow</span>
+                                    Iniciar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="phc-time-cell">
+                                <span class="material-symbols-rounded">schedule</span>
+                                15:30
+                            </div>
+                        </td>
+                        <td>
+                            <div class="phc-patient-cell">
+                                <div class="phc-patient-avatar">EN</div>
+                                <div>
+                                    <div class="phc-patient-name">Eduardo Nunes</div>
+                                    <div class="phc-patient-id">ID #10287</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Retorno pós-cirúrgico</td>
+                        <td>
+                            <span class="phc-badge phc-badge-confirmed">
+                                <span class="phc-badge-dot"></span>
+                                Confirmada
+                            </span>
+                        </td>
+                        <td>
+                            <div class="phc-actions-cell justify-content-end">
+                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
+                                    <span class="material-symbols-rounded">check</span>
+                                </button>
+                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
+                                    <span class="material-symbols-rounded">event_repeat</span>
+                                </button>
+                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
+                                    <span class="material-symbols-rounded">close</span>
+                                </button>
+                                <button class="phc-action-btn start">
+                                    <span class="material-symbols-rounded">play_arrow</span>
+                                    Iniciar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Navegação do calendário (visual)
+    document.querySelectorAll('.phc-nav-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            this.style.transform = 'scale(0.92)';
+            setTimeout(() => this.style.transform = '', 150);
+        });
+    });
+
+    // Toggle de visualização
+    document.querySelectorAll('.phc-view-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.phc-view-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Seleção de dia no calendário
+    document.querySelectorAll('.phc-day:not(.empty)').forEach(day => {
+        day.addEventListener('click', function() {
+            document.querySelectorAll('.phc-day').forEach(d => d.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    // Ações dos botões (feedback visual)
+    document.querySelectorAll('.phc-action-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const originalBg = this.style.background;
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+    });
+</script>
+
+{% endblock %}

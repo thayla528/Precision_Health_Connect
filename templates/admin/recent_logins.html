@@ -1,0 +1,954 @@
+{% extends "base.html" %}
+
+{% block title %}
+Últimos Logins - Precision Health Connect
+{% endblock %}
+
+{% block content %}
+<style>
+    .logins-page {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e0f2fe;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        color: #0c4a6e;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-top: 0.5rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #0c4a6e;
+        border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+        background: #f1f5f9;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e2e8f0;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .stat-icon.blue { background: #dbeafe; color: #1e40af; }
+    .stat-icon.green { background: #dcfce7; color: #166534; }
+    .stat-icon.orange { background: #fed7aa; color: #9a3412; }
+    .stat-icon.red { background: #fee2e2; color: #991b1b; }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .stat-change {
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .stat-change.positive { color: #16a34a; }
+    .stat-change.negative { color: #dc2626; }
+
+    .filters-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e2e8f0;
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .filter-group label {
+        display: block;
+        font-size: 0.85rem;
+        color: #475569;
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+    }
+
+    .filter-input,
+    .filter-select {
+        width: 100%;
+        padding: 0.6rem 0.9rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        background: white;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .filter-input:focus,
+    .filter-select:focus {
+        outline: none;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e2e8f0;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .results-count {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #f8fafc;
+    }
+
+    th {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    td {
+        padding: 1rem 1.5rem;
+        font-size: 0.9rem;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-name {
+        font-weight: 500;
+        color: #0f172a;
+    }
+
+    .user-email {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+
+    .status-badge.success {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-badge.failed {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-badge.pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .device-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .device-browser {
+        font-weight: 500;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .device-os {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .location-info {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #475569;
+    }
+
+    .ip-address {
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        color: #475569;
+        background: #f1f5f9;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+    }
+
+    .datetime {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .datetime-date {
+        font-weight: 500;
+        color: #0f172a;
+    }
+
+    .datetime-time {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .pagination-info {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 0.4rem;
+    }
+
+    .page-btn {
+        min-width: 36px;
+        height: 36px;
+        border: 1px solid #cbd5e1;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+    }
+
+    .page-btn:hover:not(:disabled):not(.active) {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+    }
+
+    .page-btn.active {
+        background: #0ea5e9;
+        color: white;
+        border-color: #0ea5e9;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 1024px) {
+        .filters-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .logins-page { padding: 1rem; }
+        .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        .filters-grid { grid-template-columns: 1fr; }
+        .table-container { overflow-x: auto; }
+        table { min-width: 900px; }
+    }
+</style>
+
+<div class="logins-page">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">🔐 Últimos Logins</h1>
+            <p class="page-subtitle">Monitoramento de acessos ao sistema Precision Health Connect</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="window.location.reload()">
+                🔄 Atualizar
+            </button>
+            <button class="btn btn-primary">
+                📥 Exportar CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue">📊</div>
+            <div class="stat-label">Logins Hoje</div>
+            <div class="stat-value">1.284</div>
+            <div class="stat-change positive">↑ 12% vs. ontem</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">✅</div>
+            <div class="stat-label">Logins Bem-Sucedidos</div>
+            <div class="stat-value">1.247</div>
+            <div class="stat-change positive">↑ 8% vs. ontem</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon red">⚠️</div>
+            <div class="stat-label">Tentativas Falhas</div>
+            <div class="stat-value">37</div>
+            <div class="stat-change negative">↓ 3% vs. ontem</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange">👥</div>
+            <div class="stat-label">Usuários Ativos</div>
+            <div class="stat-value">486</div>
+            <div class="stat-change positive">↑ 5% vs. ontem</div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-section">
+        <div class="filters-grid">
+            <div class="filter-group">
+                <label for="search-user">Buscar Usuário</label>
+                <input type="text" id="search-user" class="filter-input" placeholder="Nome, e-mail ou CPF...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-status">Status</label>
+                <select id="filter-status" class="filter-select">
+                    <option value="all">Todos</option>
+                    <option value="success">Bem-sucedido</option>
+                    <option value="failed">Falhou</option>
+                    <option value="pending">Pendente</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-date">Período</label>
+                <select id="filter-date" class="filter-select">
+                    <option value="today">Hoje</option>
+                    <option value="week">Últimos 7 dias</option>
+                    <option value="month">Últimos 30 dias</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-role">Tipo de Usuário</label>
+                <select id="filter-role" class="filter-select">
+                    <option value="all">Todos</option>
+                    <option value="doctor">Médicos</option>
+                    <option value="patient">Pacientes</option>
+                    <option value="admin">Administradores</option>
+                    <option value="staff">Equipe</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" style="height: 40px;">
+                🔍 Filtrar
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabela de Logins -->
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">Histórico de Acessos</div>
+            <div class="results-count">Exibindo 10 de 1.284 registros</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Data/Hora</th>
+                    <th>Dispositivo</th>
+                    <th>IP</th>
+                    <th>Localização</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar">MS</div>
+                            <div class="user-info">
+                                <span class="user-name">Dra. Maria Silva</span>
+                                <span class="user-email">maria.silva@precision.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">14:32:18</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">💻 Chrome 116</span>
+                            <span class="device-os">Windows 11</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">192.168.1.45</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 São Paulo, SP
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge success">
+                            <span class="status-dot"></span>
+                            Sucesso
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">JO</div>
+                            <div class="user-info">
+                                <span class="user-name">João Oliveira</span>
+                                <span class="user-email">joao.oliveira@email.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">14:28:45</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">📱 Safari Mobile</span>
+                            <span class="device-os">iOS 17.5</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">177.22.156.89</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Rio de Janeiro, RJ
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge success">
+                            <span class="status-dot"></span>
+                            Sucesso
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">AC</div>
+                            <div class="user-info">
+                                <span class="user-name">Ana Costa</span>
+                                <span class="user-email">ana.costa@precision.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">14:15:22</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">💻 Firefox 118</span>
+                            <span class="device-os">macOS Sonoma</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">200.155.34.12</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Belo Horizonte, MG
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge failed">
+                            <span class="status-dot"></span>
+                            Falhou
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">CR</div>
+                            <div class="user-info">
+                                <span class="user-name">Dr. Carlos Ribeiro</span>
+                                <span class="user-email">carlos.ribeiro@precision.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">14:02:56</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">💻 Edge 116</span>
+                            <span class="device-os">Windows 10</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">189.44.78.201</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Curitiba, PR
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge success">
+                            <span class="status-dot"></span>
+                            Sucesso
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #ec4899, #db2777);">PF</div>
+                            <div class="user-info">
+                                <span class="user-name">Patrícia Ferreira</span>
+                                <span class="user-email">patricia.ferreira@email.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">13:48:31</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">📱 Chrome Mobile</span>
+                            <span class="device-os">Android 14</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">179.128.45.67</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Salvador, BA
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge success">
+                            <span class="status-dot"></span>
+                            Sucesso
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">RM</div>
+                            <div class="user-info">
+                                <span class="user-name">Roberto Mendes</span>
+                                <span class="user-email">roberto.mendes@precision.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">13:35:12</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">💻 Chrome 116</span>
+                            <span class="device-os">Ubuntu 22.04</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">201.17.89.145</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Brasília, DF
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge pending">
+                            <span class="status-dot"></span>
+                            2FA Pendente
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #ef4444, #dc2626);">LS</div>
+                            <div class="user-info">
+                                <span class="user-name">Luciana Santos</span>
+                                <span class="user-email">luciana.santos@email.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">13:22:47</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">💻 Safari 17</span>
+                            <span class="device-os">macOS Ventura</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">186.215.33.98</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Porto Alegre, RS
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge success">
+                            <span class="status-dot"></span>
+                            Sucesso
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">FA</div>
+                            <div class="user-info">
+                                <span class="user-name">Fernando Almeida</span>
+                                <span class="user-email">fernando.almeida@precision.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">13:10:03</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">💻 Chrome 116</span>
+                            <span class="device-os">Windows 11</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">200.198.56.234</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Recife, PE
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge failed">
+                            <span class="status-dot"></span>
+                            Falhou
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #f97316, #ea580c);">BM</div>
+                            <div class="user-info">
+                                <span class="user-name">Beatriz Martins</span>
+                                <span class="user-email">beatriz.martins@email.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">12:58:29</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">📱 Safari Mobile</span>
+                            <span class="device-os">iOS 17.5</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">177.95.123.45</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Fortaleza, CE
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge success">
+                            <span class="status-dot"></span>
+                            Sucesso
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">GP</div>
+                            <div class="user-info">
+                                <span class="user-name">Dr. Gustavo Pereira</span>
+                                <span class="user-email">gustavo.pereira@precision.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime">
+                            <span class="datetime-date">31/07/2026</span>
+                            <span class="datetime-time">12:45:16</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="device-info">
+                            <span class="device-browser">💻 Firefox 118</span>
+                            <span class="device-os">Windows 11</span>
+                        </div>
+                    </td>
+                    <td><span class="ip-address">189.76.142.88</span></td>
+                    <td>
+                        <div class="location-info">
+                            📍 Campinas, SP
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge success">
+                            <span class="status-dot"></span>
+                            Sucesso
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Paginação -->
+        <div class="pagination">
+            <div class="pagination-info">
+                Mostrando <strong>1-10</strong> de <strong>1.284</strong> registros
+            </div>
+            <div class="pagination-controls">
+                <button class="page-btn" disabled>‹</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">...</button>
+                <button class="page-btn">129</button>
+                <button class="page-btn">›</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Filtro de busca em tempo real
+    document.getElementById('search-user').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const userName = row.querySelector('.user-name').textContent.toLowerCase();
+            const userEmail = row.querySelector('.user-email').textContent.toLowerCase();
+
+            if (userName.includes(searchTerm) || userEmail.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Filtro por status
+    document.getElementById('filter-status').addEventListener('change', function(e) {
+        const status = e.target.value;
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const badge = row.querySelector('.status-badge');
+            if (status === 'all') {
+                row.style.display = '';
+            } else if (status === 'success' && badge.classList.contains('success')) {
+                row.style.display = '';
+            } else if (status === 'failed' && badge.classList.contains('failed')) {
+                row.style.display = '';
+            } else if (status === 'pending' && badge.classList.contains('pending')) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Paginação
+    document.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!this.disabled && !this.textContent.includes('...')) {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                if (!isNaN(this.textContent)) {
+                    this.classList.add('active');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

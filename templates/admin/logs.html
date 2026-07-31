@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+
+{% block title %}
+Logs do Sistema | Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<!-- Importação do Material Symbols Rounded -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-bg: #FFFFFF;
+        --phc-hover: #F5F3FF;
+        --phc-text-main: #2D2D2D;
+        --phc-text-sec: #6B7280;
+        --phc-border: #DDD6FE;
+        --phc-btn-hover: #7C3AED;
+    }
+
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+        color: var(--phc-text-main);
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .page-subtitle {
+        color: var(--phc-text-sec);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .card-custom {
+        background-color: var(--phc-bg);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(139, 92, 246, 0.06);
+        padding: 1.5rem;
+    }
+
+    .form-control-custom, .form-select-custom {
+        border: 1px solid var(--phc-border);
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        color: var(--phc-text-main);
+        background-color: var(--phc-bg);
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control-custom:focus, .form-select-custom:focus {
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        background-color: var(--phc-bg);
+        color: var(--phc-text-main);
+    }
+
+    .btn-custom-primary {
+        background-color: var(--phc-primary);
+        border: none;
+        color: white;
+        border-radius: 12px;
+        padding: 0.65rem 1.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-custom-primary:hover {
+        background-color: var(--phc-btn-hover);
+        color: white;
+    }
+
+    .btn-custom-secondary {
+        background-color: var(--phc-bg);
+        border: 1.5px solid var(--phc-secondary);
+        color: var(--phc-primary);
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 0.65rem 1.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-custom-secondary:hover {
+        background-color: var(--phc-hover);
+        color: var(--phc-btn-hover);
+        border-color: var(--phc-btn-hover);
+    }
+
+    .btn-action-details {
+        background-color: var(--phc-light);
+        color: var(--phc-primary);
+        border: none;
+        border-radius: 10px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-action-details:hover {
+        background-color: var(--phc-primary);
+        color: white;
+    }
+
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 0;
+    }
+
+    .table-custom thead th {
+        background-color: var(--phc-hover);
+        color: var(--phc-text-sec);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border-bottom: 1px solid var(--phc-border);
+        white-space: nowrap;
+    }
+
+    .table-custom thead th:first-child { border-top-left-radius: 12px; }
+    .table-custom thead th:last-child { border-top-right-radius: 12px; }
+
+    .table-custom tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #F3F4F6;
+        vertical-align: middle;
+        color: var(--phc-text-main);
+        font-size: 0.95rem;
+    }
+
+    .table-custom tbody tr:last-child td { border-bottom: none; }
+    .table-custom tbody tr { transition: background-color 0.2s ease; }
+    .table-custom tbody tr:hover { background-color: var(--phc-hover); }
+
+    /* Badges de Resultado */
+    .badge-result {
+        padding: 0.35em 0.8em;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .badge-result .material-symbols-rounded {
+        font-size: 14px;
+    }
+
+    .badge-success { background-color: #DCFCE7; color: #166534; }
+    .badge-error { background-color: #FEE2E2; color: #991B1B; }
+    .badge-warning { background-color: #FEF3C7; color: #92400E; }
+
+    /* Badge de Ação */
+    .badge-action {
+        padding: 0.35em 0.8em;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background-color: var(--phc-light);
+        color: var(--phc-primary);
+    }
+
+    .badge-action .material-symbols-rounded {
+        font-size: 14px;
+    }
+
+    .pagination-custom .page-item .page-link {
+        border: 1px solid var(--phc-border);
+        color: var(--phc-text-sec);
+        background-color: var(--phc-bg);
+        margin: 0 4px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .pagination-custom .page-item .page-link:hover {
+        background-color: var(--phc-hover);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .pagination-custom .page-item.active .page-link {
+        background-color: var(--phc-primary);
+        border-color: var(--phc-primary);
+        color: white;
+    }
+
+    .pagination-custom .page-item.disabled .page-link {
+        background-color: var(--phc-bg);
+        color: #D1D5DB;
+        border-color: #F3F4F6;
+    }
+
+    .material-symbols-rounded {
+        font-size: 20px;
+        vertical-align: middle;
+    }
+
+    /* Modal Styling */
+    .modal-content-custom {
+        background-color: var(--phc-bg);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(139, 92, 246, 0.15);
+    }
+
+    .modal-xl-custom {
+        max-width: 1100px;
+        width: 95%;
+    }
+
+    .modal-header-custom {
+        border-bottom: 1px solid var(--phc-border);
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body-custom {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-footer-custom {
+        border-top: 1px solid var(--phc-border);
+        padding: 1rem 1.5rem;
+    }
+
+    .section-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--phc-primary);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--phc-light);
+    }
+
+    .detail-label {
+        font-size: 0.75rem;
+        color: var(--phc-text-sec);
+        font-weight: 600;
+        margin-bottom: 0.15rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .detail-value {
+        font-size: 0.95rem;
+        color: var(--phc-text-main);
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-box {
+        background-color: var(--phc-hover);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--phc-border);
+    }
+
+    .description-box {
+        background-color: var(--phc-hover);
+        border-radius: 10px;
+        padding: 1rem;
+        border-left: 3px solid var(--phc-primary);
+        color: var(--phc-text-main);
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    
+    <!-- Cabeçalho -->
+    <div class="page-header">
+        <h1 class="page-title">Logs do Sistema</h1>
+        <p class="page-subtitle">Acompanhe todas as ações administrativas realizadas dentro da plataforma.</p>
+    </div>
+
+    <!-- Card Principal -->
+    <div class="card-custom">
+        
+        <!-- Filtros -->
+        <form class="row g-3 mb-4">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="input-group">
+                    <input type="text" class="form-control-custom" placeholder="Pesquisar por administrador ou usuário...">
+                    <button class="btn-custom-primary" type="button" style="border-radius: 0 12px 12px 0;">
+                        <span class="material-symbols-rounded">search</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="col-12 col-md-6 col-lg-3">
+                <select class="form-select-custom">
+                    <option selected>Administrador</option>
+                    <option>Todos</option>
+                    <option>Carlos Henrique Oliveira</option>
+                    <option>Fernanda Alves</option>
+                    <option>Gabriel Costa</option>
+                    <option>Amanda Ribeiro</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <select class="form-select-custom">
+                    <option selected>Tipo de ação</option>
+                    <option>Todas</option>
+                    <option>Login</option>
+                    <option>Logout</option>
+                    <option>Criação de Convite</option>
+                    <option>Cancelamento de Convite</option>
+                    <option>Aceite de Convite</option>
+                    <option>Cadastro de Usuário</option>
+                    <option>Atualização de Usuário</option>
+                    <option>Desativação de Usuário</option>
+                    <option>Ativação de Usuário</option>
+                    <option>Cadastro de Administrador</option>
+                    <option>Alteração de Senha</option>
+                    <option>Alteração de Foto</option>
+                </select>
+            </div>
+            
+            <div class="col-12 col-md-6 col-lg-2">
+                <select class="form-select-custom">
+                    <option selected>Período</option>
+                    <option>Hoje</option>
+                    <option>Últimos 7 dias</option>
+                    <option>Últimos 30 dias</option>
+                    <option>Todos</option>
+                </select>
+            </div>
+        </form>
+
+        <!-- Tabela -->
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Administrador</th>
+                        <th>Ação</th>
+                        <th>Usuário Afetado</th>
+                        <th>Resultado</th>
+                        <th class="text-end">Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set logs = [
+                        {"date": "31/07/2026", "time": "09:42", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Criação de Convite", "action_icon": "mail", "affected_user": "Roberto Silva", "affected_email": "roberto.silva@clinica.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Novo convite enviado para o profissional Roberto Silva (CRM SP-123456) com validade de 72 horas. Código do convite: PREC-2026-RS.", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
+                        {"date": "31/07/2026", "time": "09:18", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Aceite de Convite", "action_icon": "task_alt", "affected_user": "Mariana Souza Lima", "affected_email": "mariana.lima@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Convite aceito pela profissional Mariana Souza Lima. Conta ativada com sucesso e perfil configurado como Profissional de Saúde.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"},
+                        {"date": "31/07/2026", "time": "08:55", "admin": "Gabriel Costa", "admin_email": "gabriel.costa@precisionhealth.com", "action": "Alteração de Senha", "action_icon": "lock_reset", "affected_user": "Lucas Almeida Ferreira", "affected_email": "lucas.ferreira@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Senha do usuário Lucas Almeida Ferreira alterada com sucesso. Notificação enviada ao e-mail cadastrado.", "ip": "177.89.14.220", "browser": "Google Chrome", "os": "Android 14"},
+                        {"date": "31/07/2026", "time": "08:30", "admin": "Amanda Ribeiro", "admin_email": "amanda.ribeiro@precisionhealth.com", "action": "Atualização de Usuário", "action_icon": "edit", "affected_user": "Pedro Henrique Costa", "affected_email": "pedro.costa@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Dados cadastrais do paciente Pedro Henrique Costa atualizados: telefone e endereço modificados.", "ip": "192.168.1.201", "browser": "Google Chrome", "os": "macOS Sonoma"},
+                        {"date": "31/07/2026", "time": "08:05", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Desativação de Usuário", "action_icon": "person_off", "affected_user": "Juliana Rocha Mendes", "affected_email": "juliana.mendes@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Conta do paciente Juliana Rocha Mendes desativada conforme solicitação por inatividade superior a 90 dias.", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
+                        {"date": "31/07/2026", "time": "07:42", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Cadastro de Usuário", "action_icon": "person_add", "affected_user": "Ana Beatriz Martins", "affected_email": "ana.martins@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Novo profissional cadastrado: Ana Beatriz Martins (CRM MG-789012). Perfil configurado como Profissional de Saúde.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"},
+                        {"date": "30/07/2026", "time": "18:20", "admin": "Gabriel Costa", "admin_email": "gabriel.costa@precisionhealth.com", "action": "Login", "action_icon": "login", "affected_user": "Gabriel Costa", "affected_email": "gabriel.costa@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Login realizado com sucesso no sistema. Autenticação de dois fatores confirmada.", "ip": "177.89.14.220", "browser": "Google Chrome", "os": "Android 14"},
+                        {"date": "30/07/2026", "time": "17:45", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Cancelamento de Convite", "action_icon": "cancel", "affected_user": "Bruno Nascimento", "affected_email": "bruno.nascimento@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Convite PREC-2026-BN cancelado antes do aceite. Código invalidado e notificação enviada ao destinatário.", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
+                        {"date": "30/07/2026", "time": "16:30", "admin": "Amanda Ribeiro", "admin_email": "amanda.ribeiro@precisionhealth.com", "action": "Cadastro de Administrador", "action_icon": "admin_panel_settings", "affected_user": "Patrícia Gomes", "affected_email": "patricia.gomes@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Novo administrador cadastrado: Patrícia Gomes. Permissões de nível Administrador atribuídas.", "ip": "192.168.1.201", "browser": "Google Chrome", "os": "macOS Sonoma"},
+                        {"date": "30/07/2026", "time": "15:12", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Alteração de Foto", "action_icon": "photo_camera", "affected_user": "Fernanda Alves", "affected_email": "fernanda.alves@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Foto de perfil do administrador Fernanda Alves atualizada com sucesso. Arquivo processado e otimizado.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"},
+                        {"date": "30/07/2026", "time": "14:05", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Ativação de Usuário", "action_icon": "person", "affected_user": "Ricardo Santos", "affected_email": "ricardo.santos@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Conta do profissional Ricardo Santos reativada após solicitação formal por e-mail.", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
+                        {"date": "30/07/2026", "time": "11:30", "admin": "Gabriel Costa", "admin_email": "gabriel.costa@precisionhealth.com", "action": "Criação de Convite", "action_icon": "mail", "affected_user": "Camila Dias", "affected_email": "camila.dias@email.com", "result": "Aviso", "result_class": "badge-warning", "result_icon": "warning", "description": "Convite enviado, porém o e-mail do destinatário retornou como pendente de verificação. Recomenda-se validar o endereço.", "ip": "177.89.14.220", "browser": "Google Chrome", "os": "Android 14"},
+                        {"date": "30/07/2026", "time": "10:15", "admin": "Amanda Ribeiro", "admin_email": "amanda.ribeiro@precisionhealth.com", "action": "Atualização de Usuário", "action_icon": "edit", "affected_user": "João Henrique", "affected_email": "joao.henrique@email.com", "result": "Erro", "result_class": "badge-error", "result_icon": "error", "description": "Falha ao atualizar dados do usuário: campo CPF com formato inválido. Operação cancelada automaticamente.", "ip": "192.168.1.201", "browser": "Google Chrome", "os": "macOS Sonoma"},
+                        {"date": "30/07/2026", "time": "09:00", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Logout", "action_icon": "logout", "affected_user": "Fernanda Alves", "affected_email": "fernanda.alves@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Logout realizado manualmente pelo administrador. Sessão encerrada com sucesso.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"},
+                        {"date": "29/07/2026", "time": "17:40", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Alteração de Senha", "action_icon": "lock_reset", "affected_user": "Carlos Henrique Oliveira", "affected_email": "carlos.oliveira@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Senha do administrador alterada conforme política de segurança (renovação trimestral obrigatória).", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
+                        {"date": "29/07/2026", "time": "15:22", "admin": "Gabriel Costa", "admin_email": "gabriel.costa@precisionhealth.com", "action": "Cadastro de Usuário", "action_icon": "person_add", "affected_user": "Felipe Nascimento", "affected_email": "felipe.nascimento@precisionhealth.com", "result": "Erro", "result_class": "badge-error", "result_icon": "error", "description": "Falha ao cadastrar usuário: e-mail já existente na base de dados. Cadastro não concluído.", "ip": "177.89.14.220", "browser": "Google Chrome", "os": "Android 14"},
+                        {"date": "29/07/2026", "time": "13:10", "admin": "Amanda Ribeiro", "admin_email": "amanda.ribeiro@precisionhealth.com", "action": "Desativação de Usuário", "action_icon": "person_off", "affected_user": "Bruno Costa", "affected_email": "bruno.costa@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Conta do paciente Bruno Costa desativada por solicitação do titular via canal oficial de atendimento.", "ip": "192.168.1.201", "browser": "Google Chrome", "os": "macOS Sonoma"},
+                        {"date": "29/07/2026", "time": "10:45", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Aceite de Convite", "action_icon": "task_alt", "affected_user": "Ricardo Santos", "affected_email": "ricardo.santos@precisionhealth.com", "result": "Aviso", "result_class": "badge-warning", "result_icon": "warning", "description": "Convite aceito, porém o profissional não possui registro ativo no conselho de classe. Pendência identificada para validação manual.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"}
+                    ] %}
+
+                    {% for log in logs %}
+                    <tr>
+                        <td class="text-muted">{{ log.date }}</td>
+                        <td class="text-muted">{{ log.time }}</td>
+                        <td class="fw-semibold">{{ log.admin }}</td>
+                        <td>
+                            <span class="badge-action">
+                                <span class="material-symbols-rounded">{{ log.action_icon }}</span>
+                                {{ log.action }}
+                            </span>
+                        </td>
+                        <td class="text-muted">{{ log.affected_user }}</td>
+                        <td>
+                            <span class="badge-result {{ log.result_class }}">
+                                <span class="material-symbols-rounded">{{ log.result_icon }}</span>
+                                {{ log.result }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#logDetailsModal{{ loop.index }}">
+                                <span class="material-symbols-rounded">visibility</span> Detalhes
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginação -->
+        <nav class="mt-4">
+            <ul class="pagination pagination-custom justify-content-end mb-0">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Próximo</a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
+<!-- Modal: Detalhes do Log -->
+{% for log in logs %}
+<div class="modal fade" id="logDetailsModal{{ loop.index }}" tabindex="-1" aria-labelledby="logDetailsModalLabel{{ loop.index }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom modal-dialog-centered">
+        <div class="modal-content modal-content-custom">
+            
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold" id="logDetailsModalLabel{{ loop.index }}" style="color: var(--phc-primary);">
+                    Detalhes do Log
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            
+            <div class="modal-body modal-body-custom">
+                <div class="row g-3">
+                    <!-- Coluna Esquerda: Informações da Ação -->
+                    <div class="col-lg-6">
+                        <div class="section-title">Informações da Ação</div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="detail-label">Data</div>
+                                <div class="detail-value">{{ log.date }}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-label">Hora</div>
+                                <div class="detail-value">{{ log.time }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label">Administrador Responsável</div>
+                                <div class="detail-value fw-semibold">{{ log.admin }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label">Email do Administrador</div>
+                                <div class="detail-value text-break">{{ log.admin_email }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label">Tipo da Ação</div>
+                                <div class="detail-value">
+                                    <span class="badge-action">
+                                        <span class="material-symbols-rounded">{{ log.action_icon }}</span>
+                                        {{ log.action }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label mb-2">Descrição Completa</div>
+                                <div class="description-box">{{ log.description }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Usuário Afetado e Dados Técnicos -->
+                    <div class="col-lg-6">
+                        <div class="section-title">Usuário Afetado</div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-12">
+                                <div class="detail-label">Nome</div>
+                                <div class="detail-value fw-semibold">{{ log.affected_user }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label">Email</div>
+                                <div class="detail-value text-break">{{ log.affected_email }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-label">Resultado</div>
+                                <div class="detail-value">
+                                    <span class="badge-result {{ log.result_class }}">
+                                        <span class="material-symbols-rounded">{{ log.result_icon }}</span>
+                                        {{ log.result }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-title">Dados Técnicos</div>
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <div class="detail-label">Endereço IP</div>
+                                <div class="detail-value" style="font-family: monospace;">{{ log.ip }}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-label">Navegador</div>
+                                <div class="detail-value">{{ log.browser }}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-label">Sistema Operacional</div>
+                                <div class="detail-value">{{ log.os }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer modal-footer-custom">
+                <button type="button" class="btn-custom-secondary px-4" data-bs-dismiss="modal">Fechar</button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

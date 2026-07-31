@@ -1,0 +1,1255 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-white: #FFFFFF;
+        --phc-text: #1F2937;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+        --phc-bg: #FAFAFC;
+    }
+
+    .phc-profile-page {
+        padding: 2rem 1.5rem;
+        background: var(--phc-bg);
+        min-height: 100vh;
+    }
+
+    .phc-page-header {
+        margin-bottom: 1.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .phc-page-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-page-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 2rem;
+    }
+
+    .phc-page-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.95rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* Botões */
+    .phc-btn {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.3rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.15s ease;
+        text-decoration: none;
+    }
+
+    .phc-btn:hover {
+        background: var(--phc-secondary);
+        color: white;
+    }
+
+    .phc-btn:active {
+        transform: scale(0.98);
+    }
+
+    .phc-btn-outline {
+        background: var(--phc-white);
+        color: var(--phc-muted);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-btn-outline:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-btn .material-symbols-rounded {
+        font-size: 1.15rem;
+    }
+
+    /* Card principal do perfil */
+    .phc-profile-main-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .phc-profile-cover {
+        height: 150px;
+        background: linear-gradient(135deg, var(--phc-primary) 0%, var(--phc-secondary) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .phc-profile-cover::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+    }
+
+    .phc-profile-cover::after {
+        content: '';
+        position: absolute;
+        bottom: -40%;
+        left: 20%;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 50%;
+    }
+
+    .phc-profile-edit-cover {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        backdrop-filter: blur(8px);
+    }
+
+    .phc-profile-edit-cover:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .phc-profile-edit-cover .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    .phc-profile-avatar-wrapper {
+        position: absolute;
+        bottom: -60px;
+        left: 2rem;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background: var(--phc-white);
+        padding: 5px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        z-index: 2;
+    }
+
+    .phc-profile-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 2.75rem;
+        border: 3px solid var(--phc-white);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .phc-profile-avatar-badge {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--phc-white);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--phc-white);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+    }
+
+    .phc-profile-avatar-badge .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    .phc-profile-content {
+        padding: 5rem 2rem 2rem 2rem;
+    }
+
+    .phc-profile-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-profile-name {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0 0 0.35rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-profile-verified {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--phc-primary);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .phc-profile-verified .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    .phc-profile-specialty {
+        color: var(--phc-primary);
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .phc-profile-specialty .material-symbols-rounded {
+        font-size: 1.2rem;
+    }
+
+    .phc-profile-location {
+        color: var(--phc-muted);
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .phc-profile-location .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    .phc-profile-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.9rem;
+        background: #DCFCE7;
+        color: #166534;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 500;
+    }
+
+    .phc-profile-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #16A34A;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    /* Grid de informações */
+    .phc-profile-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        padding: 1.5rem;
+        background: #FAFAFC;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-profile-info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+    }
+
+    .phc-profile-info-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .phc-profile-info-icon .material-symbols-rounded {
+        font-size: 1.25rem;
+    }
+
+    .phc-profile-info-label {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 0.15rem;
+    }
+
+    .phc-profile-info-value {
+        font-size: 0.95rem;
+        color: var(--phc-text);
+        font-weight: 500;
+    }
+
+    /* Estatísticas rápidas */
+    .phc-quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--phc-border);
+    }
+
+    .phc-quick-stat {
+        text-align: center;
+        padding: 0.75rem;
+        border-radius: 10px;
+        transition: background 0.2s ease;
+    }
+
+    .phc-quick-stat:hover {
+        background: var(--phc-light);
+    }
+
+    .phc-quick-stat-value {
+        font-size: 1.65rem;
+        font-weight: 700;
+        color: var(--phc-primary);
+        line-height: 1;
+    }
+
+    .phc-quick-stat-label {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+        margin-top: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    /* Seção de informações profissionais */
+    .phc-section-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-section-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-section-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 1.4rem;
+    }
+
+    .phc-section-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.88rem;
+        margin: 0.2rem 0 0 0;
+    }
+
+    /* Formulário */
+    .phc-form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-form-label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin-bottom: 0.5rem;
+    }
+
+    .phc-form-label .required {
+        color: #DC2626;
+        margin-left: 0.15rem;
+    }
+
+    .phc-form-control {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        font-family: inherit;
+    }
+
+    .phc-form-control:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    }
+
+    .phc-form-control::placeholder {
+        color: #9CA3AF;
+    }
+
+    textarea.phc-form-control {
+        resize: vertical;
+        min-height: 130px;
+        line-height: 1.6;
+    }
+
+    .phc-form-hint {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+        margin-top: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .phc-form-hint .material-symbols-rounded {
+        font-size: 0.95rem;
+    }
+
+    .phc-char-count {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        text-align: right;
+        margin-top: 0.25rem;
+    }
+
+    /* Chips de idiomas */
+    .phc-chips-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.85rem;
+        min-height: 40px;
+        padding: 0.5rem;
+        background: #FAFAFC;
+        border-radius: 10px;
+        border: 1px dashed var(--phc-border);
+    }
+
+    .phc-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.45rem 0.9rem;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        animation: chipIn 0.25s ease;
+    }
+
+    @keyframes chipIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .phc-chip-remove {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(139, 92, 246, 0.15);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        border: none;
+        padding: 0;
+    }
+
+    .phc-chip-remove:hover {
+        background: rgba(139, 92, 246, 0.3);
+    }
+
+    .phc-chip-remove .material-symbols-rounded {
+        font-size: 0.9rem;
+    }
+
+    .phc-chip-input-wrapper {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .phc-chip-input-wrapper input {
+        flex: 1;
+    }
+
+    .phc-btn-add-chip {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.7rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .phc-btn-add-chip:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-btn-add-chip .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    /* Horários disponíveis */
+    .phc-schedule-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 0.85rem;
+    }
+
+    .phc-schedule-day {
+        background: #FAFAFC;
+        border: 1px solid var(--phc-border);
+        border-radius: 10px;
+        padding: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .phc-schedule-day.active {
+        background: var(--phc-light);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-schedule-day.disabled {
+        opacity: 0.55;
+    }
+
+    .phc-schedule-day.disabled .phc-schedule-times {
+        pointer-events: none;
+    }
+
+    .phc-schedule-day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.85rem;
+    }
+
+    .phc-schedule-day-name {
+        font-weight: 600;
+        color: var(--phc-text);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .phc-schedule-day-name .material-symbols-rounded {
+        font-size: 1.1rem;
+        color: var(--phc-primary);
+    }
+
+    /* Toggle switch */
+    .phc-schedule-toggle {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        display: inline-block;
+    }
+
+    .phc-schedule-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .phc-schedule-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #CBD5E1;
+        transition: 0.3s;
+        border-radius: 24px;
+    }
+
+    .phc-schedule-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .phc-schedule-toggle input:checked + .phc-schedule-slider {
+        background-color: var(--phc-primary);
+    }
+
+    .phc-schedule-toggle input:checked + .phc-schedule-slider:before {
+        transform: translateX(20px);
+    }
+
+    .phc-schedule-times {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .phc-schedule-times input {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .phc-schedule-times span {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-schedule-summary {
+        margin-top: 1rem;
+        padding: 0.85rem 1rem;
+        background: var(--phc-light);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        font-size: 0.88rem;
+        color: var(--phc-primary);
+        font-weight: 500;
+    }
+
+    .phc-schedule-summary .material-symbols-rounded {
+        font-size: 1.2rem;
+    }
+
+    /* Botões de ação */
+    .phc-actions-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .phc-btn-save {
+        background: var(--phc-primary);
+        color: white;
+        padding: 0.75rem 1.75rem;
+        font-size: 0.95rem;
+    }
+
+    .phc-btn-save:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-btn-save.saved {
+        background: #10B981;
+    }
+
+    /* Toast de feedback */
+    .phc-toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--phc-text);
+        color: white;
+        padding: 0.85rem 1.25rem;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        pointer-events: none;
+        z-index: 1000;
+    }
+
+    .phc-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .phc-toast .material-symbols-rounded {
+        color: #10B981;
+        font-size: 1.3rem;
+    }
+
+    @media (max-width: 768px) {
+        .phc-profile-page { padding: 1.25rem 1rem; }
+        .phc-page-title { font-size: 1.5rem; }
+        .phc-profile-content { padding: 4.5rem 1.25rem 1.5rem 1.25rem; }
+        .phc-profile-avatar-wrapper {
+            width: 105px;
+            height: 105px;
+            bottom: -45px;
+            left: 1.25rem;
+        }
+        .phc-profile-avatar { font-size: 2.2rem; }
+        .phc-profile-name { font-size: 1.4rem; }
+        .phc-section-card { padding: 1.25rem; }
+        .phc-schedule-grid { grid-template-columns: 1fr; }
+        .phc-actions-footer { flex-direction: column-reverse; }
+        .phc-actions-footer .phc-btn { width: 100%; justify-content: center; }
+        .phc-toast { left: 1rem; right: 1rem; bottom: 1rem; }
+    }
+</style>
+
+<div class="phc-profile-page">
+    <!-- Cabeçalho -->
+    <div class="phc-page-header">
+        <div>
+            <h1 class="phc-page-title">
+                <span class="material-symbols-rounded">person</span>
+                Meu Perfil Profissional
+            </h1>
+            <p class="phc-page-subtitle">Gerencie suas informações profissionais e dados de contato.</p>
+        </div>
+        <button class="phc-btn phc-btn-outline">
+            <span class="material-symbols-rounded">lock</span>
+            Alterar senha
+        </button>
+    </div>
+
+    <!-- Card principal do perfil -->
+    <div class="phc-profile-main-card">
+        <div class="phc-profile-cover">
+            <button class="phc-profile-edit-cover">
+                <span class="material-symbols-rounded">photo_camera</span>
+                Alterar capa
+            </button>
+        </div>
+        <div class="phc-profile-avatar-wrapper">
+            <div class="phc-profile-avatar">
+                RA
+                <div class="phc-profile-avatar-badge" title="Alterar foto">
+                    <span class="material-symbols-rounded">edit</span>
+                </div>
+            </div>
+        </div>
+        <div class="phc-profile-content">
+            <div class="phc-profile-top">
+                <div>
+                    <h2 class="phc-profile-name">
+                        Dra. Renata Almeida
+                        <span class="phc-profile-verified" title="Perfil verificado">
+                            <span class="material-symbols-rounded">verified</span>
+                        </span>
+                    </h2>
+                    <p class="phc-profile-specialty">
+                        <span class="material-symbols-rounded">medical_information</span>
+                        Cardiologia Clínica
+                    </p>
+                    <div class="phc-profile-location">
+                        <span class="material-symbols-rounded">location_on</span>
+                        São Paulo, SP — Brasil
+                    </div>
+                </div>
+                <div class="phc-profile-status">
+                    <span class="phc-profile-status-dot"></span>
+                    Disponível para atendimentos
+                </div>
+            </div>
+
+            <!-- Grid de informações -->
+            <div class="phc-profile-info-grid">
+                <div class="phc-profile-info-item">
+                    <div class="phc-profile-info-icon">
+                        <span class="material-symbols-rounded">badge</span>
+                    </div>
+                    <div>
+                        <div class="phc-profile-info-label">CRM</div>
+                        <div class="phc-profile-info-value">CRM/SP 123.456</div>
+                    </div>
+                </div>
+                <div class="phc-profile-info-item">
+                    <div class="phc-profile-info-icon">
+                        <span class="material-symbols-rounded">local_hospital</span>
+                    </div>
+                    <div>
+                        <div class="phc-profile-info-label">Hospital</div>
+                        <div class="phc-profile-info-value">Hospital São Lucas</div>
+                    </div>
+                </div>
+                <div class="phc-profile-info-item">
+                    <div class="phc-profile-info-icon">
+                        <span class="material-symbols-rounded">call</span>
+                    </div>
+                    <div>
+                        <div class="phc-profile-info-label">Telefone</div>
+                        <div class="phc-profile-info-value">(11) 98765-4321</div>
+                    </div>
+                </div>
+                <div class="phc-profile-info-item">
+                    <div class="phc-profile-info-icon">
+                        <span class="material-symbols-rounded">mail</span>
+                    </div>
+                    <div>
+                        <div class="phc-profile-info-label">Email</div>
+                        <div class="phc-profile-info-value">renata.almeida@precision.com</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estatísticas rápidas -->
+            <div class="phc-quick-stats">
+                <div class="phc-quick-stat">
+                    <div class="phc-quick-stat-value">248</div>
+                    <div class="phc-quick-stat-label">Pacientes</div>
+                </div>
+                <div class="phc-quick-stat">
+                    <div class="phc-quick-stat-value">1.284</div>
+                    <div class="phc-quick-stat-label">Consultas</div>
+                </div>
+                <div class="phc-quick-stat">
+                    <div class="phc-quick-stat-value">4.9</div>
+                    <div class="phc-quick-stat-label">Avaliação</div>
+                </div>
+                <div class="phc-quick-stat">
+                    <div class="phc-quick-stat-value">8 anos</div>
+                    <div class="phc-quick-stat-label">Experiência</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informações profissionais -->
+    <div class="phc-section-card">
+        <div class="phc-section-header">
+            <div>
+                <h3 class="phc-section-title">
+                    <span class="material-symbols-rounded">work</span>
+                    Informações Profissionais
+                </h3>
+                <p class="phc-section-subtitle">Atualize seus dados profissionais, idiomas e disponibilidade de horários.</p>
+            </div>
+        </div>
+
+        <form id="profileForm">
+            <!-- Currículo -->
+            <div class="phc-form-group">
+                <label class="phc-form-label" for="curriculumInput">
+                    Currículo <span class="required">*</span>
+                </label>
+                <textarea class="phc-form-control" id="curriculumInput" maxlength="1000" placeholder="Descreva sua formação acadêmica, experiências profissionais e especializações...">Médica cardiologista formada pela Universidade de São Paulo (USP) em 2016. Residência em Cardiologia pelo Instituto do Coração (InCor-HCFMUSP) entre 2017-2019. Especialização em Ecocardiografia pela Sociedade Brasileira de Cardiologia (2020).
+
+Atuação clínica em cardiologia geral com foco em prevenção cardiovascular, insuficiência cardíaca e arritmias. Experiência em atendimento ambulatorial e hospitalar.
+
+Membro da Sociedade Brasileira de Cardiologia (SBC) e da American Heart Association (AHA).</textarea>
+                <div class="phc-char-count"><span id="curriculumCount">0</span>/1000 caracteres</div>
+                <div class="phc-form-hint">
+                    <span class="material-symbols-rounded">info</span>
+                    Informe sua formação acadêmica, experiências e especializações
+                </div>
+            </div>
+
+            <!-- Idiomas -->
+            <div class="phc-form-group">
+                <label class="phc-form-label">
+                    Idiomas
+                </label>
+                <div class="phc-chips-container" id="languagesChips">
+                    <div class="phc-chip">
+                        Português (Nativo)
+                        <button type="button" class="phc-chip-remove" onclick="removeChip(this)">
+                            <span class="material-symbols-rounded">close</span>
+                        </button>
+                    </div>
+                    <div class="phc-chip">
+                        Inglês (Avançado)
+                        <button type="button" class="phc-chip-remove" onclick="removeChip(this)">
+                            <span class="material-symbols-rounded">close</span>
+                        </button>
+                    </div>
+                    <div class="phc-chip">
+                        Espanhol (Intermediário)
+                        <button type="button" class="phc-chip-remove" onclick="removeChip(this)">
+                            <span class="material-symbols-rounded">close</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="phc-chip-input-wrapper">
+                    <input type="text" class="phc-form-control" id="newLanguageInput" placeholder="Ex: Francês - Básico">
+                    <button type="button" class="phc-btn-add-chip" onclick="addLanguage()">
+                        <span class="material-symbols-rounded">add</span>
+                        Adicionar
+                    </button>
+                </div>
+                <div class="phc-form-hint">
+                    <span class="material-symbols-rounded">info</span>
+                    Adicione os idiomas que você domina com o nível de proficiência
+                </div>
+            </div>
+
+            <!-- Horários disponíveis -->
+            <div class="phc-form-group">
+                <label class="phc-form-label">
+                    Horários disponíveis
+                </label>
+                <div class="phc-schedule-grid">
+                    <div class="phc-schedule-day active">
+                        <div class="phc-schedule-day-header">
+                            <span class="phc-schedule-day-name">
+                                <span class="material-symbols-rounded">calendar_today</span>
+                                Segunda-feira
+                            </span>
+                            <label class="phc-schedule-toggle">
+                                <input type="checkbox" checked onchange="toggleDay(this)">
+                                <span class="phc-schedule-slider"></span>
+                            </label>
+                        </div>
+                        <div class="phc-schedule-times">
+                            <input type="time" class="phc-form-control" value="08:00">
+                            <span>às</span>
+                            <input type="time" class="phc-form-control" value="17:00">
+                        </div>
+                    </div>
+
+                    <div class="phc-schedule-day active">
+                        <div class="phc-schedule-day-header">
+                            <span class="phc-schedule-day-name">
+                                <span class="material-symbols-rounded">calendar_today</span>
+                                Terça-feira
+                            </span>
+                            <label class="phc-schedule-toggle">
+                                <input type="checkbox" checked onchange="toggleDay(this)">
+                                <span class="phc-schedule-slider"></span>
+                            </label>
+                        </div>
+                        <div class="phc-schedule-times">
+                            <input type="time" class="phc-form-control" value="08:00">
+                            <span>às</span>
+                            <input type="time" class="phc-form-control" value="17:00">
+                        </div>
+                    </div>
+
+                    <div class="phc-schedule-day active">
+                        <div class="phc-schedule-day-header">
+                            <span class="phc-schedule-day-name">
+                                <span class="material-symbols-rounded">calendar_today</span>
+                                Quarta-feira
+                            </span>
+                            <label class="phc-schedule-toggle">
+                                <input type="checkbox" checked onchange="toggleDay(this)">
+                                <span class="phc-schedule-slider"></span>
+                            </label>
+                        </div>
+                        <div class="phc-schedule-times">
+                            <input type="time" class="phc-form-control" value="08:00">
+                            <span>às</span>
+                            <input type="time" class="phc-form-control" value="12:00">
+                        </div>
+                    </div>
+
+                    <div class="phc-schedule-day active">
+                        <div class="phc-schedule-day-header">
+                            <span class="phc-schedule-day-name">
+                                <span class="material-symbols-rounded">calendar_today</span>
+                                Quinta-feira
+                            </span>
+                            <label class="phc-schedule-toggle">
+                                <input type="checkbox" checked onchange="toggleDay(this)">
+                                <span class="phc-schedule-slider"></span>
+                            </label>
+                        </div>
+                        <div class="phc-schedule-times">
+                            <input type="time" class="phc-form-control" value="08:00">
+                            <span>às</span>
+                            <input type="time" class="phc-form-control" value="17:00">
+                        </div>
+                    </div>
+
+                    <div class="phc-schedule-day active">
+                        <div class="phc-schedule-day-header">
+                            <span class="phc-schedule-day-name">
+                                <span class="material-symbols-rounded">calendar_today</span>
+                                Sexta-feira
+                            </span>
+                            <label class="phc-schedule-toggle">
+                                <input type="checkbox" checked onchange="toggleDay(this)">
+                                <span class="phc-schedule-slider"></span>
+                            </label>
+                        </div>
+                        <div class="phc-schedule-times">
+                            <input type="time" class="phc-form-control" value="08:00">
+                            <span>às</span>
+                            <input type="time" class="phc-form-control" value="14:00">
+                        </div>
+                    </div>
+
+                    <div class="phc-schedule-day disabled">
+                        <div class="phc-schedule-day-header">
+                            <span class="phc-schedule-day-name">
+                                <span class="material-symbols-rounded">calendar_today</span>
+                                Sábado
+                            </span>
+                            <label class="phc-schedule-toggle">
+                                <input type="checkbox" onchange="toggleDay(this)">
+                                <span class="phc-schedule-slider"></span>
+                            </label>
+                        </div>
+                        <div class="phc-schedule-times">
+                            <input type="time" class="phc-form-control" value="08:00">
+                            <span>às</span>
+                            <input type="time" class="phc-form-control" value="12:00">
+                        </div>
+                    </div>
+
+                    <div class="phc-schedule-day disabled">
+                        <div class="phc-schedule-day-header">
+                            <span class="phc-schedule-day-name">
+                                <span class="material-symbols-rounded">calendar_today</span>
+                                Domingo
+                            </span>
+                            <label class="phc-schedule-toggle">
+                                <input type="checkbox" onchange="toggleDay(this)">
+                                <span class="phc-schedule-slider"></span>
+                            </label>
+                        </div>
+                        <div class="phc-schedule-times">
+                            <input type="time" class="phc-form-control" value="08:00">
+                            <span>às</span>
+                            <input type="time" class="phc-form-control" value="12:00">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phc-schedule-summary" id="scheduleSummary">
+                    <span class="material-symbols-rounded">schedule</span>
+                    <span id="scheduleSummaryText">5 dias disponíveis por semana</span>
+                </div>
+
+                <div class="phc-form-hint">
+                    <span class="material-symbols-rounded">info</span>
+                    Defina os dias e horários em que você está disponível para atendimentos
+                </div>
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="phc-actions-footer">
+                <button type="button" class="phc-btn phc-btn-outline">
+                    <span class="material-symbols-rounded">close</span>
+                    Cancelar
+                </button>
+                <button type="submit" class="phc-btn phc-btn-save" id="saveBtn">
+                    <span class="material-symbols-rounded">save</span>
+                    Salvar alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast de feedback -->
+<div class="phc-toast" id="feedbackToast">
+    <span class="material-symbols-rounded">check_circle</span>
+    <span>Alterações salvas com sucesso!</span>
+</div>
+
+<script>
+    // Contador de caracteres do currículo
+    const curriculumInput = document.getElementById('curriculumInput');
+    const curriculumCount = document.getElementById('curriculumCount');
+    
+    function updateCharCount() {
+        curriculumCount.textContent = curriculumInput.value.length;
+    }
+    
+    curriculumInput.addEventListener('input', updateCharCount);
+    updateCharCount();
+
+    // Adicionar idioma
+    function addLanguage() {
+        const input = document.getElementById('newLanguageInput');
+        const value = input.value.trim();
+        
+        if (value === '') {
+            input.focus();
+            return;
+        }
+
+        const chipsContainer = document.getElementById('languagesChips');
+        const chip = document.createElement('div');
+        chip.className = 'phc-chip';
+        chip.innerHTML = `
+            ${value}
+            <button type="button" class="phc-chip-remove" onclick="removeChip(this)">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        `;
+        chipsContainer.appendChild(chip);
+        input.value = '';
+        input.focus();
+    }
+
+    // Remover idioma
+    function removeChip(button) {
+        const chip = button.parentElement;
+        chip.style.animation = 'chipIn 0.2s ease reverse';
+        setTimeout(() => chip.remove(), 180);
+    }
+
+    // Toggle dia da semana
+    function toggleDay(checkbox) {
+        const dayCard = checkbox.closest('.phc-schedule-day');
+        if (checkbox.checked) {
+            dayCard.classList.remove('disabled');
+            dayCard.classList.add('active');
+        } else {
+            dayCard.classList.add('disabled');
+            dayCard.classList.remove('active');
+        }
+        updateScheduleSummary();
+    }
+
+    // Atualizar resumo de horários
+    function updateScheduleSummary() {
+        const activeDays = document.querySelectorAll('.phc-schedule-day.active').length;
+        const summaryText = document.getElementById('scheduleSummaryText');
+        
+        if (activeDays === 0) {
+            summaryText.textContent = 'Nenhum dia disponível selecionado';
+        } else if (activeDays === 1) {
+            summaryText.textContent = '1 dia disponível por semana';
+        } else {
+            summaryText.textContent = `${activeDays} dias disponíveis por semana`;
+        }
+    }
+
+    // Submit do formulário
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('saveBtn');
+        const originalHTML = btn.innerHTML;
+        
+        // Estado salvando
+        btn.innerHTML = '<span class="material-symbols-rounded" style="animation: spin 1s linear infinite;">progress_activity</span> Salvando...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            // Estado salvo
+            btn.innerHTML = '<span class="material-symbols-rounded">check_circle</span> Salvo!';
+            btn.classList.add('saved');
+            
+            // Mostrar toast
+            const toast = document.getElementById('feedbackToast');
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('saved');
+                btn.disabled = false;
+                toast.classList.remove('show');
+            }, 2500);
+        }, 1200);
+    });
+
+    // Permitir adicionar idioma com Enter
+    document.getElementById('newLanguageInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addLanguage();
+        }
+    });
+
+    // Inicializar resumo
+    updateScheduleSummary();
+</script>
+
+<style>
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+
+{% endblock %}

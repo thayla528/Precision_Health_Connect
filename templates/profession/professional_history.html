@@ -1,0 +1,1322 @@
+{% extends "base.html" %}
+
+{% block title %}
+Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-white: #FFFFFF;
+        --phc-text: #1F2937;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+        --phc-bg: #FAFAFC;
+    }
+
+    .phc-history-page {
+        padding: 2rem 1.5rem;
+        background: var(--phc-bg);
+        min-height: 100vh;
+    }
+
+    .phc-page-header {
+        margin-bottom: 1.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .phc-page-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-page-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 2rem;
+    }
+
+    .phc-page-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.95rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* Botões */
+    .phc-btn {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        text-decoration: none;
+    }
+
+    .phc-btn:hover {
+        background: var(--phc-secondary);
+        color: white;
+    }
+
+    .phc-btn-outline {
+        background: var(--phc-white);
+        color: var(--phc-primary);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-btn-outline:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    .phc-btn .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    /* Cards de estatísticas */
+    .phc-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-stat-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.35rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .phc-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
+    }
+
+    .phc-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--phc-primary), var(--phc-secondary));
+    }
+
+    .phc-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.85rem;
+    }
+
+    .phc-stat-label {
+        font-size: 0.82rem;
+        color: var(--phc-muted);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .phc-stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        line-height: 1.1;
+    }
+
+    .phc-stat-trend {
+        font-size: 0.78rem;
+        color: var(--phc-primary);
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .phc-stat-trend .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    /* Filtros */
+    .phc-filters-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-filters-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-filters-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 1.25rem;
+    }
+
+    .phc-filter-label {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--phc-muted);
+        margin-bottom: 0.35rem;
+        display: block;
+    }
+
+    .phc-filter-input,
+    .phc-filter-select {
+        width: 100%;
+        padding: 0.55rem 0.85rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.86rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .phc-filter-input:focus,
+    .phc-filter-select:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+    }
+
+    .phc-btn-filter {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.55rem 1rem;
+        border-radius: 8px;
+        font-size: 0.86rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        width: 100%;
+    }
+
+    .phc-btn-filter:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-btn-clear {
+        background: transparent;
+        color: var(--phc-muted);
+        border: 1px solid var(--phc-border);
+        padding: 0.55rem 1rem;
+        border-radius: 8px;
+        font-size: 0.86rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+
+    .phc-btn-clear:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    /* Tabela */
+    .phc-table-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .phc-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-table-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-table-title .material-symbols-rounded {
+        color: var(--phc-primary);
+    }
+
+    .phc-results-count {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .phc-table thead th {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        font-size: 0.74rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.9rem 1.1rem;
+        border: none;
+        text-align: left;
+    }
+
+    .phc-table tbody td {
+        padding: 1rem 1.1rem;
+        border-bottom: 1px solid var(--phc-border);
+        font-size: 0.9rem;
+        color: var(--phc-text);
+        vertical-align: middle;
+    }
+
+    .phc-table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    .phc-table tbody tr:hover {
+        background: #FAFAFE;
+    }
+
+    .phc-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Célula paciente */
+    .phc-patient-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .phc-patient-name {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-patient-id {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+    }
+
+    /* Data */
+    .phc-date-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .phc-date-main {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-date-sub {
+        font-size: 0.78rem;
+        color: var(--phc-muted);
+    }
+
+    /* Diagnóstico */
+    .phc-diagnosis-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .phc-diagnosis-main {
+        font-weight: 500;
+        color: var(--phc-text);
+    }
+
+    .phc-diagnosis-cid {
+        font-size: 0.75rem;
+        color: var(--phc-primary);
+        font-weight: 500;
+        background: var(--phc-light);
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 0.15rem;
+    }
+
+    /* Contadores de receitas/exames */
+    .phc-counter-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+    }
+
+    .phc-counter-badge .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    .phc-counter-badge.zero {
+        background: #F3F4F6;
+        color: var(--phc-muted);
+    }
+
+    /* Botão detalhes */
+    .phc-btn-details {
+        background: var(--phc-primary);
+        color: white;
+        border: none;
+        padding: 0.45rem 0.9rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .phc-btn-details:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-btn-details .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    /* Paginação */
+    .phc-pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .phc-pagination-info {
+        color: var(--phc-muted);
+        font-size: 0.85rem;
+    }
+
+    .phc-pagination-controls {
+        display: flex;
+        gap: 0.35rem;
+    }
+
+    .phc-page-btn {
+        min-width: 34px;
+        height: 34px;
+        border: 1px solid var(--phc-border);
+        background: var(--phc-white);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: var(--phc-text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+    }
+
+    .phc-page-btn:hover:not(:disabled):not(.active) {
+        background: var(--phc-light);
+        border-color: var(--phc-secondary);
+        color: var(--phc-primary);
+    }
+
+    .phc-page-btn.active {
+        background: var(--phc-primary);
+        color: white;
+        border-color: var(--phc-primary);
+    }
+
+    .phc-page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    /* Modal */
+    .phc-modal .modal-content {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .phc-modal-header {
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        padding: 1.5rem;
+        border: none;
+    }
+
+    .phc-modal-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+    }
+
+    .phc-modal-header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .phc-modal-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .phc-modal-title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .phc-modal-subtitle {
+        font-size: 0.88rem;
+        opacity: 0.9;
+        margin: 0.15rem 0 0 0;
+    }
+
+    .phc-modal-body {
+        padding: 1.5rem;
+    }
+
+    .phc-view-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .phc-view-section-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--phc-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--phc-border);
+    }
+
+    .phc-view-section-title .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    .phc-view-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .phc-view-item-label {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 0.2rem;
+    }
+
+    .phc-view-item-value {
+        font-size: 0.95rem;
+        color: var(--phc-text);
+        font-weight: 500;
+    }
+
+    .phc-diagnosis-highlight {
+        background: var(--phc-light);
+        border: 1px solid var(--phc-secondary);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        gap: 0.85rem;
+        align-items: flex-start;
+    }
+
+    .phc-diagnosis-highlight-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--phc-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .phc-diagnosis-highlight-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin: 0 0 0.15rem 0;
+    }
+
+    .phc-diagnosis-highlight-cid {
+        font-size: 0.78rem;
+        color: var(--phc-primary);
+        font-weight: 600;
+    }
+
+    .phc-clinical-evolution {
+        background: #FAFAFC;
+        border-left: 3px solid var(--phc-primary);
+        border-radius: 0 8px 8px 0;
+        padding: 1rem 1.25rem;
+        font-size: 0.9rem;
+        color: var(--phc-text);
+        line-height: 1.65;
+    }
+
+    /* Lista de receitas no modal */
+    .phc-prescription-item {
+        display: flex;
+        gap: 0.85rem;
+        padding: 0.85rem;
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 10px;
+        margin-bottom: 0.65rem;
+        align-items: flex-start;
+    }
+
+    .phc-prescription-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .phc-prescription-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .phc-prescription-name {
+        font-weight: 600;
+        color: var(--phc-text);
+        font-size: 0.92rem;
+    }
+
+    .phc-prescription-details {
+        font-size: 0.8rem;
+        color: var(--phc-muted);
+        margin-top: 0.15rem;
+    }
+
+    /* Lista de exames no modal */
+    .phc-exam-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0.9rem;
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        gap: 0.75rem;
+    }
+
+    .phc-exam-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .phc-exam-info {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .phc-exam-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .phc-exam-icon .material-symbols-rounded {
+        font-size: 1.1rem;
+    }
+
+    .phc-exam-name {
+        font-weight: 500;
+        color: var(--phc-text);
+        font-size: 0.88rem;
+    }
+
+    .phc-exam-status {
+        font-size: 0.72rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .phc-exam-status.completed {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    .phc-exam-status.pending {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .phc-modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        background: #FAFAFC;
+    }
+
+    .phc-modal-btn {
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .phc-modal-btn-primary {
+        background: var(--phc-primary);
+        color: white;
+    }
+
+    .phc-modal-btn-primary:hover {
+        background: var(--phc-secondary);
+    }
+
+    .phc-modal-btn-secondary {
+        background: transparent;
+        color: var(--phc-muted);
+        border: 1px solid var(--phc-border);
+    }
+
+    .phc-modal-btn-secondary:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
+    @media (max-width: 992px) {
+        .phc-table-card { overflow-x: auto; }
+        .phc-table { min-width: 920px; }
+    }
+
+    @media (max-width: 768px) {
+        .phc-history-page { padding: 1.25rem 1rem; }
+        .phc-page-title { font-size: 1.5rem; }
+        .phc-modal-body { padding: 1.25rem; }
+    }
+</style>
+
+<div class="phc-history-page">
+    <!-- Cabeçalho -->
+    <div class="phc-page-header">
+        <div>
+            <h1 class="phc-page-title">
+                <span class="material-symbols-rounded">history</span>
+                Histórico de Consultas
+            </h1>
+            <p class="phc-page-subtitle">Consulte atendimentos realizados anteriormente.</p>
+        </div>
+        <button class="phc-btn phc-btn-outline">
+            <span class="material-symbols-rounded">download</span>
+            Exportar histórico
+        </button>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="phc-stats-grid">
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">medical_services</span>
+            </div>
+            <div class="phc-stat-label">Total de consultas</div>
+            <div class="phc-stat-value">1.284</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">trending_up</span>
+                +186 este mês
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">calendar_month</span>
+            </div>
+            <div class="phc-stat-label">Consultas este mês</div>
+            <div class="phc-stat-value">186</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">trending_up</span>
+                +8% vs. mês anterior
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">group</span>
+            </div>
+            <div class="phc-stat-label">Pacientes atendidos</div>
+            <div class="phc-stat-value">248</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">person_add</span>
+                +12 novos
+            </div>
+        </div>
+        <div class="phc-stat-card">
+            <div class="phc-stat-icon">
+                <span class="material-symbols-rounded">schedule</span>
+            </div>
+            <div class="phc-stat-label">Tempo médio</div>
+            <div class="phc-stat-value">32 min</div>
+            <div class="phc-stat-trend">
+                <span class="material-symbols-rounded">timer</span>
+                Por atendimento
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="phc-filters-card">
+        <div class="phc-filters-title">
+            <span class="material-symbols-rounded">tune</span>
+            Filtros de busca
+        </div>
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <label class="phc-filter-label">Paciente</label>
+                <input type="text" class="phc-filter-input" placeholder="Nome do paciente...">
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="phc-filter-label">Data</label>
+                <input type="date" class="phc-filter-input">
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="phc-filter-label">Diagnóstico</label>
+                <input type="text" class="phc-filter-input" placeholder="CID ou diagnóstico...">
+            </div>
+            <div class="col-12 col-md-2 d-flex align-items-end gap-2">
+                <button class="phc-btn-filter">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">search</span>
+                    Buscar
+                </button>
+                <button class="phc-btn-clear d-none d-md-block">Limpar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="phc-table-card">
+        <div class="phc-table-header">
+            <h2 class="phc-table-title">
+                <span class="material-symbols-rounded">list_alt</span>
+                Consultas Realizadas
+            </h2>
+            <div class="phc-results-count">Exibindo 10 de 1.284 consultas</div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="phc-table">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Data</th>
+                        <th>Diagnóstico</th>
+                        <th>Receita</th>
+                        <th>Exames</th>
+                        <th class="text-end">Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <!-- Linhas geradas via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="phc-pagination">
+            <div class="phc-pagination-info">
+                Mostrando <strong>1-10</strong> de <strong>1.284</strong> consultas
+            </div>
+            <div class="phc-pagination-controls">
+                <button class="phc-page-btn" disabled>‹</button>
+                <button class="phc-page-btn active">1</button>
+                <button class="phc-page-btn">2</button>
+                <button class="phc-page-btn">3</button>
+                <button class="phc-page-btn">...</button>
+                <button class="phc-page-btn">129</button>
+                <button class="phc-page-btn">›</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detalhes da Consulta -->
+<div class="modal fade phc-modal" id="consultationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div class="phc-modal-header-content">
+                    <div class="phc-modal-avatar" id="modalAvatar">--</div>
+                    <div>
+                        <h3 class="phc-modal-title">Resumo da Consulta</h3>
+                        <p class="phc-modal-subtitle" id="modalSubtitle">Atendimento #AT-00000</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="phc-modal-body">
+                <!-- Dados da consulta -->
+                <div class="phc-view-section">
+                    <div class="phc-view-section-title">
+                        <span class="material-symbols-rounded">badge</span>
+                        Dados da consulta
+                    </div>
+                    <div class="phc-view-grid">
+                        <div>
+                            <div class="phc-view-item-label">Paciente</div>
+                            <div class="phc-view-item-value" id="modalPatient">—</div>
+                        </div>
+                        <div>
+                            <div class="phc-view-item-label">Data e horário</div>
+                            <div class="phc-view-item-value" id="modalDate">—</div>
+                        </div>
+                        <div>
+                            <div class="phc-view-item-label">Tipo de atendimento</div>
+                            <div class="phc-view-item-value" id="modalType">—</div>
+                        </div>
+                        <div>
+                            <div class="phc-view-item-label">Duração</div>
+                            <div class="phc-view-item-value" id="modalDuration">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnóstico -->
+                <div class="phc-view-section">
+                    <div class="phc-view-section-title">
+                        <span class="material-symbols-rounded">diagnosis</span>
+                        Diagnóstico
+                    </div>
+                    <div class="phc-diagnosis-highlight">
+                        <div class="phc-diagnosis-highlight-icon">
+                            <span class="material-symbols-rounded">stethoscope</span>
+                        </div>
+                        <div>
+                            <div class="phc-diagnosis-highlight-title" id="modalDiagnosis">—</div>
+                            <div class="phc-diagnosis-highlight-cid" id="modalCid">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evolução clínica -->
+                <div class="phc-view-section">
+                    <div class="phc-view-section-title">
+                        <span class="material-symbols-rounded">notes</span>
+                        Evolução clínica
+                    </div>
+                    <div class="phc-clinical-evolution" id="modalEvolution">
+                        —
+                    </div>
+                </div>
+
+                <!-- Receitas -->
+                <div class="phc-view-section">
+                    <div class="phc-view-section-title">
+                        <span class="material-symbols-rounded">prescriptions</span>
+                        Receitas emitidas
+                    </div>
+                    <div id="modalPrescriptions">
+                        <!-- Items gerados via JS -->
+                    </div>
+                </div>
+
+                <!-- Exames -->
+                <div class="phc-view-section">
+                    <div class="phc-view-section-title">
+                        <span class="material-symbols-rounded">biotech</span>
+                        Exames solicitados
+                    </div>
+                    <div id="modalExams">
+                        <!-- Items gerados via JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="phc-modal-footer">
+                <button type="button" class="phc-modal-btn phc-modal-btn-secondary" data-bs-dismiss="modal">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">close</span>
+                    Fechar
+                </button>
+                <button type="button" class="phc-modal-btn phc-modal-btn-primary">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">picture_as_pdf</span>
+                    Exportar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dados fictícios das consultas
+    const consultations = [
+        {
+            initials: 'MS', name: 'Mariana Souza', id: '#10248',
+            date: '31/07/2026', time: '08:00', type: 'Consulta de retorno',
+            duration: '35 min',
+            diagnosis: 'Hipertensão arterial essencial', cid: 'CID-10 I10',
+            evolution: 'Paciente comparece à consulta de retorno referindo boa adesão ao tratamento. PA aferida: 132x84 mmHg. Relata cefaleia ocasional. Mantém dieta hipossódica e prática regular de atividade física. Ajuste posológico da medicação realizado. Retorno em 30 dias com MAPA 24h.',
+            prescriptions: [
+                { name: 'Losartana 50mg', details: '1 comprimido • 2x ao dia • 30 dias' },
+                { name: 'Hidroclorotiazida 25mg', details: '1 comprimido • 1x ao dia • 30 dias' }
+            ],
+            exams: [
+                { name: 'MAPA 24h', icon: 'monitoring', status: 'pending' },
+                { name: 'Ecocardiograma', icon: 'monitor_heart', status: 'pending' }
+            ]
+        },
+        {
+            initials: 'CO', name: 'Carlos Oliveira', id: '#10312',
+            date: '30/07/2026', time: '09:30', type: 'Avaliação clínica',
+            duration: '45 min',
+            diagnosis: 'Diabetes mellitus tipo 2', cid: 'CID-10 E11',
+            evolution: 'Paciente em acompanhamento para DM2. Glicemia de jejum: 142 mg/dL. HbA1c: 7,8%. Relata aderência parcial à dieta. Orientado sobre contagem de carboidratos e importância do exercício físico. Mantém Metformina e adicionada Sinvastatina para controle lipídico. Retorno em 60 dias.',
+            prescriptions: [
+                { name: 'Metformina 850mg', details: '1 comprimido • 2x ao dia • 60 dias' },
+                { name: 'Sinvastatina 20mg', details: '1 comprimido • 1x à noite • 90 dias' }
+            ],
+            exams: [
+                { name: 'Hemograma completo', icon: 'bloodtype', status: 'completed' },
+                { name: 'Glicemia de jejum', icon: 'monitoring', status: 'completed' },
+                { name: 'HbA1c', icon: 'lab_profile', status: 'completed' }
+            ]
+        },
+        {
+            initials: 'AM', name: 'Ana Martins', id: '#10187',
+            date: '29/07/2026', time: '11:00', type: 'Consulta de resultados',
+            duration: '25 min',
+            diagnosis: 'Infecção do trato urinário', cid: 'CID-10 N39.0',
+            evolution: 'Paciente comparece para análise de exames de urocultura. Resultado positivo para E. coli sensível a ciprofloxacino. Sintomas urinários em resolução. Prescrito antibiótico conforme antibiograma. Orientada sobre hidratação e retorno em 7 dias.',
+            prescriptions: [
+                { name: 'Ciprofloxacino 500mg', details: '1 comprimido • 2x ao dia • 7 dias' }
+            ],
+            exams: [
+                { name: 'Urocultura', icon: 'biotech', status: 'completed' },
+                { name: 'EAS', icon: 'science', status: 'completed' }
+            ]
+        },
+        {
+            initials: 'RL', name: 'Roberto Lima', id: '#10421',
+            date: '28/07/2026', time: '14:15', type: 'Acompanhamento',
+            duration: '40 min',
+            diagnosis: 'Dislipidemia mista', cid: 'CID-10 E78.2',
+            evolution: 'Paciente em acompanhamento de dislipidemia. Colesterol total: 248 mg/dL, LDL: 168 mg/dL, HDL: 38 mg/dL, Triglicerídeos: 210 mg/dL. Refere dieta inadequada e sedentarismo. Reforçadas orientações sobre alimentação e iniciado tratamento farmacológico. Retorno em 90 dias com controle lipídico.',
+            prescriptions: [
+                { name: 'Atorvastatina 20mg', details: '1 comprimido • 1x à noite • 90 dias' },
+                { name: 'Ômega 3 1g', details: '1 cápsula • 2x ao dia • 90 dias' }
+            ],
+            exams: [
+                { name: 'Perfil lipídico', icon: 'bloodtype', status: 'completed' },
+                { name: 'TGO/TGP', icon: 'lab_profile', status: 'completed' }
+            ]
+        },
+        {
+            initials: 'JF', name: 'Juliana Ferreira', id: '#10509',
+            date: '27/07/2026', time: '16:00', type: 'Primeira consulta',
+            duration: '50 min',
+            diagnosis: 'Hipotireoidismo', cid: 'CID-10 E03.9',
+            evolution: 'Paciente em primeira consulta referindo fadiga, ganho de peso e queda de cabelo há 3 meses. TSH: 8,2 mUI/L, T4 livre: 0,7 ng/dL. Exames compatíveis com hipotireoidismo primário. Iniciada reposição hormonal. Orientada sobre uso em jejum e retorno em 45 dias para reavaliação laboratorial.',
+            prescriptions: [
+                { name: 'Levotiroxina 50mcg', details: '1 comprimido • 1x ao dia em jejum • 60 dias' }
+            ],
+            exams: [
+                { name: 'TSH e T4 livre', icon: 'monitoring', status: 'pending' },
+                { name: 'Ultrassom de tireoide', icon: 'pregnancy', status: 'pending' }
+            ]
+        },
+        {
+            initials: 'PR', name: 'Paulo Ribeiro', id: '#10287',
+            date: '26/07/2026', time: '10:30', type: 'Consulta de retorno',
+            duration: '30 min',
+            diagnosis: 'Gonartrose bilateral', cid: 'CID-10 M17',
+            evolution: 'Paciente retorna para avaliação de dor em joelhos. Relata melhora parcial com fisioterapia. Exame físico: crepitação bilateral, limitação moderada de amplitude. Solicitados exames de imagem para avaliação de progressão. Mantido tratamento conservador com AINE sob demanda e encaminhamento para ortopedia.',
+            prescriptions: [
+                { name: 'Naproxeno 500mg', details: '1 comprimido • 2x ao dia • 7 dias (uso sob demanda)' }
+            ],
+            exams: [
+                { name: 'Raio-X de joelhos', icon: 'image_search', status: 'pending' },
+                { name: 'Ressonância de joelhos', icon: 'scan', status: 'pending' }
+            ]
+        },
+        {
+            initials: 'BS', name: 'Beatriz Santos', id: '#10356',
+            date: '25/07/2026', time: '08:45', type: 'Check-up anual',
+            duration: '40 min',
+            diagnosis: 'Rinite alérgica', cid: 'CID-10 J30.4',
+            evolution: 'Paciente em check-up anual. Exames laboratoriais dentro da normalidade. Relata sintomas alérgicos sazonais (espirros, coriza, obstrução nasal). Orientada sobre medidas ambientais e prescrito anti-histamínico para uso contínuo na primavera. Vacinação atualizada.',
+            prescriptions: [
+                { name: 'Loratadina 10mg', details: '1 comprimido • 1x ao dia • 30 dias' },
+                { name: 'Budesonida nasal', details: '2 jatos • 1x ao dia • 30 dias' }
+            ],
+            exams: [
+                { name: 'Hemograma completo', icon: 'bloodtype', status: 'completed' },
+                { name: 'Glicemia de jejum', icon: 'monitoring', status: 'completed' }
+            ]
+        },
+        {
+            initials: 'GM', name: 'Gustavo Mendes', id: '#10198',
+            date: '24/07/2026', time: '15:20', type: 'Emergência',
+            duration: '55 min',
+            diagnosis: 'Fibrilação atrial paroxística', cid: 'CID-10 I48.0',
+            evolution: 'Paciente comparece à emergência com palpitações, dispneia e tontura há 2 horas. ECG evidencia FA com RVR. Instabilizado com controle de frequência. Iniciada anticoagulação com warfarina. Encaminhado para avaliação cardiológica especializada. Retorno em 24h para controle de INR.',
+            prescriptions: [
+                { name: 'Warfarina 5mg', details: 'Conforme INR • 1x ao dia • 30 dias' },
+                { name: 'Atenolol 50mg', details: '1 comprimido • 1x ao dia • 30 dias' }
+            ],
+            exams: [
+                { name: 'Eletrocardiograma', icon: 'monitoring', status: 'completed' },
+                { name: 'Ecocardiograma', icon: 'monitor_heart', status: 'pending' },
+                { name: 'INR seriado', icon: 'bloodtype', status: 'pending' }
+            ]
+        },
+        {
+            initials: 'FA', name: 'Fernando Alves', id: '#10402',
+            date: '23/07/2026', time: '11:45', type: 'Avaliação clínica',
+            duration: '35 min',
+            diagnosis: 'Gastrite enantematosa', cid: 'CID-10 K29.3',
+            evolution: 'Paciente refere epigastralgia há 2 semanas, piora pós-prandial, náuseas e plenitude. Nega perda de peso ou sangramento. Solicitada endoscopia digestiva alta. Iniciado tratamento com IBP e orientado sobre dieta e evitar AINEs. Retorno com resultado do exame.',
+            prescriptions: [
+                { name: 'Omeprazol 20mg', details: '1 cápsula • 1x ao dia em jejum • 14 dias' }
+            ],
+            exams: [
+                { name: 'Endoscopia digestiva alta', icon: 'endoscopy', status: 'pending' },
+                { name: 'Pesquisa de H. pylori', icon: 'biotech', status: 'pending' }
+            ]
+        },
+        {
+            initials: 'LC', name: 'Luciana Costa', id: '#10455',
+            date: '22/07/2026', time: '09:00', type: 'Pré-natal',
+            duration: '45 min',
+            diagnosis: 'Gestação de baixo risco — 2º trimestre', cid: 'CID-10 Z34.0',
+            evolution: 'Paciente em acompanhamento pré-natal (24 semanas). AF: MF presente, BU: 24 cm, CF: 142 bpm. PA: 118x76 mmHg. Peso: 68,4 kg (+6,2 kg). Exames de rotina normais. Sorologias não reagentes. USG morfológica normal. Orientada sobre sinais de alerta e suplementação. Retorno em 30 dias.',
+            prescriptions: [
+                { name: 'Sulfato ferroso 40mg', details: '1 comprimido • 1x ao dia • contínuo' },
+                { name: 'Ácido fólico 5mg', details: '1 comprimido • 1x ao dia • contínuo' },
+                { name: 'Cálcio + Vitamina D', details: '1 comprimido • 1x ao dia • contínuo' }
+            ],
+            exams: [
+                { name: 'USG morfológica', icon: 'pregnancy', status: 'completed' },
+                { name: 'TOTG 75g', icon: 'lab_profile', status: 'completed' },
+                { name: 'Urocultura', icon: 'biotech', status: 'completed' }
+            ]
+        }
+    ];
+
+    // Renderizar tabela
+    function renderTable() {
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = consultations.map((c, idx) => `
+            <tr>
+                <td>
+                    <div class="phc-patient-cell">
+                        <div class="phc-patient-avatar">${c.initials}</div>
+                        <div>
+                            <div class="phc-patient-name">${c.name}</div>
+                            <div class="phc-patient-id">ID ${c.id}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="phc-date-cell">
+                        <span class="phc-date-main">${c.date}</span>
+                        <span class="phc-date-sub">${c.time} • ${c.type}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="phc-diagnosis-cell">
+                        <span class="phc-diagnosis-main">${c.diagnosis}</span>
+                        <span class="phc-diagnosis-cid">${c.cid}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="phc-counter-badge ${c.prescriptions.length === 0 ? 'zero' : ''}">
+                        <span class="material-symbols-rounded">prescriptions</span>
+                        ${c.prescriptions.length} ${c.prescriptions.length === 1 ? 'receita' : 'receitas'}
+                    </span>
+                </td>
+                <td>
+                    <span class="phc-counter-badge ${c.exams.length === 0 ? 'zero' : ''}">
+                        <span class="material-symbols-rounded">biotech</span>
+                        ${c.exams.length} ${c.exams.length === 1 ? 'exame' : 'exames'}
+                    </span>
+                </td>
+                <td class="text-end">
+                    <button class="phc-btn-details" onclick="openConsultationModal(${idx})">
+                        <span class="material-symbols-rounded">visibility</span>
+                        Detalhes
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Abrir modal com dados da consulta
+    function openConsultationModal(idx) {
+        const c = consultations[idx];
+        document.getElementById('modalAvatar').textContent = c.initials;
+        document.getElementById('modalSubtitle').textContent = `Atendimento #AT-${String(10000 + idx).padStart(5, '0')} • ${c.name}`;
+        document.getElementById('modalPatient').textContent = `${c.name} (ID ${c.id})`;
+        document.getElementById('modalDate').textContent = `${c.date} às ${c.time}`;
+        document.getElementById('modalType').textContent = c.type;
+        document.getElementById('modalDuration').textContent = c.duration;
+        document.getElementById('modalDiagnosis').textContent = c.diagnosis;
+        document.getElementById('modalCid').textContent = c.cid;
+        document.getElementById('modalEvolution').textContent = c.evolution;
+
+        // Receitas
+        const prescriptionsEl = document.getElementById('modalPrescriptions');
+        if (c.prescriptions.length === 0) {
+            prescriptionsEl.innerHTML = '<div style="color: var(--phc-muted); font-size: 0.88rem;">Nenhuma receita emitida nesta consulta.</div>';
+        } else {
+            prescriptionsEl.innerHTML = c.prescriptions.map(p => `
+                <div class="phc-prescription-item">
+                    <div class="phc-prescription-icon">
+                        <span class="material-symbols-rounded">medication</span>
+                    </div>
+                    <div>
+                        <div class="phc-prescription-name">${p.name}</div>
+                        <div class="phc-prescription-details">${p.details}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Exames
+        const examsEl = document.getElementById('modalExams');
+        if (c.exams.length === 0) {
+            examsEl.innerHTML = '<div style="color: var(--phc-muted); font-size: 0.88rem;">Nenhum exame solicitado nesta consulta.</div>';
+        } else {
+            examsEl.innerHTML = c.exams.map(e => `
+                <div class="phc-exam-item">
+                    <div class="phc-exam-info">
+                        <div class="phc-exam-icon">
+                            <span class="material-symbols-rounded">${e.icon}</span>
+                        </div>
+                        <div class="phc-exam-name">${e.name}</div>
+                    </div>
+                    <span class="phc-exam-status ${e.status}">
+                        ${e.status === 'completed' ? '✓ Concluído' : '⏳ Pendente'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('consultationModal'));
+        modal.show();
+    }
+
+    // Inicializar
+    renderTable();
+
+    // Paginação
+    document.querySelectorAll('.phc-page-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!this.disabled && !this.textContent.includes('...')) {
+                document.querySelectorAll('.phc-page-btn').forEach(b => b.classList.remove('active'));
+                if (!isNaN(this.textContent)) {
+                    this.classList.add('active');
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}
