@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% block title %}
+Exames
+{% endblock %}
+
+{% block content %}
+<!-- Material Symbols -->
+
+<style>
+        :root {
+            --primary-color: #8a2be2;
+            --primary-light: #efdbff;
+            --primary-dark: #6e00c1;
+            --surface-bg: #f8f9fa;
+            --text-main: #191c1d;
+            --text-muted: #4c4354;
+            --border-color: rgba(207, 194, 215, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--surface-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+            vertical-align: middle;
+        }
+
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #dcb8ff;
+            border-radius: 10px;
+        }
+
+        .avatar-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid white;
+        }
+
+        .status-online {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #198754;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .unread-badge {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 10px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bg-primary-fixed { background-color: var(--primary-light); color: var(--primary-color); }
+        .bg-error-container { background-color: #ffdad6; color: #ba1a1a; }
+        .bg-secondary-fixed { background-color: #eaddff; color: #6c49b2; }
+
+        .chat-container { height: 650px; }
+
+        .message-professional .message-bubble {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 0;
+        }
+
+        .message-patient .message-bubble {
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .message-bubble {
+            padding: 1rem;
+            border-radius: 1rem;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .file-card {
+            border: 1px solid var(--glass-border);
+            transition: all 0.2s;
+        }
+        .file-card:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .text-primary-custom { color: var(--primary-color); }
+        .label-caps {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .pro-status-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+    </style>
+
+
+<main class="container py-5">
+<!-- 1. Header Section -->
+<header class="row align-items-end mb-4">
+<div class="col-lg-8 mb-3 mb-lg-0">
+<h1 class="fw-bold text-primary-custom mb-2">Mensagens</h1>
+<p class="text-muted mb-0" style="max-width: 600px;">
+                Comunique-se de forma segura e direta com sua equipe de cuidados multidisciplinar. Esclareça dúvidas, receba orientações e acompanhe sua jornada de saúde.
+            </p>
+</div>
+<div class="col-lg-4 text-lg-end">
+<button class="btn btn-primary-custom">
+<span class="material-symbols-outlined me-1">add</span>
+                Nova Mensagem
+            </button>
+</div>
+</header>
+<!-- 2. Summary Cards -->
+<section class="row g-4 mb-4">
+<div class="col-md-6 col-lg-3">
+<div class="glass-card p-4 d-flex align-items-center">
+<div class="icon-box bg-primary-fixed me-3">
+<span class="material-symbols-outlined fs-4">chat</span>
+</div>
+<div>
+<p class="label-caps text-muted mb-0">Conversas Ativas</p>
+<h3 class="fw-bold text-primary-custom mb-0">08</h3>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="glass-card p-4 d-flex align-items-center">
+<div class="icon-box bg-error-container me-3">
+<span class="material-symbols-outlined fs-4">mark_unread_chat_alt</span>
+</div>
+<div>
+<p class="label-caps text-muted mb-0">Não Lidas</p>
+<h3 class="fw-bold text-danger mb-0">03</h3>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="glass-card p-4 d-flex align-items-center">
+<div class="icon-box bg-secondary-fixed me-3">
+<span class="material-symbols-outlined fs-4">groups</span>
+</div>
+<div>
+<p class="label-caps text-muted mb-0">Profissionais On</p>
+<h3 class="fw-bold text-secondary mb-0">12</h3>
+</div>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="glass-card p-4 d-flex align-items-center">
+<div class="icon-box bg-light me-3">
+<span class="material-symbols-outlined fs-4 text-primary-custom" style="font-variation-settings: 'FILL' 1;">history</span>
+</div>
+<div>
+<p class="label-caps text-muted mb-0">Último Contato</p>
+<h3 class="fw-bold text-primary-custom mb-0" style="font-size: 1.25rem;">Há 15 min</h3>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Main Layout: Chat Columns -->
+<div class="row g-4">
+<!-- Left Column -->
+<aside class="col-lg-4 d-flex flex-column gap-4">
+<div class="glass-card d-flex flex-column chat-container overflow-hidden">
+<div class="p-3 border-bottom border-white">
+<div class="input-group">
+<span class="input-group-text bg-white border-0"><span class="material-symbols-outlined text-muted">search</span></span>
+<input class="form-control border-0 bg-white" placeholder="Buscar conversas..." style="font-size: 14px;" type="text"/>
+</div>
+</div>
+<div class="flex-grow-1 overflow-y-auto custom-scrollbar">
+                    {% set convos = [
+                        {'name': 'Dr. Ricardo Silva', 'specialty': 'Cardiologista', 'msg': 'Olá! Como estão os batimentos hoje?', 'time': '10:45', 'unread': 2, 'online': true},
+                        {'name': 'Dra. Elena Vasquez', 'specialty': 'Nutricionista', 'msg': 'O plano alimentar foi atualizado.', 'time': 'Ontem', 'unread': 0, 'online': true},
+                        {'name': 'Enf. Marcos Junior', 'specialty': 'Home Care', 'msg': 'Confirmado para amanhã às 08h.', 'time': 'Ontem', 'unread': 0, 'online': false},
+                        {'name': 'Dra. Sarah Bloom', 'specialty': 'Genética', 'msg': 'O resultado do sequenciamento saiu.', 'time': 'Segunda', 'unread': 1, 'online': true},
+                        {'name': 'Suporte Técnico', 'specialty': 'Plataforma', 'msg': 'Seu acesso foi renovado com sucesso.', 'time': '05 Abr', 'unread': 0, 'online': false}
+                    ] %}
+
+                    {% for convo in convos %}
+                    <button class="w-100 border-0 bg-transparent p-3 d-flex align-items-center gap-3 border-bottom border-light hover-shadow transition-all text-start">
+<div class="position-relative">
+<div class="avatar-img shadow-sm" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAW1GMLa5HbuBKPDLaMsnvrifLr4L24Lws-LJi3-1m8XJCbxdexM-VloAT4achDKDmSuX0QOH5abBoPik9n3l3PJEXcOXkqgIN4kadfm4Fk2O80NYjFbMKq7JKBBun8eFWn1OmFfCeF-jWg94HwsmhwDN6sCm39sEm4ldkFWmt2pPRCmkr1W_bCtb3O-5sbB1H-KqcM23lJDzQt2xUFpZZTmKyMJ395he5DsmruGOTSsXramVLxuZKxgaN62RKlrR9tAto1gyryydoa')"></div>
+                            {% if convo.online %}<div class="status-online"></div>{% endif %}
+                        </div>
+<div class="flex-grow-1 min-vw-0 overflow-hidden">
+<div class="d-flex justify-content-between">
+<h6 class="fw-bold mb-0 text-truncate">{{ convo.name }}</h6>
+<small class="text-muted" style="font-size: 10px;">{{ convo.time }}</small>
+</div>
+<p class="text-primary-custom mb-0 fw-medium" style="font-size: 11px;">{{ convo.specialty }}</p>
+<p class="text-muted text-truncate mb-0" style="font-size: 13px;">{{ convo.msg }}</p>
+</div>
+                        {% if convo.unread > 0 %}
+                        <div class="unread-badge">{{ convo.unread }}</div>
+                        {% endif %}
+                    </button>
+                    {% endfor %}
+                </div>
+</div>
+<!-- Side Card: Available Professionals -->
+<div class="glass-card p-4">
+<h6 class="fw-bold text-primary-custom d-flex align-items-center gap-2 mb-3">
+<span class="material-symbols-outlined">person_search</span>
+                    Profissionais Disponíveis
+                </h6>
+<div class="d-flex flex-column gap-2">
+                    {% set pros = [
+                        {'role': 'Clínico Geral', 'status': 'Online'},
+                        {'role': 'Fisioterapeuta', 'status': 'Em atendimento'},
+                        {'role': 'Psicólogo', 'status': 'Online'},
+                        {'role': 'Laboratório', 'status': 'Offline'}
+                    ] %}
+                    {% for pro in pros %}
+                    <div class="d-flex justify-content-between align-items-center p-2 rounded-3 hover-bg-white cursor-pointer transition-all">
+<div class="d-flex align-items-center gap-2">
+<div class="icon-box bg-light text-primary-custom" style="width: 32px; height: 32px;">
+<span class="material-symbols-outlined fs-6">medical_services</span>
+</div>
+<span class="small fw-medium">{{ pro.role }}</span>
+</div>
+<span class="pro-status-tag {% if pro.status == 'Online' %}bg-success-subtle text-success{% elif pro.status == 'Offline' %}bg-secondary-subtle text-secondary{% else %}bg-warning-subtle text-warning{% endif %}">
+                            {{ pro.status }}
+                        </span>
+</div>
+                    {% endfor %}
+                </div>
+</div>
+</aside>
+<!-- Right Column -->
+<div class="col-lg-8 d-flex flex-column gap-4">
+<!-- Chat Window -->
+<div class="glass-card d-flex flex-column chat-container overflow-hidden">
+<!-- Chat Header -->
+<div class="p-3 border-bottom border-white bg-white bg-opacity-25 d-flex justify-content-between align-items-center">
+<div class="d-flex align-items-center gap-3">
+<div class="avatar-img" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBp3sa6mwymFAc254GJDLHofJvVRBdoibdKSxRuztfnrDSC7q5AsgUuKAwneVkHJ0kVMaUjEI6CxHwRpa3Mx48Sgz9WWgH-_ihL01_jxdFEJCFPQPCfZm00LNLwvhmzNCN8JsHfE6dMd_mkaFB_rVaS2x-P8i6OUaKVvv8U7NH5UwVefrRmlRY5m9CmKwuMjjdIkLop5zCG02_MvZq8men6PjMYaFq2qnTonqFQZ42qDKRM9VhDXUFyH7h7I1HAs3NTYdsWpNAHQceS')"></div>
+<div>
+<h6 class="fw-bold mb-0">Dr. Ricardo Silva</h6>
+<p class="mb-0 text-primary-custom d-flex align-items-center gap-1" style="font-size: 11px;">
+<span class="rounded-circle bg-success d-inline-block" style="width: 6px; height: 6px;"></span>
+                                Cardiologista • Online agora
+                            </p>
+</div>
+</div>
+<div class="d-flex gap-1">
+<button class="btn btn-sm btn-link text-muted p-2 rounded-circle hover-bg-primary-light"><span class="material-symbols-outlined">call</span></button>
+<button class="btn btn-sm btn-link text-muted p-2 rounded-circle hover-bg-primary-light"><span class="material-symbols-outlined">videocam</span></button>
+<button class="btn btn-sm btn-link text-muted p-2 rounded-circle hover-bg-primary-light"><span class="material-symbols-outlined">info</span></button>
+</div>
+</div>
+<!-- Message History -->
+<div class="flex-grow-1 overflow-y-auto p-4 custom-scrollbar bg-light bg-opacity-10">
+<div class="d-flex flex-column gap-4">
+<!-- Pro Message -->
+<div class="d-flex gap-2 message-professional" style="max-width: 80%;">
+<div class="avatar-img flex-shrink-0" style="width: 32px; height: 32px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCSsWBGPUyGDZHwJysz_FcHEANyq0qCUB4DabfjfaYEvUAI9F3hFYH47EiWK4JK5l_V26o5u1-WfyqSirFBZ2MHxymMDn0G1RxpaqmJFhCEEU9rerkoU2V9RWu2T3uIbWT8DBcJd3fFWztGPw8c3RJLC1_cTdMpM-6JvuW0iKgD3XmgfvL9pdUevdm4zLz7M34CGC-y5UWEVOM3p7fCxUXq7hOjxiXRvABFlhev5sXtTdObXicYuG2zCxrG5alInje6dKfe6Q_luY-b')"></div>
+<div class="message-bubble">
+                                Olá! Acabei de revisar os dados do seu wearable do último fim de semana. Notei uma leve oscilação na pressão arterial no domingo à tarde. Você sentiu algum desconforto ou dor de cabeça nesse período?
+                                <div class="text-end mt-1 text-muted" style="font-size: 9px;">09:12</div>
+</div>
+</div>
+<!-- Patient Message -->
+<div class="d-flex gap-2 flex-row-reverse message-patient ms-auto" style="max-width: 80%;">
+<div class="avatar-img flex-shrink-0 d-flex align-items-center justify-content-center bg-primary-custom text-white fw-bold" style="width: 32px; height: 32px; font-size: 10px;">EU</div>
+<div class="message-bubble">
+                                Bom dia, Dr.! No domingo fiz uma caminhada mais longa que o habitual no sol. Senti um pouco de tontura ao final, mas passou após o descanso.
+                                <div class="text-end mt-1 text-white text-opacity-75" style="font-size: 9px;">10:20</div>
+</div>
+</div>
+<!-- Pro Message -->
+<div class="d-flex gap-2 message-professional" style="max-width: 80%;">
+<div class="avatar-img flex-shrink-0" style="width: 32px; height: 32px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHL4pWE40eqntpFGdB10sz4f384VWd_PC7MFbPYb62g3-C5UnKvObnhESRKCUaq15NYZ43iy4vHvkkf3DqnP1urEznkwrA6Qrju8YmWty8NJhOxQkhHIPCSWLo363FyfeSUKV4Dm1bXXTD9mpwOSdUoC3S6Z6VcJ95hIU6WTHBeE0vTc7gQDfmJYDQZ6lOwuU34bZb84-7lXAqt_nL3v_5cq3C9tJHPuVMjSYNcIPxs7G79alFtpeboDoofhSMmMuYGWH7U2bjyt7L')"></div>
+<div class="message-bubble">
+                                Entendi. Pode ser desidratação combinada com o esforço. Por favor, anexe aqui o relatório do seu medidor de glicemia também, para descartarmos outras causas.
+                                <div class="text-end mt-1 text-muted" style="font-size: 9px;">10:45</div>
+</div>
+</div>
+<div class="text-center">
+<span class="label-caps bg-white bg-opacity-50 px-3 py-1 border rounded-pill text-muted">Hoje</span>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-3 border-top border-white bg-white bg-opacity-25">
+<div class="d-flex align-items-center gap-2">
+<button class="btn btn-link text-primary-custom p-2"><span class="material-symbols-outlined">attach_file</span></button>
+<div class="flex-grow-1 position-relative">
+<textarea class="form-control border-0 bg-white bg-opacity-75 rounded-4 px-3 py-2" placeholder="Escreva sua mensagem..." rows="1" style="font-size: 14px; resize: none; padding-right: 45px;"></textarea>
+<button class="btn btn-primary-custom p-1 position-absolute end-0 top-50 translate-middle-y me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 10px;">
+<span class="material-symbols-outlined fs-6" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Card: Shared Files -->
+<div class="glass-card p-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h6 class="fw-bold text-primary-custom d-flex align-items-center gap-2 mb-0">
+<span class="material-symbols-outlined">folder_shared</span>
+                        Arquivos Compartilhados
+                    </h6>
+<a class="text-primary-custom fw-bold text-decoration-none small" href="#">Ver todos</a>
+</div>
+<div class="row g-3">
+                    {% set files = [
+                        {'name': 'Checkup_Cardio.pdf', 'type': 'PDF', 'date': '02/05/2024', 'icon': 'description', 'color': 'text-danger'},
+                        {'name': 'Exame_Sangue_Abril.pdf', 'type': 'PDF', 'date': '28/04/2024', 'icon': 'description', 'color': 'text-danger'},
+                        {'name': 'Receita_Digital.jpg', 'type': 'IMG', 'date': '15/04/2024', 'icon': 'image', 'color': 'text-info'},
+                        {'name': 'Plano_Alimentar.docx', 'type': 'DOC', 'date': '10/04/2024', 'icon': 'article', 'color': 'text-primary'}
+                    ] %}
+                    {% for file in files %}
+                    <div class="col-md-6">
+<div class="file-card d-flex align-items-center gap-2 p-2 rounded-3">
+<div class="icon-box bg-light {{ file.color }}" style="width: 40px; height: 40px;">
+<span class="material-symbols-outlined">
+{{ file.icon }}
+</span>
+</div>
+<div class="flex-grow-1 overflow-hidden">
+<p class="mb-0 fw-medium text-truncate small">{{ file.name }}</p>
+<small class="text-muted" style="font-size: 9px;">{{ file.type }} • {{ file.date }}</small>
+</div>
+<button class="btn btn-link btn-sm text-muted p-1 hover-text-primary"><span class="material-symbols-outlined">download</span></button>
+</div>
+</div>
+                    {% endfor %}
+                </div>
+</div>
+</div>
+</div>
+<!-- 4. Bottom Section: Recent History -->
+<section class="glass-card mt-4 overflow-hidden">
+<div class="p-4 border-bottom border-white d-flex justify-content-between align-items-center bg-white bg-opacity-25">
+<h6 class="fw-bold mb-0">Histórico Recente de Interações</h6>
+<div class="d-flex gap-3">
+<span class="small text-muted d-flex align-items-center gap-1"><span class="rounded-circle bg-success d-inline-block" style="width: 8px; height: 8px;"></span> Respondido</span>
+<span class="small text-muted d-flex align-items-center gap-1"><span class="rounded-circle bg-warning d-inline-block" style="width: 8px; height: 8px;"></span> Pendente</span>
+</div>
+</div>
+<div class="table-responsive">
+
+                    {% set history = [
+                        {'date': '05/05/2024', 'pro': 'Dr. Ricardo Silva', 'subject': 'Relatório Wearable - Oscilação PA', 'status': 'Respondido', 'color': 'text-success bg-success-subtle'},
+                        {'date': '04/05/2024', 'pro': 'Dra. Elena Vasquez', 'subject': 'Dúvida Dieta Cetogênica', 'status': 'Respondido', 'color': 'text-success bg-success-subtle'},
+                        {'date': '03/05/2024', 'pro': 'Enf. Marcos Junior', 'subject': 'Agendamento Curativo', 'status': 'Respondido', 'color': 'text-success bg-success-subtle'},
+                        {'date': '02/05/2024', 'pro': 'Suporte Técnico', 'subject': 'Erro no Upload de Arquivo', 'status': 'Pendente', 'color': 'text-warning bg-warning-subtle'}
+                    ] %}
+                    {% for item in history %}
+
+                    {% endfor %}
+                <table class="table table-hover mb-0">
+<thead class="bg-light">
+<tr>
+<th class="label-caps py-3 ps-4 text-muted">Data</th>
+<th class="label-caps py-3 text-muted">Profissional</th>
+<th class="label-caps py-3 text-muted">Assunto</th>
+<th class="label-caps py-3 text-muted">Status</th>
+<th class="label-caps py-3 text-end pe-4 text-muted">Ações</th>
+</tr>
+</thead>
+<tbody>
+
+{% for item in history %}
+<tr>
+
+<td>{{ item.date }}</td>
+
+<td>{{ item.pro }}</td>
+
+<td>{{ item.subject }}</td>
+
+<td>
+<span class="badge {{ item.color }}">
+{{ item.status }}
+</span>
+</td>
+
+<td>
+<button class="btn btn-sm btn-link">
+<span class="material-symbols-outlined">
+open_in_new
+</span>
+</button>
+</td>
+
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+</div>
+<div class="p-3 text-center bg-white bg-opacity-10">
+<button class="btn btn-link text-primary-custom fw-bold text-decoration-none small d-flex align-items-center justify-content-center gap-2 mx-auto">
+                Ver Histórico Completo
+                <span class="material-symbols-outlined fs-5">trending_flat</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Bootstrap Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

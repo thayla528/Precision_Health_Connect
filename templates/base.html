@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+{% block title %}
+Precision Health Connect
+{% endblock %}
+</title>
+
+
+<!-- Bootstrap -->
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+
+<!-- Fonts -->
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+<!-- Icons -->
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+rel="stylesheet">
+
+
+
+<style>
+
+
+
+
+.glass-card{
+    background:var(--gradient-card);
+    backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.45);
+    border-radius:20px;
+}
+
+.btn-primary-custom,
+.btn-primary{
+    background:var(--gradient-button);
+    border:none;
+    color:white;
+}
+
+.btn-primary-custom:hover,
+.btn-primary:hover{
+    background:linear-gradient(135deg,#6d28d9,#a855f7);
+}
+
+.table thead{
+    background:linear-gradient(135deg,#500989,#7c3aed);
+    color:white;
+}
+
+.table tbody tr:hover{
+    background:#f3e8ff;
+}
+
+.form-control,
+.form-select{
+    background:white;
+    border:1px solid #c084fc;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#7c3aed;
+    box-shadow:0 0 0 .2rem rgba(124,58,237,.25);
+}
+
+footer{
+    background:linear-gradient(135deg,#500989,#7c3aed);
+    color:white;
+}
+
+.modal-content{
+    background:var(--gradient-card);
+}
+
+.alert-success,
+.alert-danger,
+.alert-warning,
+.alert-info{
+    background:linear-gradient(135deg,#ede9fe,#ffffff);
+    color:#500989;
+    border:1px solid #a855f7;
+}
+
+.material-symbols-outlined{
+    color:#7c3aed;
+}
+
+h1,h2,h3,h4,h5{
+    color:#500989;
+}
+
+/* ===========================
+   FLASH MESSAGES
+=========================== */
+
+/* ===========================
+   FLASH MESSAGES
+=========================== */
+
+.flash-message{
+
+    max-width:520px;
+
+    margin:20px auto;
+
+    padding:16px 25px;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(243,229,245,.95),
+        rgba(255,255,255,.95)
+    );
+
+    backdrop-filter:blur(18px);
+
+    border:2px solid #8e44ad;
+
+    border-radius:18px;
+
+    color:#500989;
+
+    font-size:1rem;
+
+    font-weight:700;
+
+    text-align:center;
+
+    box-shadow:
+    0 10px 30px rgba(80,9,137,.18);
+
+}
+
+
+.flash-message .btn-close{
+
+    transform:scale(.85);
+
+}
+
+
+/* todas as categorias ficam no mesmo padrão */
+
+.flash-success,
+.flash-danger,
+.flash-warning,
+.flash-info{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f3e5f5,
+        #ffffff
+    );
+
+    border-color:#8e44ad;
+
+    color:#500989;
+
+}
+
+
+body {
+
+
+font-family:'Inter',sans-serif;
+
+background:
+linear-gradient(
+135deg,
+#f3e5f5 0%,
+#ffffff 100%
+);
+
+
+min-height:100vh;
+
+color:var(--primary-purple);
+
+
+}
+
+
+
+/* TITULOS */
+
+h1,h2,h3,h4,h5,.headline{
+
+
+font-family:'Manrope',sans-serif;
+
+font-weight:700;
+
+
+}
+
+
+
+/* =====================
+NAVBAR
+===================== */
+
+
+.navbar {
+
+
+height:80px;
+
+
+background:
+rgba(255,255,255,0.8)!important;
+
+
+backdrop-filter:blur(12px);
+
+
+border-bottom:
+1px solid var(--glass-border);
+
+
+z-index:2000;
+
+
+}
+
+
+
+
+.branding {
+
+
+font-family:'Manrope';
+
+font-size:24px;
+
+font-weight:800;
+
+color:var(--primary-purple);
+
+cursor:pointer;
+
+
+}
+
+
+
+
+
+/* =====================
+SIDEBAR
+===================== */
+
+
+.sidebar {
+
+
+width:260px;
+
+
+position:fixed;
+
+
+top:80px;
+
+
+bottom:0;
+
+
+left:0;
+
+
+background:
+rgba(255,255,255,0.45);
+
+
+backdrop-filter:blur(20px);
+
+
+border-right:
+1px solid var(--glass-border);
+
+
+padding:25px 15px;
+
+
+transition:.3s ease;
+
+
+z-index:1000;
+
+
+}
+
+
+
+
+
+.sidebar.collapsed {
+
+
+transform:translateX(-260px);
+
+
+}
+
+
+
+
+
+/* =====================
+MENU
+===================== */
+
+
+
+
+
+.nav-link {
+
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+
+padding:12px 15px;
+
+
+margin-bottom:6px;
+
+
+border-radius:12px;
+
+
+text-decoration:none;
+
+
+color:var(--primary-purple);
+
+
+border:1px solid transparent;
+
+
+transition:.3s ease;
+
+
+}
+
+
+
+.nav-link:hover {
+
+
+background:white;
+
+
+color:var(--primary-purple);
+
+
+border:1px solid var(--medium-lilac);
+
+
+box-shadow:
+0 0 8px rgba(225,190,231,0.7);
+
+
+}
+
+
+
+.nav-link.active {
+
+
+background:var(--light-lilac);
+
+
+border:1px solid var(--medium-lilac);
+
+
+color:var(--primary-purple);
+
+
+font-weight:600;
+
+
+}
+
+/* =====================
+CONTEUDO
+===================== */
+
+
+.main-content{
+    margin-left:260px;
+    margin-top:80px;
+    padding:30px;
+
+    width:calc(100% - 260px);
+
+    min-height:calc(100vh - 80px);
+
+    transition:.3s;
+}
+
+
+
+
+.main-content.expanded {
+
+
+margin-left:0;
+
+
+}
+
+
+
+
+
+/* =====================
+GLASS CARD
+===================== */
+
+
+.glass-card {
+
+
+background:
+var(--glass-bg);
+
+
+backdrop-filter:blur(12px);
+
+
+border:
+1px solid var(--glass-border);
+
+
+border-radius:20px;
+
+
+box-shadow:
+0 8px 32px rgba(106,27,154,.08);
+
+
+}
+
+
+
+
+
+/* ICONES */
+
+
+.profile-icon {
+
+
+width:45px;
+
+height:45px;
+
+
+background:var(--light-lilac);
+
+
+border-radius:50%;
+
+
+display:flex;
+
+
+align-items:center;
+
+
+justify-content:center;
+
+
+color:var(--primary-purple);
+
+
+}
+
+
+
+
+/* BOTAO */
+
+
+.btn-lilac {
+
+
+background:var(--medium-lilac);
+
+
+border:none;
+
+
+color:var(--primary-purple);
+
+
+font-weight:600;
+
+
+border-radius:50px;
+
+
+padding:8px 25px;
+
+
+}
+
+
+
+.btn-lilac:hover {
+
+
+background:var(--dark-lilac);
+
+color:white;
+
+
+}
+
+
+
+/* RESPONSIVO */
+
+
+@media(max-width:992px){
+
+
+.sidebar{
+
+transform:translateX(-260px);
+
+}
+
+
+.sidebar.mobile-open{
+
+
+transform:translateX(0);
+
+}
+
+
+.main-content{
+
+
+margin-left:0;
+
+
+}
+
+
+}
+
+/* REMOVE AZUL DO BOOTSTRAP */
+
+.text-primary,
+a,
+a:hover,
+.navbar a,
+.btn-link {
+
+    color:var(--primary-purple)!important;
+
+}
+
+
+.btn-edit-profile {
+
+    border:2px solid white;
+
+    color:white;
+
+    background:transparent;
+
+    border-radius:50px;
+
+    padding:8px 25px;
+
+    font-weight:600;
+
+    transition:.3s ease;
+
+}
+
+:root {
+
+--primary-purple:#8e44ad;
+
+--primary-dark:#6a1b9a;
+
+--light-lilac:#f3e5f5;
+
+--medium-lilac:#e1bee7;
+
+--dark-lilac:#ce93d8;
+
+--glass-bg:rgba(255,255,255,0.75);
+
+--glass-border:rgba(206,147,216,0.35);
+
+}
+
+.btn-edit-profile:hover {
+
+    --primary-purple:#8e44ad;
+
+--primary-dark:#6a1b9a;
+
+--light-lilac:#f3e5f5;
+
+--medium-lilac:#e1bee7;
+
+--dark-lilac:#ce93d8;
+
+--glass-bg:rgba(255,255,255,0.75);
+
+--glass-border:rgba(206,147,216,0.35);
+
+}
+
+/* Remove azul dos links padrão */
+
+a {
+
+    text-decoration:none;
+
+}
+
+
+
+/* Ícones Material */
+
+.material-symbols-outlined {
+
+    color:var(--primary-purple);
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<!-- =========================
+NAVBAR SUPERIOR
+========================= -->
+
+
+<nav class="navbar fixed-top px-4">
+
+
+<div class="container-fluid">
+
+
+<div class="branding" id="toggleSidebar">
+
+    Precision Health Connect
+
+</div>
+
+
+
+<div class="d-flex align-items-center gap-3">
+
+
+{% if session.get("role") == "administrator" %}
+
+<span class="fw-semibold">
+Administrador
+</span>
+
+{% elif session.get("role") == "professional" %}
+
+<span class="fw-semibold">
+Profissional de Saúde
+</span>
+
+{% else %}
+
+<span class="fw-semibold">
+Paciente
+</span>
+
+{% endif %}
+
+
+
+
+<a href="{{ url_for('auth.logout') }}"
+class="text-decoration-none"
+style="color:var(--primary-purple);">
+
+
+<span class="material-symbols-outlined">
+
+logout
+
+</span>
+
+
+</a>
+
+
+</div>
+
+
+</div>
+
+
+
+</nav>
+
+
+
+
+
+
+<!-- =========================
+SIDEBAR
+========================= -->
+
+
+<aside class="sidebar" id="sidebar">
+
+
+
+<!-- PERFIL LATERAL -->
+
+
+<div class="text-center mb-4">
+
+
+<div class="profile-icon mx-auto mb-3"
+style="width:100px;height:100px;">
+
+
+<span class="material-symbols-outlined"
+style="font-size:55px;">
+
+person
+
+</span>
+
+
+</div>
+
+
+{% if session.get("role") == "administrator" %}
+
+<h5 class="headline mb-0">
+Administrador
+</h5>
+
+<small class="text-muted">
+Painel administrativo
+</small>
+
+
+{% elif session.get("role") == "professional" %}
+
+<h5 class="headline mb-0">
+Profissional de Saúde
+</h5>
+
+<small class="text-muted">
+Área profissional
+</small>
+
+
+{% else %}
+
+<h5 class="headline mb-0">
+Paciente
+</h5>
+
+<small class="text-muted">
+Área do paciente
+</small>
+
+{% endif %}
+
+
+
+</div>
+
+<nav class="nav flex-column">
+
+{% if session.get("role") == "administrator" %}
+
+<!-- =====================
+MENU ADMIN
+===================== -->
+
+<a href="/admin"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+dashboard
+</span>
+
+Dashboard
+
+</a>
+
+<a href="{{ url_for('web.admin_invitations') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+mail
+</span>
+
+Convites
+
+</a>
+
+<a href="/admin/users"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+groups
+</span>
+
+Usuários
+
+</a>
+
+<a href="/admin/patients"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+personal_injury
+</span>
+
+Pacientes
+
+</a>
+
+<a href="/admin/settings"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+settings
+</span>
+
+Configurações
+
+</a>
+
+{% elif session.get("role") == "professional" %}
+
+<!-- =====================
+MENU PROFISSIONAL
+===================== -->
+
+<a href="{{ url_for('web.health_professional_zone') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+medical_services
+</span>
+
+Dashboard
+
+</a>
+
+
+{% else %}
+
+<!-- =====================
+MENU PACIENTE
+===================== -->
+
+<a href="{{ url_for('web.patient_dashboard') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+space_dashboard
+</span>
+
+Dashboard
+
+</a>
+
+<a href="{{ url_for('web.patient_profile') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+account_circle
+</span>
+
+Meu Perfil
+
+</a>
+
+<a href="{{ url_for('web.appointments') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+event_available
+</span>
+
+Consultas
+
+</a>
+
+<a href="{{ url_for('web.medical_record') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+folder_shared
+</span>
+
+Prontuário
+
+</a>
+
+<a href="{{ url_for('web.exams') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+lab_profile
+</span>
+
+Exames
+
+</a>
+
+<a href="{{ url_for('web.recipes') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+medication
+</span>
+
+Receitas
+
+</a>
+
+<a href="{{ url_for('web.messages') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+forum
+</span>
+
+Mensagens
+
+</a>
+
+{% endif %}
+
+</nav>
+
+</aside>
+
+<!-- =========================
+CONTEÚDO DAS PÁGINAS
+========================= -->
+
+
+<main class="main-content" id="mainContent">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-4">
+
+                {% for category, message in messages %}
+
+                    <div class="flash-message flash-{{ category }} alert-dismissible fade show shadow-lg" role="alert">
+
+                        {{ message }}
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+        {% endif %}
+    {% endwith %}
+
+
+    {% block content %}
+
+    {% endblock %}
+
+
+</main>
+
+
+
+
+
+<!-- =========================
+BOOTSTRAP JS
+========================= -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+<script>
+
+
+// =====================
+// SIDEBAR TOGGLE
+// =====================
+
+
+const toggleSidebar = document.getElementById("toggleSidebar");
+
+const sidebar = document.getElementById("sidebar");
+
+const mainContent = document.getElementById("mainContent");
+
+
+
+toggleSidebar.addEventListener("click", function(){
+
+
+    sidebar.classList.toggle("collapsed");
+
+
+    mainContent.classList.toggle("expanded");
+
+
+});
+
+
+
+
+
+// =====================
+// MOBILE SIDEBAR
+// =====================
+
+
+function openMobileSidebar(){
+
+
+    sidebar.classList.toggle("mobile-open");
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+</html>

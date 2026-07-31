@@ -1,53 +1,184 @@
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    flash
+)
 
-from flask_login import LoginManager, UserMixin
-from flask import Flask, render_template, url_for, flash, redirect, request, jsonify, Blueprint
+import requests
 
-auth_bp = Blueprint("auth", __name__)
-
-
-
+auth_bp = Blueprint(
+    "auth",
+    __name__
+)
 
 API_URL = "http://127.0.0.1:5001"
 
-DESVIAR_PROXY = {"http": None, "https": None}
 
-login_manager = LoginManager()
+# =====================================================
+# FINALIZAR CADASTRO
+# =====================================================
+
+@auth_bp.route("/register", methods=["GET", "POST"])
+def register():
+
+    if request.method == "POST":
+
+        invitation_code = request.form["invitation_code"]
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+
+        if password != confirm_password:
+
+            flash(
+                "As senhas não coincidem.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("auth.register")
+            )
+
+        response = requests.post(
+            f"{API_URL}/api/register",
+            json={
+                "invitation_code": invitation_code,
+                "password": password
+            }
+        )
+
+        print("STATUS API:", response.status_code)
+        print("RESPOSTA API:", response.text)
+
+        result = response.json()
+
+        if result["success"]:
+
+            flash(
+                "Cadastro realizado com sucesso!",
+                "success"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
+
+        flash(
+            result["message"],
+            "danger"
+        )
+
+    return render_template(
+        "user_registration.html"
+    )
 
 
+# =====================================================
+# LOGIN
+# =====================================================
 
-class UserSession(UserMixin):
-    def __init__(self, id, nome=None):
-        self.id = id
-        self.nome = nome
-
-@login_manager.user_loader
-def load_user(user_id):
-    if not user_id:
-        return None
-
-    # Resgata o nome do operador que foi guardado na sessão do Flask durante o login
-    from flask import session
-    nome_usuario = session.get('user_name', 'Operador FlashLog')
-
-    # Retorna a sessão mantendo a autenticação por ID, mas injetando o Nome para o HTML
-    return UserSession(id=user_id, nome=nome_usuario)
-
-@auth_bp.route('/')
-def home():
-    return redirect(url_for('auth.public_page'))
-
-@auth_bp.route('/public_page')
-def public_page():
-    return render_template('public_page.html')
-
-@auth_bp.route('/login')
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template('login.html')
 
-@auth_bp.route('/invitation')
-def invitation():
-    return render_template('invitation.html')
+    if request.method == "POST":
 
-@auth_bp.route('/user_registration')
-def user_registration():
-    return render_template('user_registration.html')
+        email = request.form["email"]
+        password = request.form["password"]
+
+        response = requests.post(
+            f"{API_URL}/login",
+            json={
+                "email": email,
+                "password": password
+            }
+        )
+
+        try:
+            print("STATUS API:", response.status_code)
+            print("RESPOSTA API:", response.text)
+
+            result = response.json()
+
+        except Exception:
+
+            flash(
+                "A API retornou uma resposta inválida.",
+                "danger"
+            )
+
+            return render_template(
+                "login.html"
+            )
+
+        if result["success"]:
+
+            session["user_id"] = result["user"]["id"]
+            session["user_name"] = result["user"]["full_name"]
+            session["user_email"] = result["user"]["email"]
+            session["role"] = result["user"]["role"]
+            session["profile_type"] = result["user"]["profile_type"]
+
+            flash(
+                f"Bem-vindo(a), {session['user_name']}!",
+                "success"
+            )
+
+            if session["role"] == "administrator":
+
+                return redirect(
+                    url_for("web.admin_invitations")
+                )
+
+            elif session["role"] == "patient":
+
+                return redirect(
+                    url_for("web.patient_dashboard")
+                )
+
+            elif session["role"] == "professional":
+
+                return redirect(
+                    url_for("web.health_professional_zone")
+                )
+
+            else:
+
+                flash(
+                    "Tipo de usuário inválido.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for("auth.login")
+                )
+
+        flash(
+            result["message"],
+            "danger"
+        )
+
+    return render_template(
+        "login.html"
+    )
+
+
+# =====================================================
+# LOGOUT
+# =====================================================
+
+@auth_bp.route("/logout")
+def logout():
+
+    session.clear()
+
+    flash(
+        "Logout realizado com sucesso.",
+        "info"
+    )
+
+    return redirect(
+        url_for("web.public_page")
+    )

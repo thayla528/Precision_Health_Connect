@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-
-<html lang="pt-BR"><head>
+<html lang="pt-BR">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Precision Health Connect</title>
@@ -12,619 +12,683 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #A855F7, #C084FC);
-            --main-bg-gradient: linear-gradient(135deg, #FFFFFF 0%, #F3E8FF 35%, #D8B4FE 70%, #C084FC 100%);
-            --lilac-border: #F3E8FF;
-            --main-purple: #8127cf;
-            --text-dark: #151c27;
-            --text-muted: #4d4354;
-        }
+    .flash-container {
+        margin-top: 95px;
+        position: relative;
+        z-index: 1055;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--main-bg-gradient);
-            background-attachment: fixed;
-            color: var(--text-dark);
-            overflow-x: hidden;
-        }
+    .flash-message {
+        max-width: 420px;
+        margin: 15px auto;
+        padding: 10px 18px;
+        background: rgba(237,233,254,.55);
+        backdrop-filter: blur(18px);
+        border: 1.5px solid #8b5cf6;
+        border-radius: 14px;
+        color: #500989;
+        font-size: .9rem;
+        font-weight: 600;
+        box-shadow: 0 8px 25px rgba(80,9,137,.08);
+    }
 
-        /* Navbar Styling */
-        .navbar {
-            transition: all 0.3s ease-in-out;
-            padding: 1.25rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+    .flash-message .btn-close {
+        transform: scale(.75);
+    }
 
-        .navbar.scrolled {
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(12px);
-            padding: 0.75rem 0;
-            box-shadow: 0 4px 20px rgba(129, 39, 207, 0.1);
-            border-bottom: 1px solid rgba(168, 85, 247, 0.1);
-        }
+    .flash-success,
+    .flash-danger,
+    .flash-warning,
+    .flash-info {
+        background: rgba(237,233,254,.55);
+        border-color: #8b5cf6;
+        color: #500989;
+    }
 
-        .navbar-brand {
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--main-purple) !important;
-            letter-spacing: -0.02em;
-        }
+    :root {
+        --primary-gradient: linear-gradient(135deg, #A855F7, #C084FC);
+        --main-bg-gradient: linear-gradient(135deg, #FFFFFF 0%, #F3E8FF 35%, #D8B4FE 70%, #C084FC 100%);
+        --lilac-border: #F3E8FF;
+        --main-purple: #8127cf;
+        --text-dark: #151c27;
+        --text-muted: #4d4354;
+    }
 
-        .nav-link {
-            font-weight: 500;
-            color: var(--text-muted) !important;
-            margin: 0 10px;
-            transition: color 0.3s;
-        }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: var(--main-bg-gradient);
+        background-attachment: fixed;
+        color: var(--text-dark);
+        overflow-x: hidden;
+    }
 
-        .nav-link:hover {
-            color: var(--main-purple) !important;
-        }
+    /* Navbar Styling */
+    .navbar {
+        transition: all 0.3s ease-in-out;
+        padding: 1.25rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-        /* Buttons */
-        .btn-gradient {
-            background: var(--primary-gradient);
-            color: white !important;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 24px;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+    .navbar.scrolled {
+        background: rgba(255, 255, 255, 0.8) !important;
+        backdrop-filter: blur(12px);
+        padding: 0.75rem 0;
+        box-shadow: 0 4px 20px rgba(129, 39, 207, 0.1);
+        border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+    }
 
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
-        }
+    .navbar-brand {
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--main-purple) !important;
+        letter-spacing: -0.02em;
+    }
 
-        .btn-outline-purple {
-            border: 1.5px solid var(--main-purple);
-            color: var(--main-purple);
-            border-radius: 8px;
-            padding: 10px 24px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
+    .nav-link {
+        font-weight: 500;
+        color: var(--text-muted) !important;
+        margin: 0 10px;
+        transition: color 0.3s;
+    }
 
-        .btn-outline-purple:hover {
-            background: rgba(129, 39, 207, 0.05);
-            border-color: var(--main-purple);
-            color: var(--main-purple);
-        }
+    .nav-link:hover {
+        color: var(--main-purple) !important;
+    }
 
-        /* Hero Section */
-        .hero-section {
-            padding: 160px 0 100px;
-        }
+    /* Buttons */
+    .btn-gradient {
+        background: var(--primary-gradient);
+        color: white !important;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-        .hero-title {
-            font-weight: 800;
-            font-size: 3.5rem;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.03em;
-        }
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+    }
 
-        .hero-text {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
-        }
+    .btn-outline-purple {
+        border: 1.5px solid var(--main-purple);
+        color: var(--main-purple);
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
 
-        /* Cards and Features */
-        .section-padding {
-            padding: 100px 0;
-        }
+    .btn-outline-purple:hover {
+        background: rgba(129, 39, 207, 0.05);
+        border-color: var(--main-purple);
+        color: var(--main-purple);
+    }
 
-        .section-title {
-            font-weight: 700;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            text-align: center;
-        }
+    /* Hero Section */
+    .hero-section {
+        padding: 160px 0 100px;
+    }
 
-        .feature-card {
-            background: white;
-            border: 1px solid var(--lilac-border);
-            border-radius: 20px;
-            padding: 40px;
-            height: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(129, 39, 207, 0.03);
-        }
+    .hero-title {
+        font-weight: 800;
+        font-size: 3.5rem;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.03em;
+    }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            border-color: #C084FC;
-            box-shadow: 0 15px 40px rgba(129, 39, 207, 0.08);
-        }
+    .hero-text {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+    }
 
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(168, 85, 247, 0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--main-purple);
-            margin-bottom: 20px;
-        }
+    /* Cards and Features */
+    .section-padding {
+        padding: 100px 0;
+    }
 
-        /* Steps */
-        .step-card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-        }
+    .section-title {
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
 
-        .step-number {
-            width: 40px;
-            height: 40px;
-            background: var(--main-purple);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-weight: 700;
-        }
+    .feature-card {
+        background: white;
+        border: 1px solid var(--lilac-border);
+        border-radius: 20px;
+        padding: 40px;
+        height: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(129, 39, 207, 0.03);
+    }
 
-        /* Accordion */
-        .accordion-item {
-            border: none;
-            background: white;
-            border-radius: 16px !important;
-            margin-bottom: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
+    .feature-card:hover {
+        transform: translateY(-5px);
+        border-color: #C084FC;
+        box-shadow: 0 15px 40px rgba(129, 39, 207, 0.08);
+    }
 
-        .accordion-button:not(.collapsed) {
-            background-color: rgba(168, 85, 247, 0.05);
-            color: var(--main-purple);
-            box-shadow: none;
-        }
+    .feature-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(168, 85, 247, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: var(--main-purple);
+        margin-bottom: 20px;
+    }
 
-        .accordion-button:focus {
-            box-shadow: none;
-            border-color: var(--main-purple);
-        }
+    /* Steps - ATUALIZADO PARA ALTURA IGUAL */
+    .step-card {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        height: 100%; /* Garante que ocupe toda a altura da coluna */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Distribui o conteúdo uniformemente */
+    }
 
-        /* Contact Form */
-        .form-control {
-            border-radius: 10px;
-            padding: 12px 16px;
-            border: 1px solid var(--lilac-border);
-        }
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: var(--main-purple);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-weight: 700;
+        flex-shrink: 0; /* Impede que o círculo encolha */
+    }
 
-        .form-control:focus {
-            border-color: var(--main-purple);
-            box-shadow: 0 0 0 4px rgba(129, 39, 207, 0.1);
-        }
+    /* Accordion */
+    .accordion-item {
+        border: none;
+        background: white;
+        border-radius: 16px !important;
+        margin-bottom: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
 
-        /* Footer */
-        footer {
-            background: #ffffff;
-            padding: 80px 0 40px;
-            border-top: 1px solid var(--lilac-border);
-        }
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(168, 85, 247, 0.05);
+        color: var(--main-purple);
+        box-shadow: none;
+    }
 
-        footer h5 {
-            font-weight: 700;
-            margin-bottom: 24px;
-        }
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: var(--main-purple);
+    }
 
-        footer ul {
-            padding: 0;
-            list-style: none;
-        }
+    /* Contact Form */
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 16px;
+        border: 1px solid var(--lilac-border);
+    }
 
-        footer ul li {
-            margin-bottom: 12px;
-        }
+    .form-control:focus {
+        border-color: var(--main-purple);
+        box-shadow: 0 0 0 4px rgba(129, 39, 207, 0.1);
+    }
 
-        footer ul li a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
+    /* Footer */
+    footer {
+        background: #ffffff;
+        padding: 80px 0 40px;
+        border-top: 1px solid var(--lilac-border);
+    }
 
-        footer ul li a:hover {
-            color: var(--main-purple);
-        }
+    footer h5 {
+        font-weight: 700;
+        margin-bottom: 24px;
+    }
 
-        @media (max-width: 991.98px) {
-            .hero-title { font-size: 2.5rem; }
-            .section-padding { padding: 60px 0; }
-        }
-    </style>
+    footer ul {
+        padding: 0;
+        list-style: none;
+    }
+
+    footer ul li {
+        margin-bottom: 12px;
+    }
+
+    footer ul li a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    footer ul li a:hover {
+        color: var(--main-purple);
+    }
+
+    @media (max-width: 991.98px) {
+        .hero-title { font-size: 2.5rem; }
+        .section-padding { padding: 60px 0; }
+    }
+</style>
 </head>
 <body>
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-<div class="container">
-<a class="navbar-brand" href="#">Precision Health Connect</a>
-<button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
-<span class="navbar-toggler-icon"></span>
-</button>
-<div class="collapse navbar-collapse" id="navbarNav">
-<ul class="navbar-nav mx-auto">
-<li class="nav-item"><a class="nav-link" href="#recursos">Recursos</a></li>
-<li class="nav-item"><a class="nav-link" href="#como-funciona">Como Funciona</a></li>
-<li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-<li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
-</ul>
-<div class="d-flex align-items-center gap-3">
-<a class="btn btn-outline-purple px-4" href="#">Entrar</a>
-<a class="btn btn-gradient" href="#">Solicitar Convite</a>
-</div>
-</div>
-</div>
+    <div class="container">
+        <a class="navbar-brand" href="#">Precision Health Connect</a>
+        <button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="#recursos">Recursos</a></li>
+                <li class="nav-item"><a class="nav-link" href="#como-funciona">Como Funciona</a></li>
+                <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+                <a class="btn btn-outline-purple px-4" href="{{ url_for('web.login') }}">Entrar</a>
+                <a class="btn btn-gradient" href="{{ url_for('web.invitation') }}">Solicitar Convite</a>
+            </div>
+        </div>
+    </div>
 </nav>
-<!-- Hero Section -->
+
+<div class="container" style="margin-top: 100px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }} alert alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<!-- Hero Section (ATUALIZADO: Imagem removida e conteúdo centralizado) -->
 <section class="hero-section">
-<div class="container">
-<div class="row align-items-center g-5">
-<div class="col-lg-6">
-<h1 class="hero-title">Sua saúde organizada em um único lugar.</h1>
-<p class="hero-text">Gerencie medicamentos, consultas, sintomas, exames e lembretes com praticidade, segurança e tecnologia de ponta para sua tranquilidade.</p>
-<div class="d-flex gap-3 flex-wrap">
-<a class="btn btn-gradient btn-lg px-5 py-3" href="#">Solicitar Convite</a>
-<a class="btn btn-outline-purple btn-lg px-5 py-3" href="#como-funciona">Saiba Mais</a>
-</div>
-</div>
-<div class="col-lg-6">
-<div class="position-relative">
-<img class="img-fluid rounded-4 shadow-lg" data-alt="A futuristic 3D isometric illustration showing a vibrant purple smartphone interface connected via glowing data lines to several floating glass medical modules like a beating heart, DNA strands, and brain scans. Miniature 3D characters dressed as doctors and nurses interact with floating transparent screens displaying health analytics in a clean, bright, light-mode medical technology environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2FVV3QT7iB_U2SBLL-h14S0wIDdzwBj3JOo2BjW7SgWSgk9SIj4IFk_87ebzMoTfPntW-umveNPwa78l29VocsLmcZphFMaP6C4dVUjvDAS_TgmnC7UXztFnDCcQydzAZQ7vyIMApPva-9vCnr81DqFxY1RNDifVbchmKfGNdgGJZuxYdOpnWHR6YBpw4ZmE3kQxAtRteGTkdJ_iwScbAzDU3dSsr8OR2vOguC5yZEYkUtnzTkSuR69z5QvXZ9FKua2Mkl_Lx67xu"/>
-</div>
-</div>
-</div>
-</div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="hero-title">Sua saúde organizada em um único lugar.</h1>
+                <p class="hero-text mx-auto" style="max-width: 700px;">
+                    Gerencie medicamentos, consultas, sintomas, exames e lembretes com praticidade, segurança e tecnologia de ponta para sua tranquilidade.
+                </p>
+                <div class="d-flex gap-3 flex-wrap justify-content-center">
+                    <a class="btn btn-gradient btn-lg px-5 py-3" href="/user_registration">Solicitar Convite</a>
+                    <a class="btn btn-outline-purple btn-lg px-5 py-3" href="#como-funciona">Saiba Mais</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
 <!-- Recursos Section -->
 <section class="section-padding" id="recursos">
-<div class="container">
-<h2 class="section-title">Tecnologia a serviço do seu bem-estar</h2>
-<div class="row g-4">
-<!-- Feature Cards -->
-<div class="col-md-6 col-lg-3">
-<div class="feature-card">
-<div class="feature-icon"><i class="bi bi-capsule"></i></div>
-<h5>Registro de Medicamentos</h5>
-<p class="text-muted small">Controle total da sua posologia e estoque de remédios.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="feature-card">
-<div class="feature-icon"><i class="bi bi-calendar-event"></i></div>
-<h5>Consultas</h5>
-<p class="text-muted small">Agende e organize seu histórico de visitas médicas.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="feature-card">
-<div class="feature-icon"><i class="bi bi-activity"></i></div>
-<h5>Registro de Sintomas</h5>
-<p class="text-muted small">Monitore variações diárias para diagnósticos precisos.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="feature-card">
-<div class="feature-icon"><i class="bi bi-file-earmark-medical"></i></div>
-<h5>Exames</h5>
-<p class="text-muted small">Centralize laudos e resultados em um repositório seguro.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="feature-card">
-<div class="feature-icon"><i class="bi bi-alarm"></i></div>
-<h5>Lembretes</h5>
-<p class="text-muted small">Notificações inteligentes para nunca esquecer um cuidado.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="feature-card">
-<div class="feature-icon"><i class="bi bi-speedometer2"></i></div>
-<h5>Dashboard Inteligente</h5>
-<p class="text-muted small">Visualização clara de toda sua jornada de saúde.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="feature-card">
-<div class="feature-icon"><i class="bi bi-clock-history"></i></div>
-<h5>Histórico Completo</h5>
-<p class="text-muted small">Acesso imediato a toda sua linha do tempo médica.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="feature-card">
-<div class="feature-icon"><i class="bi bi-shield-check"></i></div>
-<h5>Segurança dos Dados</h5>
-<p class="text-muted small">Criptografia de ponta a ponta e total privacidade.</p>
-</div>
-</div>
-</div>
-</div>
+    <div class="container">
+        <h2 class="section-title">Tecnologia a serviço do seu bem-estar</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-capsule"></i></div>
+                    <h5>Registro de Medicamentos</h5>
+                    <p class="text-muted small">Controle total da sua posologia e estoque de remédios.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-calendar-event"></i></div>
+                    <h5>Consultas</h5>
+                    <p class="text-muted small">Agende e organize seu histórico de visitas médicas.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-activity"></i></div>
+                    <h5>Registro de Sintomas</h5>
+                    <p class="text-muted small">Monitore variações diárias para diagnósticos precisos.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-file-earmark-medical"></i></div>
+                    <h5>Exames</h5>
+                    <p class="text-muted small">Centralize laudos e resultados em um repositório seguro.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-alarm"></i></div>
+                    <h5>Lembretes</h5>
+                    <p class="text-muted small">Notificações inteligentes para nunca esquecer um cuidado.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-speedometer2"></i></div>
+                    <h5>Dashboard Inteligente</h5>
+                    <p class="text-muted small">Visualização clara de toda sua jornada de saúde.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-clock-history"></i></div>
+                    <h5>Histórico Completo</h5>
+                    <p class="text-muted small">Acesso imediato a toda sua linha do tempo médica.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                    <h5>Segurança dos Dados</h5>
+                    <p class="text-muted small">Criptografia de ponta a ponta e total privacidade.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
 <!-- Como Funciona Section -->
 <section class="section-padding" id="como-funciona">
-<div class="container">
-<h2 class="section-title">Sua jornada em 4 passos</h2>
-<div class="row g-4">
-<div class="col-md-6 col-lg-3">
-<div class="step-card">
-<div class="step-number">1</div>
-<h6>Solicite um convite</h6>
-<p class="small text-muted mb-0">Preencha seus dados básicos para entrar na nossa lista de espera exclusiva.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="step-card">
-<div class="step-number">2</div>
-<h6>Crie sua conta</h6>
-<p class="small text-muted mb-0">Após a aprovação, configure seu perfil e suas preferências de saúde.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="step-card">
-<div class="step-number">3</div>
-<h6>Registre suas informações</h6>
-<p class="small text-muted mb-0">Insira medicamentos, exames e históricos de forma simples e rápida.</p>
-</div>
-</div>
-<div class="col-md-6 col-lg-3">
-<div class="step-card">
-<div class="step-number">4</div>
-<h6>Acompanhe tudo</h6>
-<p class="small text-muted mb-0">Receba insights e gerencie sua vida saudável pela nossa plataforma.</p>
-</div>
-</div>
-</div>
-</div>
+    <div class="container">
+        <h2 class="section-title">Sua jornada em 4 passos</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="step-card">
+                    <div>
+                        <div class="step-number">1</div>
+                        <h6>Solicite um convite</h6>
+                    </div>
+                    <p class="small text-muted mb-0">Preencha seus dados básicos para entrar na nossa lista de espera exclusiva.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step-card">
+                    <div>
+                        <div class="step-number">2</div>
+                        <h6>Crie sua conta</h6>
+                    </div>
+                    <p class="small text-muted mb-0">Após a aprovação, configure seu perfil e suas preferências de saúde.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step-card">
+                    <div>
+                        <div class="step-number">3</div>
+                        <h6>Registre suas informações</h6>
+                    </div>
+                    <p class="small text-muted mb-0">Insira medicamentos, exames e históricos de forma simples e rápida.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step-card">
+                    <div>
+                        <div class="step-number">4</div>
+                        <h6>Acompanhe tudo</h6>
+                    </div>
+                    <p class="small text-muted mb-0">Receba insights e gerencie sua vida saudável pela nossa plataforma.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
 <!-- FAQ Section -->
 <section class="section-padding" id="faq">
-<div class="container">
-<div class="row justify-content-center">
-<div class="col-lg-8">
-<h2 class="section-title">Perguntas Frequentes</h2>
-<div class="accordion" id="faqAccordion">
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button" data-bs-target="#q1" data-bs-toggle="collapse" type="button">
-                                    A plataforma é gratuita?
-                                </button>
-</h2>
-<div class="accordion-collapse collapse show" data-bs-parent="#faqAccordion" id="q1">
-<div class="accordion-body">
-                                    Oferecemos um plano base gratuito para todos os usuários e opções Premium para recursos avançados de gestão familiar.
-                                </div>
-</div>
-</div>
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button collapsed" data-bs-target="#q2" data-bs-toggle="collapse" type="button">
-                                    Meus dados estão protegidos?
-                                </button>
-</h2>
-<div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q2">
-<div class="accordion-body">
-                                    Sim, utilizamos criptografia de nível bancário e seguimos rigorosamente a LGPD para garantir sua privacidade total.
-                                </div>
-</div>
-</div>
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button collapsed" data-bs-target="#q3" data-bs-toggle="collapse" type="button">
-                                    Funciona no celular?
-                                </button>
-</h2>
-<div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q3">
-<div class="accordion-body">
-                                    Absolutamente. A plataforma é 100% responsiva e conta com aplicativos nativos para iOS e Android.
-                                </div>
-</div>
-</div>
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button collapsed" data-bs-target="#q4" data-bs-toggle="collapse" type="button">
-                                    Como solicitar um convite?
-                                </button>
-</h2>
-<div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q4">
-<div class="accordion-body">
-                                    Basta clicar em "Solicitar Convite" no topo da página e preencher o formulário simples.
-                                </div>
-</div>
-</div>
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button collapsed" data-bs-target="#q5" data-bs-toggle="collapse" type="button">
-                                    Posso recuperar minha senha?
-                                </button>
-</h2>
-<div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q5">
-<div class="accordion-body">
-                                    Sim, através do sistema de recuperação por e-mail com autenticação em dois fatores para sua segurança.
-                                </div>
-</div>
-</div>
-<div class="accordion-item">
-<h2 class="accordion-header">
-<button class="accordion-button collapsed" data-bs-target="#q6" data-bs-toggle="collapse" type="button">
-                                    É possível exportar meus dados?
-                                </button>
-</h2>
-<div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q6">
-<div class="accordion-body">
-                                    Sim, você pode exportar seu histórico completo em PDF ou CSV a qualquer momento para levar ao seu médico.
-                                </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="section-title">Perguntas Frequentes</h2>
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" data-bs-target="#q1" data-bs-toggle="collapse" type="button">
+                                A plataforma é gratuita?
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse show" data-bs-parent="#faqAccordion" id="q1">
+                            <div class="accordion-body">
+                                Oferecemos um plano base gratuito para todos os usuários e opções Premium para recursos avançados de gestão familiar.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-target="#q2" data-bs-toggle="collapse" type="button">
+                                Meus dados estão protegidos?
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q2">
+                            <div class="accordion-body">
+                                Sim, utilizamos criptografia de nível bancário e seguimos rigorosamente a LGPD para garantir sua privacidade total.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-target="#q3" data-bs-toggle="collapse" type="button">
+                                Funciona no celular?
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q3">
+                            <div class="accordion-body">
+                                Absolutamente. A plataforma é 100% responsiva e conta com aplicativos nativos para iOS e Android.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-target="#q4" data-bs-toggle="collapse" type="button">
+                                Como solicitar um convite?
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q4">
+                            <div class="accordion-body">
+                                Basta clicar em "Solicitar Convite" no topo da página e preencher o formulário simples.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-target="#q5" data-bs-toggle="collapse" type="button">
+                                Posso recuperar minha senha?
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q5">
+                            <div class="accordion-body">
+                                Sim, através do sistema de recuperação por e-mail com autenticação em dois fatores para sua segurança.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-target="#q6" data-bs-toggle="collapse" type="button">
+                                É possível exportar meus dados?
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" data-bs-parent="#faqAccordion" id="q6">
+                            <div class="accordion-body">
+                                Sim, você pode exportar seu histórico completo em PDF ou CSV a qualquer momento para levar ao seu médico.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
 <!-- Contato Section -->
 <section class="section-padding" id="contato">
-<div class="container">
-<h2 class="section-title">Fale Conosco</h2>
-<div class="row g-5">
-<div class="col-lg-7">
-<div class="feature-card p-5">
-<form>
-<div class="row g-3">
-<div class="col-md-6">
-<label class="form-label fw-bold">Nome</label>
-<input class="form-control" placeholder="Seu nome completo" type="text"/>
-</div>
-<div class="col-md-6">
-<label class="form-label fw-bold">Email</label>
-<input class="form-control" placeholder="seu@email.com" type="email"/>
-</div>
-<div class="col-12">
-<label class="form-label fw-bold">Assunto</label>
-<input class="form-control" placeholder="No que podemos ajudar?" type="text"/>
-</div>
-<div class="col-12">
-<label class="form-label fw-bold">Mensagem</label>
-<textarea class="form-control" placeholder="Escreva sua mensagem..." rows="5"></textarea>
-</div>
-<div class="col-12">
-<button class="btn btn-gradient w-100 py-3" type="submit">Enviar Mensagem</button>
-</div>
-</div>
-</form>
-</div>
-</div>
-<div class="col-lg-5">
-<div class="h-100 d-flex flex-column gap-4">
-<div class="feature-card">
-<h5 class="mb-4">Informações de Contato</h5>
-<div class="d-flex gap-3 mb-3 align-items-start">
-<div class="feature-icon mt-1"><i class="bi bi-envelope"></i></div>
-<div>
-<div class="fw-bold">E-mail</div>
-<div class="text-muted">suporte@precisionhealth.com</div>
-</div>
-</div>
-<div class="d-flex gap-3 mb-3 align-items-start">
-<div class="feature-icon mt-1"><i class="bi bi-telephone"></i></div>
-<div>
-<div class="fw-bold">Telefone</div>
-<div class="text-muted">+55 (11) 4004-9000</div>
-</div>
-</div>
-<div class="d-flex gap-3 align-items-start">
-<div class="feature-icon mt-1"><i class="bi bi-clock"></i></div>
-<div>
-<div class="fw-bold">Horário de Atendimento</div>
-<div class="text-muted">Segunda a Sexta: 08:00 - 18:00</div>
-</div>
-</div>
-</div>
-<div class="feature-card text-center d-flex flex-column justify-content-center">
-<h5>Estamos nas redes sociais</h5>
-<div class="d-flex justify-content-center gap-3 mt-3">
-<a class="feature-icon text-decoration-none" href="#"><i class="bi bi-linkedin"></i></a>
-<a class="feature-icon text-decoration-none" href="#"><i class="bi bi-instagram"></i></a>
-<a class="feature-icon text-decoration-none" href="#"><i class="bi bi-twitter-x"></i></a>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+    <div class="container">
+        <h2 class="section-title">Fale Conosco</h2>
+        <div class="row g-5">
+            <div class="col-lg-7">
+                <div class="feature-card p-5">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Nome</label>
+                                <input class="form-control" placeholder="Seu nome completo" type="text"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Email</label>
+                                <input class="form-control" placeholder="seu@email.com" type="email"/>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Assunto</label>
+                                <input class="form-control" placeholder="No que podemos ajudar?" type="text"/>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Mensagem</label>
+                                <textarea class="form-control" placeholder="Escreva sua mensagem..." rows="5"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-gradient w-100 py-3" type="submit">Enviar Mensagem</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="h-100 d-flex flex-column gap-4">
+                    <div class="feature-card">
+                        <h5 class="mb-4">Informações de Contato</h5>
+                        <div class="d-flex gap-3 mb-3 align-items-start">
+                            <div class="feature-icon mt-1"><i class="bi bi-envelope"></i></div>
+                            <div>
+                                <div class="fw-bold">E-mail</div>
+                                <div class="text-muted">suporte@precisionhealth.com</div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3 mb-3 align-items-start">
+                            <div class="feature-icon mt-1"><i class="bi bi-telephone"></i></div>
+                            <div>
+                                <div class="fw-bold">Telefone</div>
+                                <div class="text-muted">+55 (11) 4004-9000</div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="feature-icon mt-1"><i class="bi bi-clock"></i></div>
+                            <div>
+                                <div class="fw-bold">Horário de Atendimento</div>
+                                <div class="text-muted">Segunda a Sexta: 08:00 - 18:00</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-card text-center d-flex flex-column justify-content-center">
+                        <h5>Estamos nas redes sociais</h5>
+                        <div class="d-flex justify-content-center gap-3 mt-3">
+                            <a class="feature-icon text-decoration-none" href="#"><i class="bi bi-linkedin"></i></a>
+                            <a class="feature-icon text-decoration-none" href="#"><i class="bi bi-instagram"></i></a>
+                            <a class="feature-icon text-decoration-none" href="#"><i class="bi bi-twitter-x"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+
 <!-- Footer -->
 <footer>
-<div class="container">
-<div class="row g-4 mb-5">
-<div class="col-lg-4">
-<h4 class="navbar-brand mb-3 d-block">Precision Health Connect</h4>
-<p class="text-muted pe-lg-5">Transformando a gestão da saúde pessoal através da tecnologia e cuidado centrado no paciente.</p>
-</div>
-<div class="col-6 col-lg-2">
-<h5>Produto</h5>
-<ul>
-<li><a href="#">Recursos</a></li>
-<li><a href="#">Como Funciona</a></li>
-<li><a href="#">Preços</a></li>
-<li><a href="#">Novidades</a></li>
-</ul>
-</div>
-<div class="col-6 col-lg-2">
-<h5>Suporte</h5>
-<ul>
-<li><a href="#">FAQ</a></li>
-<li><a href="#">Central de Ajuda</a></li>
-<li><a href="#">Contato</a></li>
-<li><a href="#">Status</a></li>
-</ul>
-</div>
-<div class="col-6 col-lg-2">
-<h5>Legal</h5>
-<ul>
-<li><a href="#">Privacidade</a></li>
-<li><a href="#">Termos de Uso</a></li>
-<li><a href="#">Cookies</a></li>
-<li><a href="#">Compliance</a></li>
-</ul>
-</div>
-<div class="col-6 col-lg-2">
-<h5>Empresa</h5>
-<ul>
-<li><a href="#">Sobre nós</a></li>
-<li><a href="#">Carreiras</a></li>
-<li><a href="#">Blog</a></li>
-<li><a href="#">Imprensa</a></li>
-</ul>
-</div>
-</div>
-<hr class="my-5 opacity-10"/>
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 text-muted small">
-<p class="mb-0">© 2026 Precision Health Connect. Todos os direitos reservados.</p>
-<div class="d-flex gap-4">
-<a class="text-muted text-decoration-none" href="#">PT-BR</a>
-<a class="text-muted text-decoration-none" href="#">English</a>
-</div>
-</div>
-</div>
+    <div class="container">
+        <div class="row g-4 mb-5">
+            <div class="col-lg-4">
+                <h4 class="navbar-brand mb-3 d-block">Precision Health Connect</h4>
+                <p class="text-muted pe-lg-5">Transformando a gestão da saúde pessoal através da tecnologia e cuidado centrado no paciente.</p>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h5>Produto</h5>
+                <ul>
+                    <li><a href="#">Recursos</a></li>
+                    <li><a href="#">Como Funciona</a></li>
+                    <li><a href="#">Preços</a></li>
+                    <li><a href="#">Novidades</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h5>Suporte</h5>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Central de Ajuda</a></li>
+                    <li><a href="#">Contato</a></li>
+                    <li><a href="#">Status</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h5>Legal</h5>
+                <ul>
+                    <li><a href="#">Privacidade</a></li>
+                    <li><a href="#">Termos de Uso</a></li>
+                    <li><a href="#">Cookies</a></li>
+                    <li><a href="#">Compliance</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h5>Empresa</h5>
+                <ul>
+                    <li><a href="#">Sobre nós</a></li>
+                    <li><a href="#">Carreiras</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Imprensa</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-5 opacity-10"/>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 text-muted small">
+            <p class="mb-0">© 2026 Precision Health Connect. Todos os direitos reservados.</p>
+            <div class="d-flex gap-4">
+                <a class="text-muted text-decoration-none" href="#">PT-BR</a>
+                <a class="text-muted text-decoration-none" href="#">English</a>
+            </div>
+        </div>
+    </div>
 </footer>
+
 <!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-        // Navbar scroll effect
-        window.addEventListener('scroll', function() {
-            const nav = document.getElementById('mainNav');
-            if (window.scrollY > 50) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const nav = document.getElementById('mainNav');
+        if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                window.scrollTo({
+                    top: target.offsetTop - 80,
+                    behavior: 'smooth'
+                });
             }
         });
-
-        // Smooth scroll for nav links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    window.scrollTo({
-                        top: target.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-    </script>
-</body></html>
+    });
+</script>
+</body>
+</html>

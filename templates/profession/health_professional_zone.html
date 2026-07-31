@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Fontes e Ícones (Caso não estejam totalmente carregados no base.html) -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<style>
+    :root {
+        --primary-color: #500989;
+        --secondary-color: #7b41b4;
+        --lilac-vibrant: #7c3aed;
+        --clinical-red: #FF5C3C;
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --on-surface-variant: #4c4452;
+        --outline-variant: rgba(206, 195, 211, 0.5);
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #F9F7FC 0%, #F3E8FF 100%);
+        min-height: 100vh;
+    }
+
+    h1, h2, h3, h4, h5, .brand-text {
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 700;
+    }
+
+    /* Glassmorphism Cards */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 8px 32px rgba(80, 9, 137, 0.06);
+        border-radius: 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(80, 9, 137, 0.12);
+        border-color: rgba(124, 58, 237, 0.2);
+    }
+
+    /* Metric Cards Specifics */
+    .metric-icon-wrapper {
+        width: 56px;
+        height: 56px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .metric-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--on-surface-variant);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Quick Action Cards */
+    .action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        text-decoration: none;
+        color: var(--on-surface-variant);
+        cursor: pointer;
+    }
+
+    .action-card:hover {
+        color: var(--primary-color);
+    }
+
+    .action-icon {
+        font-size: 36px;
+        margin-bottom: 1rem;
+        color: var(--secondary-color);
+        transition: transform 0.3s ease;
+    }
+
+    .action-card:hover .action-icon {
+        transform: scale(1.1);
+        color: var(--lilac-vibrant);
+    }
+
+    .action-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-desc {
+        font-size: 0.85rem;
+        color: #6b7280;
+        line-height: 1.4;
+    }
+
+    /* Header Section */
+    .dashboard-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .greeting-text {
+        font-size: 1.1rem;
+        color: var(--on-surface-variant);
+        margin-bottom: 0.25rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+    
+    <!-- Cabeçalho -->
+    <div class="dashboard-header">
+        <p class="greeting-text">Bem-vindo(a) de volta,</p>
+        <h1 class="page-title">
+            Dr(a). {{ session.get('user_name', 'Profissional de Saúde') }}
+        </h1>
+        <p class="text-muted mt-2">Aqui está o resumo da sua atividade clínica hoje.</p>
+    </div>
+
+    <!-- Cards de Resumo (Métricas) -->
+    <div class="row g-4 mb-5">
+        <!-- Pacientes Cadastrados -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="glass-card p-4 h-100 d-flex align-items-center gap-4">
+                <div class="metric-icon-wrapper" style="background-color: rgba(80, 9, 137, 0.1); color: var(--primary-color);">
+                    <span class="material-symbols-outlined">groups</span>
+                </div>
+                <div>
+                    <div class="metric-value">{{ stats.total_patients | default('142') }}</div>
+                    <div class="metric-label">Pacientes Cadastrados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consultas do Dia -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="glass-card p-4 h-100 d-flex align-items-center gap-4">
+                <div class="metric-icon-wrapper" style="background-color: rgba(123, 65, 180, 0.1); color: var(--secondary-color);">
+                    <span class="material-symbols-outlined">calendar_today</span>
+                </div>
+                <div>
+                    <div class="metric-value">{{ stats.today_appointments | default('8') }}</div>
+                    <div class="metric-label">Consultas do Dia</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentos Pendentes -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="glass-card p-4 h-100 d-flex align-items-center gap-4">
+                <div class="metric-icon-wrapper" style="background-color: rgba(251, 191, 36, 0.15); color: #d97706;">
+                    <span class="material-symbols-outlined">description</span>
+                </div>
+                <div>
+                    <div class="metric-value">{{ stats.pending_docs | default('3') }}</div>
+                    <div class="metric-label">Documentos Pendentes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas Importantes -->
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="glass-card p-4 h-100 d-flex align-items-center gap-4">
+                <div class="metric-icon-wrapper" style="background-color: rgba(255, 92, 60, 0.1); color: var(--clinical-red);">
+                    <span class="material-symbols-outlined">notifications_active</span>
+                </div>
+                <div>
+                    <div class="metric-value">{{ stats.important_alerts | default('1') }}</div>
+                    <div class="metric-label">Alertas Importantes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área de Ações Rápidas -->
+    <div class="mb-4">
+        <h3 class="h4 mb-4" style="color: var(--primary-color);">Ações Rápidas</h3>
+        <div class="row g-4">
+            
+            <!-- Ver Pacientes -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <a href="#" class="glass-card action-card h-100">
+                    <span class="material-symbols-outlined action-icon">person_search</span>
+                    <div class="action-title">Ver Pacientes</div>
+                    <div class="action-desc">Acesse a lista completa e prontuários dos seus pacientes.</div>
+                </a>
+            </div>
+
+            <!-- Abrir Agenda -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <a href="#" class="glass-card action-card h-100">
+                    <span class="material-symbols-outlined action-icon">calendar_month</span>
+                    <div class="action-title">Abrir Agenda</div>
+                    <div class="action-desc">Visualize e gerencie seus horários e consultas agendadas.</div>
+                </a>
+            </div>
+
+            <!-- Registrar Consulta -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <a href="#" class="glass-card action-card h-100">
+                    <span class="material-symbols-outlined action-icon">edit_note</span>
+                    <div class="action-title">Registrar Consulta</div>
+                    <div class="action-desc">Preencha evoluções, prescrições e laudos médicos.</div>
+                </a>
+            </div>
+
+            <!-- Enviar Documentos -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <a href="#" class="glass-card action-card h-100">
+                    <span class="material-symbols-outlined action-icon">upload_file</span>
+                    <div class="action-title">Enviar Documentos</div>
+                    <div class="action-desc">Faça upload de exames, atestados e relatórios clínicos.</div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Placeholder para conteúdo futuro (Ex: Próximas consultas ou Atividades Recentes) -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="glass-card p-4 text-center text-muted" style="border-style: dashed; background: rgba(255,255,255,0.4);">
+                <span class="material-symbols-outlined mb-2" style="font-size: 40px; opacity: 0.5;">space_dashboard</span>
+                <p class="mb-0 fw-semibold">Painel de Atividades Recentes e Próximas Consultas</p>
+                <small>(Integração com API pendente)</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

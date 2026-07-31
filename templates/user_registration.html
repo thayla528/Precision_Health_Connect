@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-
-<html lang="pt-br"><head>
+<html lang="pt-br">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Cadastro | Precision Health Connect</title>
@@ -9,339 +9,385 @@
 <!-- Bootstrap 5 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <style>
-        :root {
-            --primary: #7b41b4;
-            --primary-light: #c084fc;
-            --on-surface: #1a1c1c;
-            --on-surface-variant: #4c4452;
-            --outline-variant: #cec3d3;
-            --background-gradient: linear-gradient(135deg, #7b41b4 0%, #ffffff 100%);
-        }
+    :root {
+        --primary: #7b41b4;
+        --primary-light: #c084fc;
+        --on-surface: #1a1c1c;
+        --on-surface-variant: #4c4452;
+        --outline-variant: #cec3d3;
+        --background-gradient: linear-gradient(135deg, #7b41b4 0%, #ffffff 100%);
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--background-gradient);
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: var(--background-gradient);
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
 
-        /* Navigation Header */
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 64px;
-            background: rgba(249, 249, 249, 0.7);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--outline-variant);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            justify-content: space-between;
-        }
+    /* Navigation Header */
+    header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 64px;
+        background: rgba(249, 249, 249, 0.7);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--outline-variant);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        padding: 0 2rem;
+        justify-content: space-between;
+    }
 
-        .brand-logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-        }
+    .brand-logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+    }
 
-        .nav-links a {
-            color: var(--on-surface-variant);
-            text-decoration: none;
-            margin: 0 1rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
+    .nav-links a {
+        color: var(--on-surface-variant);
+        text-decoration: none;
+        margin: 0 1rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
 
-        .nav-links a:hover {
-            color: var(--primary);
-        }
+    .nav-links a:hover {
+        color: var(--primary);
+    }
 
-        .nav-icons {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
+    .nav-icons {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
 
-        .nav-icons .material-symbols-outlined {
-            color: var(--on-surface-variant);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
+    .nav-icons .material-symbols-outlined {
+        color: var(--on-surface-variant);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
 
-        .nav-icons .material-symbols-outlined:hover {
-            background: rgba(123, 65, 180, 0.1);
-        }
+    .nav-icons .material-symbols-outlined:hover {
+        background: rgba(123, 65, 180, 0.1);
+    }
 
-        /* Main Content */
-        main {
-            flex: 1;
-            padding-top: 100px;
-            padding-bottom: 50px;
-        }
+    /* Main Content */
+    main {
+        flex: 1;
+        padding-top: 100px;
+        padding-bottom: 50px;
+    }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 1.5rem;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-            padding: 3rem;
-        }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 1.5rem;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+        padding: 3rem;
+    }
 
-        .visual-container {
-            border-radius: 1.5rem;
-            overflow: hidden;
-            height: 100%;
-            min-height: 600px;
-            position: relative;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-        }
+    /* ===========================
+       FLASH MESSAGES
+    =========================== */
+    .flash-message {
+        max-width: 420px;
+        margin: 15px auto;
+        padding: 10px 18px;
+        background: rgba(237,233,254,.55);
+        backdrop-filter: blur(18px);
+        border: 1.5px solid #8b5cf6;
+        border-radius: 14px;
+        color: #500989;
+        font-size: .9rem;
+        font-weight: 600;
+        box-shadow: 0 8px 25px rgba(80,9,137,.08);
+    }
 
-        .visual-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(123, 65, 180, 0.85), transparent 70%);
-            display: flex;
-            align-items: flex-end;
-            padding: 3rem;
-        }
+    .flash-message .btn-close {
+        transform: scale(.75);
+    }
 
-        .badge-exclusive {
-            background: #ffffff;
-            color: var(--primary);
-            padding: 0.5rem 1.25rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: inline-block;
-            margin-bottom: 1.5rem;
-        }
+    .flash-success,
+    .flash-danger,
+    .flash-warning,
+    .flash-info {
+        background: rgba(237,233,254,.55);
+        border-color: #8b5cf6;
+        color: #500989;
+    }
 
-        .headline-xl {
-            font-size: 3rem;
-            font-weight: 700;
-            color: white;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-        }
+    .visual-container {
+        border-radius: 1.5rem;
+        overflow: hidden;
+        height: 100%;
+        min-height: 600px;
+        position: relative;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
 
-        .body-lg {
-            font-size: 1.125rem;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            max-width: 440px;
-        }
+    .visual-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(123, 65, 180, 0.85), transparent 70%);
+        display: flex;
+        align-items: flex-end;
+        padding: 3rem;
+    }
 
-        /* Form Styling */
-        .form-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--on-surface-variant);
-            margin-bottom: 0.5rem;
-        }
+    .badge-exclusive {
+        background: #ffffff;
+        color: var(--primary);
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+    }
 
-        .input-group {
-            border-radius: 0.75rem;
-            overflow: hidden;
-            border: 1px solid var(--outline-variant);
-            background: white;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+    .headline-xl {
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+    }
 
-        .input-group:focus-within {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.15);
-        }
+    .body-lg {
+        font-size: 1.125rem;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+        max-width: 440px;
+    }
 
-        .input-group-text {
-            background: transparent;
-            border: none;
-            color: var(--primary);
-            padding-left: 1rem;
-            padding-right: 0.5rem;
-        }
+    /* Form Styling */
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--on-surface-variant);
+        margin-bottom: 0.5rem;
+    }
 
-        .form-control {
-            border: none;
-            padding: 0.75rem 0.75rem 0.75rem 0.25rem;
-            font-size: 1rem;
-        }
+    .input-group {
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid var(--outline-variant);
+        background: white;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-        .form-control:focus {
-            box-shadow: none;
-            background: white;
-        }
+    .input-group:focus-within {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.15);
+    }
 
-        .btn-primary-custom {
-            background-color: var(--primary-light);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 1rem;
-        }
+    .input-group-text {
+        background: transparent;
+        border: none;
+        color: var(--primary);
+        padding-left: 1rem;
+        padding-right: 0.5rem;
+    }
 
-        .btn-primary-custom:hover {
-            background-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(123, 65, 180, 0.3);
-            color: white;
-        }
+    .form-control {
+        border: none;
+        padding: 0.75rem 0.75rem 0.75rem 0.25rem;
+        font-size: 1rem;
+    }
 
-        /* Footer */
-        footer {
-            background: rgba(243, 243, 244, 0.8);
-            border-top: 1px solid var(--outline-variant);
-            padding: 2rem;
-            margin-top: auto;
-        }
+    .form-control:focus {
+        box-shadow: none;
+        background: white;
+    }
 
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-        }
+    .btn-primary-custom {
+        background-color: var(--primary-light);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+    }
 
-        .footer-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+    .btn-primary-custom:hover {
+        background-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(123, 65, 180, 0.3);
+        color: white;
+    }
 
-        .footer-links a {
-            color: var(--on-surface-variant);
-            text-decoration: none;
-            font-size: 0.8rem;
-            margin-left: 1.5rem;
-        }
+    /* Botão Secundário (Voltar ao Login) */
+    .btn-outline-custom {
+        background-color: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+    }
 
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
+    .btn-outline-custom:hover {
+        background-color: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(123, 65, 180, 0.2);
+    }
 
-        @media (max-width: 991px) {
-            .headline-xl { font-size: 2.25rem; }
-            .visual-container { min-height: 400px; margin-bottom: 2rem; }
-        }
-    </style>
+    /* Footer */
+    footer {
+        background: rgba(243, 243, 244, 0.8);
+        border-top: 1px solid var(--outline-variant);
+        padding: 2rem;
+        margin-top: auto;
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .footer-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .footer-links a {
+        color: var(--on-surface-variant);
+        text-decoration: none;
+        font-size: 0.8rem;
+        margin-left: 1.5rem;
+    }
+
+    .footer-links a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 991px) {
+        .headline-xl { font-size: 2.25rem; }
+        .visual-container { min-height: 400px; margin-bottom: 2rem; }
+    }
+</style>
 </head>
 <body>
-
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 <main class="container">
-<div class="row g-5 align-items-stretch">
-<!-- Left Column: Narrative -->
-<div class="col-lg-6">
-<div class="visual-container">
-<img alt="DNA Helix Technology" class="w-100 h-100 object-fit-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
-<div class="visual-overlay">
-<div>
-<span class="badge-exclusive">Acesso Exclusivo</span>
-<h1 class="headline-xl">Seu convite foi aprovado.</h1>
-<p class="body-lg">Agora você pode fazer parte do Precision Health Connect. Conecte-se à excelência clínica e segurança de dados.</p>
-</div>
-</div>
-</div>
-</div>
-<!-- Right Column: Registration -->
-<div class="col-lg-6">
-<div class="glass-card">
-<div class="text-center mb-5">
-<span class="material-symbols-outlined" style="font-size: 48px; color: var(--primary); margin-bottom: 1rem;">verified_user</span>
-<h2 style="font-weight: 700; color: var(--on-surface);">Finalize seu cadastro</h2>
-<p style="color: var(--on-surface-variant);">Complete os dados abaixo para ativar sua conta institucional.</p>
-</div>
-<form class="row g-4">
-<div class="col-12">
-<label class="form-label">Código do convite</label>
-<div class="input-group">
-<span class="input-group-text"><span class="material-symbols-outlined">key</span></span>
-<input class="form-control" placeholder="XXXX-XXXX-XXXX" required="" type="text"/>
-</div>
-</div>
-<div class="col-12">
-<label class="form-label">Nome completo</label>
-<div class="input-group">
-<span class="input-group-text"><span class="material-symbols-outlined">person</span></span>
-<input class="form-control" placeholder="Como no seu documento" required="" type="text"/>
-</div>
-</div>
-<div class="col-12">
-<label class="form-label">E-mail</label>
-<div class="input-group">
-<span class="input-group-text"><span class="material-symbols-outlined">mail</span></span>
-<input class="form-control" placeholder="exemplo@instituicao.org" required="" type="email"/>
-</div>
-</div>
-<div class="col-md-6">
-<label class="form-label">Senha</label>
-<div class="input-group">
-<span class="input-group-text"><span class="material-symbols-outlined">lock</span></span>
-<input class="form-control" placeholder="••••••••" required="" type="password"/>
-</div>
-</div>
-<div class="col-md-6">
-<label class="form-label">Confirmar senha</label>
-<div class="input-group">
-<span class="input-group-text"><span class="material-symbols-outlined">lock_reset</span></span>
-<input class="form-control" placeholder="••••••••" required="" type="password"/>
-</div>
-</div>
-<div class="col-md-6">
-<label class="form-label">Data de nascimento</label>
-<div class="input-group">
-<span class="input-group-text"><span class="material-symbols-outlined">calendar_today</span></span>
-<input class="form-control" required="" type="date"/>
-</div>
-</div>
-<div class="col-md-6">
-<label class="form-label">Telefone</label>
-<div class="input-group">
-<span class="input-group-text"><span class="material-symbols-outlined">phone</span></span>
-<input class="form-control" placeholder="(00) 00000-0000" required="" type="tel"/>
-</div>
-</div>
-<div class="col-12 mt-5">
-<button class="btn btn-primary-custom" type="submit">Criar minha conta</button>
-<p class="text-center mt-3" style="font-size: 0.75rem; color: var(--on-surface-variant);">
-                            Ao clicar, você concorda com nossos <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 600;">Termos de Uso</a> e <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 600;">Privacidade HIPAA</a>.
-                        </p>
-</div>
-</form>
-</div>
-</div>
-</div>
+    <div class="row g-5 align-items-stretch">
+        <!-- Left Column: Narrative -->
+        <div class="col-lg-6">
+            <div class="visual-container">
+                <img alt="DNA Helix Technology" class="w-100 h-100 object-fit-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+                <div class="visual-overlay">
+                    <div>
+                        <span class="badge-exclusive">Acesso Exclusivo</span>
+                        <h1 class="headline-xl">Seu convite foi aprovado.</h1>
+                        <p class="body-lg">Agora você pode fazer parte do Precision Health Connect. Conecte-se à excelência clínica e segurança de dados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Registration -->
+        <div class="col-lg-6">
+            <div class="glass-card">
+                <div class="text-center mb-5">
+                    <span class="material-symbols-outlined" style="font-size: 48px; color: var(--primary); margin-bottom: 1rem;">verified_user</span>
+                    <h2 style="font-weight: 700; color: var(--on-surface);">Finalize seu cadastro</h2>
+                    <p style="color: var(--on-surface-variant);">Complete os dados abaixo para ativar sua conta institucional.</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.register') }}" class="row g-4">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="col-12">
+                        <label class="form-label">Código do convite</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <span class="material-symbols-outlined">key</span>
+                            </span>
+                            <input class="form-control" name="invitation_code" placeholder="XXXX-XXXX-XXXX" required type="text">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Senha</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <span class="material-symbols-outlined">lock</span>
+                            </span>
+                            <input class="form-control" name="password" placeholder="••••••••" required type="password">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Confirmar senha</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <span class="material-symbols-outlined">lock_reset</span>
+                            </span>
+                            <input class="form-control" name="confirm_password" placeholder="••••••••" required type="password">
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-primary-custom" type="submit">
+                            Criar minha conta
+                        </button>
+                    </div>
+
+                    <!-- Botão para Voltar ao Login -->
+                    <div class="col-12">
+                        <a href="/login" class="btn-outline-custom">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
+                            Voltar ao Login
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </main>
-<footer>
-<div class="container footer-content">
-<div class="footer-info">
-<span style="font-weight: 700; color: var(--on-surface);">Precision Health Connect</span>
-<span style="font-size: 0.75rem; color: #635b6e;">© 2024 Precision Health Connect. Clinical Excellence &amp; Security.</span>
-</div>
-<div class="footer-links">
-<a href="#">Privacy Policy</a>
-<a href="#">Terms of Service</a>
-<a href="#">HIPAA Compliance</a>
-<a href="#">Institutional Access</a>
-</div>
-</div>
-</footer>
+
+
+
 <!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body></html>
+</body>
+</html>

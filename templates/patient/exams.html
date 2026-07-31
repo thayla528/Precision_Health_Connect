@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block title %}
+Exames
+{% endblock %}
+
+{% block content %}
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+
+<style>
+
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+    }
+
+    .step-active {
+        width: 32px;
+        height: 8px;
+        background-color: #6b46c1;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .step-inactive {
+        width: 8px;
+        height: 8px;
+        background-color: #e2e8f0;
+        border-radius: 50%;
+    }
+
+    @keyframes pulse-subtle {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .skeleton {
+        animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Custom colors */
+    .bg-primary-custom { background-color: #532aa8 !important; }
+    .text-primary-custom { color: #532aa8 !important; }
+    .border-primary-custom { border-color: #532aa8 !important; }
+
+    .bg-secondary-custom { background-color: #665978 !important; }
+    .text-secondary-custom { color: #665978 !important; }
+
+    .bg-tertiary-container { background-color: #006d3d !important; }
+    .text-tertiary-container { color: #006d3d !important; }
+
+    .bg-error-custom { background-color: #ba1a1a !important; }
+    .text-error-custom { color: #ba1a1a !important; }
+
+    .card-shadow {
+        box-shadow: 0px 2px 4px rgba(45,55,72,0.05);
+    }
+
+    .btn-primary-custom {
+        background-color: #532aa8;
+        border-color: #532aa8;
+        color: white;
+    }
+
+    .btn-primary-custom:hover {
+        background-color: #45208a;
+        border-color: #45208a;
+        color: white;
+    }
+
+    .form-control:focus {
+        border-color: #532aa8;
+        box-shadow: 0 0 0 0.2rem rgba(83, 42, 168, 0.25);
+    }
+</style>
+
+<!-- TopNavBar -->
+
+<div class="container py-4">
+<!-- Summary Cards Section -->
+<section class="row g-4 mb-4">
+<!-- Total -->
+<div class="col-12 col-md-6 col-lg-3">
+<div class="card card-shadow h-100 border-top border-4 border-primary-custom">
+<div class="card-body p-4">
+<div class="d-flex align-items-center justify-content-between mb-2">
+<span class="text-muted fw-semibold small">Total de exames</span>
+<i class="bi bi-graph-up text-primary-custom fs-5"></i>
+</div>
+<h2 class="display-6 fw-bold text-primary-custom mb-0">24</h2>
+</div>
+</div>
+</div>
+<!-- Agendados -->
+<div class="col-12 col-md-6 col-lg-3">
+<div class="card card-shadow h-100 border-top border-4 border-secondary-custom">
+<div class="card-body p-4">
+<div class="d-flex align-items-center justify-content-between mb-2">
+<span class="text-muted fw-semibold small">Exames agendados</span>
+<i class="bi bi-calendar-event text-secondary-custom fs-5"></i>
+</div>
+<h2 class="display-6 fw-bold text-secondary-custom mb-0">03</h2>
+</div>
+</div>
+</div>
+<!-- Pendentes -->
+<div class="col-12 col-md-6 col-lg-3">
+<div class="card card-shadow h-100 border-top border-4 border-danger">
+<div class="card-body p-4">
+<div class="d-flex align-items-center justify-content-between mb-2">
+<span class="text-muted fw-semibold small">Pendentes de resultado</span>
+<i class="bi bi-clock-history text-danger fs-5"></i>
+</div>
+<h2 class="display-6 fw-bold text-danger mb-0">05</h2>
+</div>
+</div>
+</div>
+<!-- Concluidos -->
+<div class="col-12 col-md-6 col-lg-3">
+<div class="card card-shadow h-100 border-top border-4 border-success">
+<div class="card-body p-4">
+<div class="d-flex align-items-center justify-content-between mb-2">
+<span class="text-muted fw-semibold small">Exames concluídos</span>
+<i class="bi bi-check-circle text-success fs-5"></i>
+</div>
+<h2 class="display-6 fw-bold text-success mb-0">16</h2>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Search and Filter Bar -->
+<section class="card card-shadow mb-4">
+<div class="card-body p-4">
+<div class="row g-3 mb-3">
+<div class="col-12 col-md-8">
+<div class="input-group">
+<span class="input-group-text bg-white border-end-0">
+<i class="bi bi-search text-muted"></i>
+</span>
+<input class="form-control border-start-0 ps-0" placeholder="Buscar por nome do exame..." type="text"/>
+</div>
+</div>
+<div class="col-12 col-md-4 text-md-end">
+<button class="btn btn-primary-custom px-4" onclick="document.getElementById('requestModal').classList.remove('d-none')">
+<i class="bi bi-plus-lg me-2"></i>
+Solicitar Exame
+</button>
+</div>
+</div>
+<div class="row g-2">
+<div class="col-12 col-md-auto">
+<div class="input-group">
+<span class="input-group-text bg-white">Data:</span>
+<input class="form-control" type="date"/>
+</div>
+</div>
+<div class="col-12 col-md-auto">
+<select class="form-select">
+<option value="">Status: Todos</option>
+<option>Agendado</option>
+<option>Em andamento</option>
+<option>Resultado disponível</option>
+<option>Cancelado</option>
+</select>
+</div>
+<div class="col-12 col-md-auto">
+<select class="form-select">
+<option value="">Tipo de Exame</option>
+<option>Laboratorial</option>
+<option>Imagem</option>
+<option>Cardiológico</option>
+</select>
+</div>
+<div class="col-12 col-md-auto d-flex align-items-center">
+<a href="#" class="text-decoration-none text-primary-custom fw-semibold">Limpar filtros</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Main Table -->
+<section class="card card-shadow mb-4">
+<div class="table-responsive">
+<table class="table table-hover mb-0">
+<thead class="table-light">
+<tr>
+<th class="fw-semibold text-muted">Nome</th>
+<th class="fw-semibold text-muted">Tipo</th>
+<th class="fw-semibold text-muted">Data/Hora</th>
+<th class="fw-semibold text-muted">Profissional</th>
+<th class="fw-semibold text-muted">Local</th>
+<th class="fw-semibold text-muted">Status</th>
+<th class="fw-semibold text-muted">Previsão</th>
+<th class="fw-semibold text-muted text-end">Ações</th>
+</tr>
+</thead>
+<tbody>
+<!-- Row 1 -->
+<tr>
+<td class="fw-medium text-primary-custom">Hemograma Completo</td>
+<td class="small">Laboratorial</td>
+<td class="small">15/10/2023 - 08:30</td>
+<td class="small text-muted">Dr. Ricardo Nunes</td>
+<td class="small text-muted">Lab Precision Centro</td>
+<td>
+<span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-bold" style="font-size: 11px;">Resultado disponível</span>
+</td>
+<td class="small">17/10/2023</td>
+<td class="text-end">
+<button class="btn btn-link text-muted p-2">
+<i class="bi bi-three-dots-vertical"></i>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr>
+<td class="fw-medium text-primary-custom">Ressonância Magnética</td>
+<td class="small">Imagem</td>
+<td class="small">22/10/2023 - 14:15</td>
+<td class="small text-muted">Dra. Ana Silveira</td>
+<td class="small text-muted">Imaging Center Alpha</td>
+<td>
+<span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill fw-bold" style="font-size: 11px;">Agendado</span>
+</td>
+<td class="small">-</td>
+<td class="text-end">
+<button class="btn btn-link text-muted p-2">
+<i class="bi bi-three-dots-vertical"></i>
+</button>
+</td>
+</tr>
+<!-- Skeleton Row -->
+<tr class="skeleton">
+<td><div class="bg-light rounded" style="height: 16px; width: 128px;"></div></td>
+<td><div class="bg-light rounded" style="height: 16px; width: 80px;"></div></td>
+<td><div class="bg-light rounded" style="height: 16px; width: 96px;"></div></td>
+<td><div class="bg-light rounded" style="height: 16px; width: 112px;"></div></td>
+<td><div class="bg-light rounded" style="height: 16px; width: 128px;"></div></td>
+<td><div class="bg-light rounded-pill" style="height: 24px; width: 96px;"></div></td>
+<td><div class="bg-light rounded" style="height: 16px; width: 80px;"></div></td>
+<td class="text-end"><div class="bg-light rounded-circle ms-auto" style="height: 32px; width: 32px;"></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Empty State (Hidden by default) -->
+<div class="d-none flex-column align-items-center justify-content-center py-5 text-center">
+<i class="bi bi-search text-muted display-1 mb-3"></i>
+<h3 class="h5 fw-semibold">Nenhum exame encontrado</h3>
+<p class="text-muted mx-auto" style="max-width: 400px;">Tente ajustar seus filtros ou solicite um novo exame agora mesmo.</p>
+</div>
+</section>
+
+<!-- Últimos Resultados Section -->
+<section class="mb-4">
+<h2 class="h5 fw-semibold d-flex align-items-center gap-2 mb-4">
+<i class="bi bi-flask text-primary-custom"></i>
+Últimos Resultados
+</h2>
+<div class="row g-4">
+<!-- Result Card 1 -->
+<div class="col-12 col-md-6 col-lg-4">
+<div class="card card-shadow h-100">
+<div class="card-body d-flex flex-column">
+<div>
+<div class="d-flex justify-content-between align-items-start mb-3">
+<h5 class="card-title fw-bold text-primary-custom mb-0">Glicemia em Jejum</h5>
+<span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded fw-bold" style="font-size: 10px;">Disponível</span>
+</div>
+<p class="card-text small text-muted mb-1">Data: 10/10/2023</p>
+<p class="card-text small text-muted mb-3">Laboratório: São Lucas</p>
+</div>
+<div class="d-flex gap-2 mt-auto">
+<button class="btn btn-primary-custom flex-grow-1 py-2 small">Visualizar Resultado</button>
+<button class="btn btn-outline-primary py-2">
+<i class="bi bi-download"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Result Card 2 -->
+<div class="col-12 col-md-6 col-lg-4">
+<div class="card card-shadow h-100">
+<div class="card-body d-flex flex-column">
+<div>
+<div class="d-flex justify-content-between align-items-start mb-3">
+<h5 class="card-title fw-bold text-primary-custom mb-0">Creatinina</h5>
+<span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1 rounded fw-bold" style="font-size: 10px;">Pendente</span>
+</div>
+<p class="card-text small text-muted mb-1">Data: 16/10/2023</p>
+<p class="card-text small text-muted fst-italic mb-3">Resultado aguardando liberação pelo laboratório.</p>
+</div>
+<div class="d-flex gap-2 mt-auto">
+<button class="btn btn-secondary flex-grow-1 py-2 small" disabled>Aguardando...</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Result Card 3 -->
+<div class="col-12 col-md-6 col-lg-4">
+<div class="card card-shadow h-100">
+<div class="card-body d-flex flex-column">
+<div>
+<div class="d-flex justify-content-between align-items-start mb-3">
+<h5 class="card-title fw-bold text-primary-custom mb-0">Perfil Lipídico</h5>
+<span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded fw-bold" style="font-size: 10px;">Disponível</span>
+</div>
+<p class="card-text small text-muted mb-1">Data: 08/10/2023</p>
+<p class="card-text small text-muted mb-3">Laboratório: São Lucas</p>
+</div>
+<div class="d-flex gap-2 mt-auto">
+<button class="btn btn-primary-custom flex-grow-1 py-2 small">Visualizar Resultado</button>
+<button class="btn btn-outline-primary py-2">
+<i class="bi bi-download"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>>
+
+<!-- Footer -->
+
+<!-- Modal -->
+<div class="modal fade" id="requestModal" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal-content rounded-4 shadow">
+<!-- Header -->
+<div class="modal-header border-bottom">
+<h5 class="modal-title fw-bold text-primary-custom">Solicitar Novo Exame</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<!-- Stepper Progress Bar -->
+<div class="px-4 py-3 bg-light d-flex align-items-center justify-content-center gap-3">
+<div class="step-active"></div>
+<div class="step-inactive"></div>
+<div class="step-inactive"></div>
+</div>
+<!-- Modal Content (Wizard Steps) -->
+<div class="modal-body p-4">
+<!-- Step 1: Address (Active by default for visual) -->
+<div id="step1">
+<h5 class="fw-semibold mb-3">Passo 1: Localização</h5>
+<div class="row g-3">
+<div class="col-12 col-md-6">
+<label class="form-label small text-muted">CEP</label>
+<input class="form-control" placeholder="00000-000" type="text"/>
+</div>
+<div class="col-12 col-md-6">
+<label class="form-label small text-muted">Cidade</label>
+<input class="form-control" type="text" value="São Paulo"/>
+</div>
+<div class="col-12">
+<label class="form-label small text-muted">Endereço</label>
+<input class="form-control" placeholder="Rua, Avenida..." type="text"/>
+</div>
+<div class="col-12 col-md-6">
+<label class="form-label small text-muted">Número</label>
+<input class="form-control" type="text"/>
+</div>
+<div class="col-12 col-md-6">
+<label class="form-label small text-muted">Complemento</label>
+<input class="form-control" type="text"/>
+</div>
+</div>
+</div>
+<!-- Step 2: Exam Details (Hidden) -->
+<div class="d-none" id="step2">
+<h5 class="fw-semibold mb-3">Passo 2: Detalhes do Exame</h5>
+<!-- Form structure logic here -->
+</div>
+<!-- Step 3: Summary (Hidden) -->
+<div class="d-none" id="step3">
+<h5 class="fw-semibold mb-3">Passo 3: Confirmação</h5>
+<!-- Confirmation logic here -->
+</div>
+</div>
+<!-- Footer Buttons -->
+<div class="modal-footer border-top">
+<button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Voltar</button>
+<button type="button" class="btn btn-primary-custom">Continuar</button>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<!-- Micro-interaction Script -->
+<script>
+    // Simple search highlighting simulation
+    const searchInput = document.querySelector('input[type="text"]');
+    searchInput.addEventListener('input', (e) => {
+        const rows = document.querySelectorAll('tbody tr:not(.skeleton)');
+        const term = e.target.value.toLowerCase();
+        rows.forEach(row => {
+            const text = row.cells[0].textContent.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
+    });
+
+    // Initialize modal
+    const requestModal = new bootstrap.Modal(document.getElementById('requestModal'));
+</script>
+{% endblock %}

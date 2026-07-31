@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard Paciente
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Google Fonts: Manrope & Inter -->
+
+<style>
+        :root {
+            --primary-deep: #34005d;
+            --primary-main: #500989;
+            --secondary-lilac: #7b41b4;
+            --accent-lilac: #a76ce8;
+            --soft-lilac: #d8b8ff;
+            --glass-lilac: #f0dbff;
+            --white: #ffffff;
+            --bg-body: #f9f9f9;
+        }
+
+
+
+        h1, h2, h3, .brand-font {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        /* Glassmorphism Utility */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--soft-lilac);
+            border-radius: 1.25rem;
+            box-shadow: 0 8px 32px rgba(52, 0, 93, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 12px 40px rgba(52, 0, 93, 0.1);
+        }
+
+        .glass-gradient-card {
+            background: linear-gradient(135deg, var(--primary-main) 0%, var(--secondary-lilac) 100%);
+            border: none;
+            color: var(--white);
+            border-radius: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-gradient-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Icons */
+
+
+
+
+        /* Custom Progress Bars */
+        .progress {
+            height: 8px;
+            background-color: var(--glass-lilac);
+            border-radius: 4px;
+        }
+        .progress-bar {
+            background-color: var(--secondary-lilac);
+            border-radius: 4px;
+        }
+
+        /* Buttons */
+        .btn-precision-primary {
+            background-color: var(--primary-main);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-precision-primary:hover {
+            background-color: var(--primary-deep);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .shortcut-btn {
+            background: var(--white);
+            border: 1px solid var(--soft-lilac);
+            color: var(--primary-main);
+            padding: 1.5rem;
+            border-radius: 1.25rem;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .shortcut-btn:hover {
+            background: var(--glass-lilac);
+            border-color: var(--secondary-lilac);
+            color: var(--primary-deep);
+            transform: scale(1.05);
+        }
+
+        /* Timeline Styling */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--soft-lilac);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -29px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--secondary-lilac);
+            border: 2px solid var(--white);
+        }
+
+        /* Table */
+        .table thead th {
+            background-color: rgba(240, 219, 255, 0.3);
+            border-bottom: 2px solid var(--soft-lilac);
+            color: var(--primary-main);
+            font-weight: 600;
+        }
+
+        .badge-consult {
+            background-color: var(--glass-lilac);
+            color: var(--primary-main);
+            font-weight: 500;
+            padding: 0.5em 0.8em;
+        }
+
+        /* Spacing */
+
+    </style>
+
+
+<div class="container-fluid px-lg-5">
+<!-- Section 1: Header -->
+<header class="row mb-5 align-items-center">
+<div class="col-md-8">
+<h1 class="fw-extrabold mb-1">Olá, {{ session['user_name'] }}</h1>
+<p class="text-muted mb-0">Bem-vindo ao Precision Health Connect.</p>
+</div>
+<div class="col-md-4 text-md-end mt-3 mt-md-0">
+<div class="d-inline-block text-start me-3">
+<span class="d-block small text-uppercase fw-bold text-muted" style="letter-spacing: 1px;">Data de hoje</span>
+<span class="fw-bold text-primary">{{ current_date }}</span>
+</div>
+<a
+href="{{ url_for('web.patient_profile') }}"
+class="btn btn-precision-primary">
+
+<span class="material-symbols-outlined">
+edit_square
+</span>
+
+Editar Perfil
+
+</a>
+</div>
+</header>
+<!-- Section 2: Row 1 - Summary Cards -->
+<div class="row g-4 mb-5">
+<div class="col-xl-3 col-md-6">
+<div class="glass-gradient-card p-4 h-100 d-flex flex-column justify-content-between">
+<div class="d-flex justify-content-between align-items-start">
+<div>
+<p class="mb-1 opacity-75">Próxima consulta</p>
+<h4 class="fw-bold mb-0">
+
+{% if next_appointment %}
+    {{ next_appointment.appointment_date }}
+{% else %}
+    Nenhuma consulta
+{% endif %}
+
+
+</h4>
+</div>
+</div>
+</div>
+<div class="mt-3 small">
+
+{% if next_appointment %}
+    {{ next_appointment.professional }}
+{% endif %}
+
+</div>
+</div>
+
+
+<div class="col-xl-3 col-md-6">
+<div class="glass-card p-4 h-100 d-flex flex-column justify-content-between border-start border-4 border-primary">
+<div class="d-flex justify-content-between align-items-start">
+<div>
+<p class="mb-1 text-muted">Exames pendentes</p>
+<h4 class="fw-bold mb-0 text-primary">{{ pending_exams }}</h4>
+</div>
+<span class="material-symbols-outlined icon-lg text-primary opacity-25">lab_profile</span>
+</div>
+<div class="mt-3 text-muted small">
+    Atualizado em {{ current_date }}
+</div>
+</div>
+</div>
+<div class="col-xl-3 col-md-6">
+<div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+<div class="d-flex justify-content-between align-items-start">
+<div>
+<p class="mb-1 text-muted">Mensagens</p>
+<h4 class="fw-bold mb-0 text-primary">{{ unread_messages }}</h4>
+</div>
+<span class="material-symbols-outlined icon-lg text-primary opacity-25">mail</span>
+</div>
+<div class="mt-3 text-muted small">
+
+{% if notifications %}
+    {{ notifications[0].title }}
+{% else %}
+    Nenhuma mensagem
+{% endif %}
+
+</div>
+</div>
+</div>
+<div class="col-xl-3 col-md-6">
+<div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+<div class="d-flex justify-content-between align-items-start">
+<div>
+<p class="mb-1 text-muted">Notificações</p>
+<h4 class="fw-bold mb-0 text-primary">{{ unread_notifications }}</h4>
+</div>
+<span class="material-symbols-outlined icon-lg text-primary opacity-25">notifications</span>
+</div>
+<a href="#"
+   class="mt-3 text-muted small text-decoration-none">
+    Ver todas as atividades
+</a>
+</div>
+</div>
+</div>
+<!-- Section 3: Row 2 - Large Tables/Timeline -->
+<div class="row g-4 mb-5">
+<!-- Recent Consultations -->
+<div class="col-lg-8">
+<div class="glass-card p-4 h-100">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<h5 class="fw-bold mb-0">Consultas Recentes</h5>
+<a class="text-decoration-none text-primary small fw-bold" href="#">Ver Histórico Completo</a>
+</div>
+<div class="table-responsive">
+<table class="table table-hover align-middle mb-0">
+<thead>
+<tr>
+<th class="border-0 rounded-start">Médico</th>
+<th class="border-0">Especialidade</th>
+<th class="border-0">Data</th>
+<th class="border-0 rounded-end">Status</th>
+</tr>
+</thead>
+<tbody>
+{% for appointment in recent_appointments %}
+
+<tr>
+
+<td>
+    {{ appointment.professional }}
+</td>
+
+
+<td>
+{{ appointment.specialty }}
+</td>
+
+
+<td>
+{{ appointment.appointment_date }}
+</td>
+
+
+<td>
+<span class="badge rounded-pill badge-consult">
+{{ appointment.status }}
+</span>
+</td>
+
+
+</tr>
+
+
+{% endfor %}
+
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Health History Timeline -->
+<div class="col-lg-4">
+<div class="glass-card p-4 h-100">
+<h5 class="fw-bold mb-4">Histórico de Saúde</h5>
+<div class="timeline">
+{% for item in timeline %}
+
+<div class="timeline-item">
+
+<div class="fw-bold small text-primary">
+{{ item.type }}
+</div>
+
+
+<div class="fw-semibold">
+{{ item.title }}
+</div>
+
+
+<div class="text-muted small">
+{{ item.date }}
+</div>
+
+
+</div>
+
+
+{% endfor %}
+</div>
+</div>
+</div>
+</div>
+
+<!-- Section 4: Row 3 - Quick Shortcuts -->
+<div class="row g-4 mb-5">
+<div class="col">
+<h5 class="fw-bold mb-4">Acesso Rápido</h5>
+<div class="row row-cols-2 row-cols-md-3 row-cols-xl-6 g-3">
+<div class="col">
+<a class="shortcut-btn" href="#">
+<span class="material-symbols-outlined icon-md">event_note</span>
+<span class="small fw-semibold">Consultas</span>
+</a>
+</div>
+<div class="col">
+<a class="shortcut-btn" href="#">
+<span class="material-symbols-outlined icon-md">lab_research</span>
+<span class="small fw-semibold">Exames</span>
+</a>
+</div>
+<div class="col">
+<a class="shortcut-btn" href="#">
+<span class="material-symbols-outlined icon-md">description</span>
+<span class="small fw-semibold">Prontuário</span>
+</a>
+</div>
+<div class="col">
+<a class="shortcut-btn" href="#">
+<span class="material-symbols-outlined icon-md">medication</span>
+<span class="small fw-semibold">Receitas</span>
+</a>
+</div>
+<div class="col">
+<a class="shortcut-btn" href="#">
+<span class="material-symbols-outlined icon-md">chat</span>
+<span class="small fw-semibold">Mensagens</span>
+</a>
+</div>
+<div class="col">
+<a class="shortcut-btn" href="#">
+<span class="material-symbols-outlined icon-md">person</span>
+<span class="small fw-semibold">Perfil</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 5: Row 4 - Health Summary Progress -->
+<div class="row mb-5">
+<div class="col-12">
+<div class="glass-card p-4">
+<div class="row align-items-center">
+<div class="col-lg-3 mb-4 mb-lg-0 text-center text-lg-start">
+<h5 class="fw-bold mb-1">Resumo Anual</h5>
+<p class="text-muted small mb-0">Visão geral do seu engajamento com a saúde em 2024.</p>
+</div>
+<div class="col-lg-9">
+<div class="row g-4">
+<div class="col-md-3">
+<div class="d-flex justify-content-between mb-2">
+<span class="small fw-bold">Consultas</span>
+<span class="small text-muted">{{ health_summary.consultations }}%</span>
+</div>
+<div class="progress">
+<div class="progress-bar" role="progressbar" style="width: {{ health_summary.consultations }}%"></div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="d-flex justify-content-between mb-2">
+<span class="small fw-bold">Exames</span>
+<span class="small text-muted">{{ health_summary.exams }}%</span>
+</div>
+<div class="progress">
+<div class="progress-bar" role="progressbar" style="width: {{ health_summary.exams }}%"></div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="d-flex justify-content-between mb-2">
+<span class="small fw-bold">Tratamentos</span>
+<span class="small text-muted">{{ health_summary.medications }}%</span>
+</div>
+<div class="progress">
+<div class="progress-bar" role="progressbar" style="width: {{ health_summary.medications }}%"></div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="d-flex justify-content-between mb-2">
+<span class="small fw-bold">Vacinas</span>
+<span class="small text-muted">{{ health_summary.vaccines }}%</span>
+</div>
+<div class="progress">
+<div class="progress-bar" role="progressbar" style="width: {{ health_summary.vaccines }}%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 6: Footer Card -->
+
+</div>
+
+
+
+
+<!-- Bootstrap Bundle JS -->
+
+<!-- Optional Micro-interaction -->
+<script>
+    document.querySelectorAll('.glass-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+
+{% endblock %}

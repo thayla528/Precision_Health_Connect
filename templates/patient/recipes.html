@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}
+Detalhes da Solicitação | Precision Health Connect
+
+{% endblock %}
+{% block content %}
+
+
+<style>
+
+            .icon-circle {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        :root {
+            --primary: #6e00c1;
+            --primary-container: #8a2be2;
+            --secondary: #6c49b2;
+            --tertiary: #494b5b;
+            --error: #ba1a1a;
+            --on-surface: #191c1d;
+            --on-surface-variant: #4c4354;
+            --outline: #7e7386;
+        }
+
+
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(138, 43, 226, 0.05);
+            border-radius: 0.75rem;
+        }
+
+        .text-primary-custom { color: var(--primary) !important; }
+        .bg-primary-custom { background-color: var(--primary) !important; }
+        .text-outline { color: var(--outline) !important; }
+        .text-on-surface-variant { color: var(--on-surface-variant) !important; }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .status-chip {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-active { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
+        .status-expired { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+
+
+
+        .label-caps {
+            font-size: 12px;
+            line-height: 16px;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .btn-primary-custom {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+        .btn-primary-custom:hover {
+            background-color: var(--primary-container);
+            color: white;
+        }
+
+        .table > :not(caption) > * > * {
+            padding: 1rem;
+            background-color: transparent;
+        }
+
+        .prescription-detail-border {
+            border-left: 2px solid rgba(110, 0, 193, 0.3);
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(110, 0, 193, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(110, 0, 193, 0.4); }
+
+        .sticky-sidebar {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .hover-glass:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transition: background 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+<div class="container" style="max-width: 1320px;">
+<!-- Header -->
+<header class="mb-5">
+<h1 class="display-6 fw-bold text-primary-custom mb-2">Minhas Receitas</h1>
+<p class="lead text-on-surface-variant" style="max-width: 700px;">
+                Gerencie e consulte suas prescrições médicas digitais. Acompanhe a validade dos seus medicamentos e mantenha seu histórico de saúde sempre à mão.
+            </p>
+</header>
+<!-- Summary Cards -->
+<div class="row g-4 mb-5">
+<div class="col-12 col-md-3">
+<div class="glass-card p-3 d-flex align-items-center gap-3">
+<div class="icon-circle" style="background: rgba(110, 0, 193, 0.1); color: var(--primary);">
+<span class="material-symbols-outlined">prescriptions</span>
+</div>
+<div>
+<p class="label-caps text-outline mb-0">Receitas Ativas</p>
+<p class="h5 fw-bold text-primary-custom mb-0">04</p>
+</div>
+</div>
+</div>
+<div class="col-12 col-md-3">
+<div class="glass-card p-3 d-flex align-items-center gap-3">
+<div class="icon-circle" style="background: rgba(108, 73, 178, 0.1); color: var(--secondary);">
+<span class="material-symbols-outlined">medication</span>
+</div>
+<div>
+<p class="label-caps text-outline mb-0">Em Uso</p>
+<p class="h5 fw-bold text-secondary mb-0">12</p>
+</div>
+</div>
+</div>
+<div class="col-12 col-md-3">
+<div class="glass-card p-3 d-flex align-items-center gap-3">
+<div class="icon-circle" style="background: rgba(186, 26, 26, 0.1); color: var(--error);">
+<span class="material-symbols-outlined">event_busy</span>
+</div>
+<div>
+<p class="label-caps text-outline mb-0">Expiradas</p>
+<p class="h5 fw-bold text-error mb-0">28</p>
+</div>
+</div>
+</div>
+<div class="col-12 col-md-3">
+<div class="glass-card p-3 d-flex align-items-center gap-3">
+<div class="icon-circle" style="background: rgba(73, 75, 91, 0.1); color: var(--tertiary);">
+<span class="material-symbols-outlined">update</span>
+</div>
+<div>
+<p class="label-caps text-outline mb-0">Última Atualização</p>
+<p class="h5 fw-bold text-tertiary mb-0">Hoje, 09:45</p>
+</div>
+</div>
+</div>
+</div>
+<div class="row g-4">
+<!-- Main Content: Prescription List -->
+<div class="col-12 col-lg-8">
+<div class="d-flex flex-column gap-4">
+<section class="glass-card overflow-hidden">
+<div class="p-3 border-bottom border-white d-flex justify-content-between align-items-center">
+<h2 class="h5 fw-bold text-primary-custom mb-0">Prescrições Recentes</h2>
+<button class="btn btn-link p-0 label-caps text-primary-custom text-decoration-none d-flex align-items-center gap-1">
+                                VER TODAS <span class="material-symbols-outlined fs-6">arrow_forward</span>
+</button>
+</div>
+<div class="table-responsive">
+<table class="table mb-0 align-middle">
+<thead style="background: rgba(110, 0, 193, 0.05);">
+<tr>
+<th class="label-caps text-outline border-0">Data</th>
+<th class="label-caps text-outline border-0">Médico</th>
+<th class="label-caps text-outline border-0">Especialidade</th>
+<th class="label-caps text-outline border-0">Meds</th>
+<th class="label-caps text-outline border-0">Status</th>
+<th class="border-0"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="hover-glass">
+<td class="small">12 Out 2023</td>
+<td class="small fw-semibold">Dr. Marcos Oliveira</td>
+<td class="small">Cardiologia</td>
+<td class="small">03</td>
+<td><span class="status-chip status-active">Ativa</span></td>
+<td class="text-end">
+<button class="btn btn-primary-custom btn-sm rounded-3">
+<span class="material-symbols-outlined fs-5">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover-glass">
+<td class="small">05 Set 2023</td>
+<td class="small fw-semibold">Dra. Heloísa Santos</td>
+<td class="small">Dermatologia</td>
+<td class="small">01</td>
+<td><span class="status-chip status-active">Ativa</span></td>
+<td class="text-end">
+<button class="btn btn-primary-custom btn-sm rounded-3">
+<span class="material-symbols-outlined fs-5">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover-glass">
+<td class="small">20 Ago 2023</td>
+<td class="small fw-semibold">Dr. Ricardo Souza</td>
+<td class="small">Ortopedia</td>
+<td class="small">02</td>
+<td><span class="status-chip status-expired">Expirada</span></td>
+<td class="text-end">
+<button class="btn btn-sm rounded-3" style="background: rgba(110, 0, 193, 0.2); color: var(--primary);">
+<span class="material-symbols-outlined fs-5">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Medications in Use -->
+<section>
+<h2 class="h5 fw-bold text-primary-custom mb-3">Medicamentos em Uso</h2>
+<div class="row g-3">
+<div class="col-12 col-md-6">
+<div class="glass-card p-3 position-relative overflow-hidden">
+<div class="position-absolute top-0 end-0 rounded-circle" style="width: 100px; height: 100px; margin-right: -40px; margin-top: -40px; background: rgba(110, 0, 193, 0.05);"></div>
+<div class="d-flex justify-content-between align-items-start mb-3">
+<span class="material-symbols-outlined text-primary-custom display-6">pill</span>
+<span class="badge rounded-pill fw-bold" style="background: rgba(110, 0, 193, 0.1); color: var(--primary); font-size: 10px;">8 dias restantes</span>
+</div>
+<h3 class="h5 fw-bold mb-1">Losartana Potássica</h3>
+<p class="text-on-surface-variant small mb-3">50mg • 1 comprimido • Diário</p>
+<div class="d-flex align-items-center gap-2 text-outline label-caps">
+<span class="material-symbols-outlined fs-6">schedule</span> 08:00 AM
+                                    </div>
+</div>
+</div>
+<div class="col-12 col-md-6">
+<div class="glass-card p-3 position-relative overflow-hidden">
+<div class="position-absolute top-0 end-0 rounded-circle" style="width: 100px; height: 100px; margin-right: -40px; margin-top: -40px; background: rgba(108, 73, 178, 0.05);"></div>
+<div class="d-flex justify-content-between align-items-start mb-3">
+<span class="material-symbols-outlined text-secondary display-6">medication_liquid</span>
+<span class="badge rounded-pill fw-bold" style="background: rgba(108, 73, 178, 0.1); color: var(--secondary); font-size: 10px;">15 dias restantes</span>
+</div>
+<h3 class="h5 fw-bold mb-1">Vitamina D3</h3>
+<p class="text-on-surface-variant small mb-3">2000 UI • 2 gotas • Diário</p>
+<div class="d-flex align-items-center gap-2 text-outline label-caps">
+<span class="material-symbols-outlined fs-6">schedule</span> 12:00 PM
+                                    </div>
+</div>
+</div>
+</div>
+</section>
+<!-- History Table -->
+<section class="glass-card overflow-hidden">
+<div class="p-3 border-bottom border-white">
+<h2 class="h5 fw-bold text-primary-custom mb-0">Histórico de Prescrições</h2>
+</div>
+<div class="table-responsive">
+<table class="table mb-0 align-middle">
+<tbody>
+<tr class="hover-glass">
+<td class="small p-3">15 Mai 2023</td>
+<td class="small p-3">Dr. Arthur Lima</td>
+<td class="small p-3">Clínico Geral</td>
+<td class="p-3"><span class="status-chip status-expired">Finalizado</span></td>
+<td class="text-end p-3">
+<button class="btn btn-link p-0 label-caps text-primary-custom text-decoration-none d-flex align-items-center gap-2 float-end">
+<span class="material-symbols-outlined fs-5">download</span> PDF
+                                            </button>
+</td>
+</tr>
+<tr class="hover-glass">
+<td class="small p-3">02 Abr 2023</td>
+<td class="small p-3">Dra. Clara Mendes</td>
+<td class="small p-3">Endocrinologia</td>
+<td class="p-3"><span class="status-chip status-expired">Finalizado</span></td>
+<td class="text-end p-3">
+<button class="btn btn-link p-0 label-caps text-primary-custom text-decoration-none d-flex align-items-center gap-2 float-end">
+<span class="material-symbols-outlined fs-5">download</span> PDF
+                                            </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</div>
+<!-- Sidebar: Prescription Detail -->
+<div class="col-12 col-lg-4">
+<div class="sticky-sidebar">
+<div class="glass-card overflow-hidden border-0" style="border-top: 4px solid var(--primary) !important;">
+<div class="p-3 bg-white bg-opacity-50 border-bottom border-white">
+<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex align-items-center gap-2 text-primary-custom fw-bold">
+<span class="material-symbols-outlined">health_metrics</span>
+<span>PH CONNECT</span>
+</div>
+<span class="label-caps text-outline" style="font-size: 10px;">ID: 98234-X</span>
+</div>
+<h3 class="h4 fw-bold text-on-surface mb-0">Dr. Marcos Oliveira</h3>
+<p class="small text-on-surface-variant mb-0">CRM/SP 123456 • Cardiologista</p>
+</div>
+<div class="p-3 bg-white bg-opacity-25">
+<div class="d-flex justify-content-between label-caps text-outline mb-3" style="font-size: 10px;">
+<span>PACIENTE: ANA SILVA</span>
+<span>DATA: 12/10/2023</span>
+</div>
+<div class="prescription-items">
+<div class="prescription-detail-border">
+<p class="fw-bold text-primary-custom mb-1">1. Losartana Potássica 50mg</p>
+<p class="small text-on-surface-variant fst-italic mb-1">Tomar 1 comprimido via oral, uma vez ao dia, preferencialmente pela manhã.</p>
+<p class="label-caps fw-bold text-outline mb-0" style="font-size: 9px;">Uso Contínuo</p>
+</div>
+<div class="prescription-detail-border">
+<p class="fw-bold text-primary-custom mb-1">2. Atorvastatina 20mg</p>
+<p class="small text-on-surface-variant fst-italic mb-1">Tomar 1 comprimido via oral à noite, antes de deitar.</p>
+<p class="label-caps fw-bold text-outline mb-0" style="font-size: 9px;">Duração: 90 dias</p>
+</div>
+<div class="prescription-detail-border">
+<p class="fw-bold text-primary-custom mb-1">3. Aspirina Prevent 100mg</p>
+<p class="small text-on-surface-variant fst-italic mb-1">Tomar 1 comprimido após o almoço.</p>
+<p class="label-caps fw-bold text-outline mb-0" style="font-size: 9px;">Uso Contínuo</p>
+</div>
+</div>
+<div class="mt-4 pt-4 border-top border-dashed border-secondary border-opacity-25">
+<p class="label-caps text-outline mb-1" style="font-size: 10px;">OBSERVAÇÕES</p>
+<p class="small text-on-surface-variant mb-0">Manter dieta hipossódica e realizar atividade física leve 3x por semana conforme tolerado.</p>
+</div>
+<div class="mt-4 p-3 rounded-3 text-center border" style="background: rgba(110, 0, 193, 0.05); border-color: rgba(110, 0, 193, 0.1) !important;">
+<div class="bg-white p-2 d-inline-block rounded-3 shadow-sm mb-3">
+<img alt="QR Code" class="img-fluid" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCE-izDxrcdNJCmFt8HmSZ433-MgbA5ciszbUCu0I6MvVNpEqdhAQsQuur8r-FX-StZ7v8dma4ZbXmpNKyLTJcsvyJsWC_XPFFtoB14RrLh-MJnaQyej63RvtQPkV-fbESxnogz22v6RbLYiE05tjzW2s0_mDkeW5xijHkkDNIzdstPFk3p3aZvDsVWag4BPf3Nj3mbJNeB7k_4wnK4vMAJ0zoQZZBKK-bkPDWVWeTkjGSaHpnWOCV6NsjzCaWZCto3kkO4KoChnNGP" style="width: 80px; height: 80px; object-fit: contain;"/>
+</div>
+<p class="label-caps text-outline px-2 mb-0" style="font-size: 9px;">
+                                    ASSINATURA DIGITAL VALIDADA PELO ITI-BRASIL. ACESSE PARA VERIFICAR A AUTENTICIDADE DESTE DOCUMENTO.
+                                </p>
+</div>
+</div>
+<div class="bg-primary-custom p-3 d-flex gap-2">
+<button class="btn btn-light flex-grow-1 label-caps py-2 d-flex align-items-center justify-content-center gap-2" style="font-size: 11px;">
+<span class="material-symbols-outlined fs-6">print</span> IMPRIMIR
+                            </button>
+<button class="btn flex-grow-1 label-caps py-2 d-flex align-items-center justify-content-center gap-2" style="background-color: var(--primary-container); color: white; font-size: 11px;">
+<span class="material-symbols-outlined fs-6">share</span> COMPARTILHAR
+                            </button>
+</div>
+</div>
+<!-- Helpful Note -->
+<div class="mt-4 p-3 glass-card border-0 d-flex gap-3" style="border-left: 4px solid var(--secondary) !important;">
+<span class="material-symbols-outlined text-secondary">info</span>
+<p class="small text-on-surface-variant mb-0">
+<strong>Dica:</strong> Você pode apresentar esta receita diretamente na farmácia utilizando o QR Code acima para validar a dispensação digital.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}

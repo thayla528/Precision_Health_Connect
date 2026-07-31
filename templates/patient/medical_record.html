@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+
+{% block title %}
+Detalhes da Solicitação | Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<!-- Bootstrap 5 CSS -->
+
+<!-- Google Fonts: Inter -->
+
+<style>
+        :root {
+            --primary: #6e00c1;
+            --primary-container: #8a2be2;
+            --primary-fixed: #efdbff;
+            --secondary: #6c49b2;
+            --secondary-fixed: #eaddff;
+            --tertiary: #494b5b;
+            --tertiary-fixed: #e1e1f5;
+            --error: #ba1a1a;
+            --error-container: #ffdad6;
+            --on-surface: #191c1d;
+            --on-surface-variant: #4c4354;
+            --outline: #7e7386;
+            --background: #f8f9fa;
+        }
+
+
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(138, 43, 226, 0.05);
+            border-radius: 1rem; /* ROUND_EIGHT roughly mapping to 1rem for '2xl' equivalent or 0.5rem for standard rounded-lg */
+        }
+
+        .rounded-8 { border-radius: 0.5rem !important; }
+        .rounded-16 { border-radius: 1rem !important; }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 20;
+            vertical-align: middle;
+        }
+
+        .text-primary-custom { color: var(--primary); }
+        .text-secondary-custom { color: var(--secondary); }
+        .text-tertiary-custom { color: var(--tertiary); }
+        .text-error-custom { color: var(--error); }
+        .text-outline { color: var(--outline); }
+        .text-on-surface-variant { color: var(--on-surface-variant); }
+
+        .bg-primary-fixed { background-color: var(--primary-fixed); }
+        .bg-secondary-fixed { background-color: var(--secondary-fixed); }
+        .bg-tertiary-fixed { background-color: var(--tertiary-fixed); }
+        .bg-error-container { background-color: var(--error-container); }
+
+        .label-caps {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .table thead th {
+            background-color: rgba(110, 0, 193, 0.05);
+            border-bottom: none;
+            color: var(--outline);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .badge-custom {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .timeline-container {
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 1rem;
+            top: 0.5rem;
+            bottom: 0.5rem;
+            width: 2px;
+            background-color: rgba(110, 0, 193, 0.2);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0.625rem;
+            top: 0;
+            width: 0.875rem;
+            height: 0.875rem;
+            border-radius: 50%;
+            background-color: var(--primary);
+            border: 4px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .timeline-dot-secondary {
+            background-color: var(--secondary);
+        }
+
+        .btn-action {
+            color: var(--primary);
+            padding: 0.25rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, transform 0.1s;
+            border: none;
+            background: transparent;
+        }
+
+        .btn-action:hover {
+            background-color: rgba(110, 0, 193, 0.1);
+        }
+
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+
+        .prontuario-page h1 {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .prontuario-page h2,
+        .prontuario-page h3 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .prontuario-page h4 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+    </style>
+
+<div class="prontuario-page">
+    <main class="container-xxl mx-auto">
+    <!-- Header Section -->
+    <header class="mb-4">
+    <h1 class="text-primary-custom mb-2">Meu Prontuário</h1>
+    <p class="text-on-surface-variant mb-0">Acesse e acompanhe seu histórico clínico completo, diagnósticos e evoluções de saúde em um só lugar.</p>
+    </header>
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+    <div class="col-12 col-md-6 col-lg-3">
+    <div class="glass-card p-3 d-flex align-items-center gap-3">
+    <div class="rounded-16 bg-primary-fixed d-flex align-items-center justify-content-center text-primary-custom" style="width: 48px; height: 48px;">
+    <span class="material-symbols-outlined fs-2">event_note</span>
+    </div>
+    <div>
+    <p class="label-caps text-outline mb-0">Total de Consultas</p>
+    <p class="h5 fw-bold mb-0">12</p>
+    </div>
+    </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+    <div class="glass-card p-3 d-flex align-items-center gap-3">
+    <div class="rounded-16 bg-secondary-fixed d-flex align-items-center justify-content-center text-secondary-custom" style="width: 48px; height: 48px;">
+    <span class="material-symbols-outlined fs-2">clinical_notes</span>
+    </div>
+    <div>
+    <p class="label-caps text-outline mb-0">Diagnósticos</p>
+    <p class="h5 fw-bold mb-0">05</p>
+    </div>
+    </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+    <div class="glass-card p-3 d-flex align-items-center gap-3">
+    <div class="rounded-16 bg-error-container d-flex align-items-center justify-content-center text-error-custom" style="width: 48px; height: 48px;">
+    <span class="material-symbols-outlined fs-2">warning</span>
+    </div>
+    <div>
+    <p class="label-caps text-outline mb-0">Alergias</p>
+    <p class="h5 fw-bold mb-0">02</p>
+    </div>
+    </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+    <div class="glass-card p-3 d-flex align-items-center gap-3">
+    <div class="rounded-16 bg-tertiary-fixed d-flex align-items-center justify-content-center text-tertiary-custom" style="width: 48px; height: 48px;">
+    <span class="material-symbols-outlined fs-2">chronic</span>
+    </div>
+    <div>
+    <p class="label-caps text-outline mb-0">Drs. Crônicas</p>
+    <p class="h5 fw-bold mb-0">01</p>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- Main Content Grid -->
+    <div class="row g-4 mb-4">
+    <!-- Clinical History & Vitals -->
+    <div class="col-12 col-lg-8">
+    <div class="d-flex flex-column gap-4">
+    <!-- Clinical History Table -->
+    <section class="glass-card overflow-hidden border-0">
+    <div class="p-3 border-bottom border-white d-flex justify-content-between align-items-center">
+    <h2 class="text-primary-custom mb-0">Histórico Clínico</h2>
+    <span class="material-symbols-outlined text-outline">history</span>
+    </div>
+    <div class="table-responsive">
+    <table class="table table-hover mb-0">
+    <thead>
+    <tr>
+    <th>Data</th>
+    <th>Profissional</th>
+    <th>Especialidade</th>
+    <th>Diagnóstico</th>
+    <th>Status</th>
+    <th>Ação</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>15/10/2023</td>
+    <td class="fw-medium">Dr. Ricardo Mello</td>
+    <td>Cardiologia</td>
+    <td>Check-up Anual</td>
+    <td>
+    <span class="badge-custom bg-success-subtle text-success">Concluído</span>
+    </td>
+    <td>
+    <button class="btn-action">
+    <span class="material-symbols-outlined">visibility</span>
+    </button>
+    </td>
+    </tr>
+    <tr>
+    <td>02/09/2023</td>
+    <td class="fw-medium">Dra. Elisa Sanches</td>
+    <td>Endocrinologia</td>
+    <td>Ajuste de Dosagem</td>
+    <td>
+    <span class="badge-custom bg-success-subtle text-success">Concluído</span>
+    </td>
+    <td>
+    <button class="btn-action">
+    <span class="material-symbols-outlined">visibility</span>
+    </button>
+    </td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    </section>
+    <!-- Vital Signs Table -->
+    <section class="glass-card overflow-hidden border-0">
+    <div class="p-3 border-bottom border-white d-flex justify-content-between align-items-center">
+    <h2 class="text-primary-custom mb-0">Sinais Vitais</h2>
+    <span class="material-symbols-outlined text-outline">monitoring</span>
+    </div>
+    <div class="table-responsive">
+    <table class="table mb-0">
+    <thead>
+    <tr>
+    <th>Data</th>
+    <th>P. Arterial</th>
+    <th>Freq. Cardíaca</th>
+    <th>Temperatura</th>
+    <th>Peso</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>15/10/2023</td>
+    <td>120/80 mmHg</td>
+    <td>72 bpm</td>
+    <td>36.5 °C</td>
+    <td>64 kg</td>
+    </tr>
+    <tr>
+    <td>02/09/2023</td>
+    <td>115/75 mmHg</td>
+    <td>68 bpm</td>
+    <td>36.6 °C</td>
+    <td>65 kg</td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    </section>
+    </div>
+    </div>
+    <!-- Sidebar Info Sections -->
+    <aside class="col-12 col-lg-4">
+    <div class="d-flex flex-column gap-4">
+    <!-- Allergies Section -->
+    <div class="glass-card p-3">
+    <h3 class="text-primary-custom mb-3 d-flex align-items-center gap-2">
+    <span class="material-symbols-outlined text-error-custom">emergency_home</span> Alergias
+                        </h3>
+    <div class="d-flex flex-column gap-2">
+    <div class="p-3 rounded-16 border bg-opacity-10" style="background-color: rgba(186, 26, 26, 0.05); border-color: rgba(186, 26, 26, 0.1);">
+    <div class="d-flex justify-content-between mb-1">
+    <span class="fw-bold fs-6 text-error-custom">Penicilina</span>
+    <span class="badge rounded-pill bg-danger text-uppercase" style="font-size: 10px;">Grave</span>
+    </div>
+    <p class="small text-outline mb-0">Reação anafilática registrada em 2018.</p>
+    </div>
+    <div class="p-3 rounded-16 border bg-opacity-10" style="background-color: rgba(110, 0, 193, 0.05); border-color: rgba(110, 0, 193, 0.1);">
+    <div class="d-flex justify-content-between mb-1">
+    <span class="fw-bold fs-6 text-primary-custom">Lactose</span>
+    <span class="badge rounded-pill bg-primary text-uppercase" style="font-size: 10px;">Moderada</span>
+    </div>
+    <p class="small text-outline mb-0">Desconforto gástrico e erupções cutâneas.</p>
+    </div>
+    </div>
+    </div>
+    <!-- Chronic Diseases Section -->
+    <div class="glass-card p-3">
+    <h3 class="text-primary-custom mb-3 d-flex align-items-center gap-2">
+    <span class="material-symbols-outlined text-secondary-custom">database</span> Doenças Crônicas
+                        </h3>
+    <div class="p-3 rounded-16 border bg-opacity-10" style="background-color: rgba(108, 73, 178, 0.05); border-color: rgba(108, 73, 178, 0.2);">
+    <p class="fw-bold fs-6 text-secondary-custom mb-2">Hipotireoidismo</p>
+    <div class="d-flex justify-content-between small">
+    <span class="text-outline">Diagnóstico: 12/04/2021</span>
+    <span class="text-primary-custom fw-semibold">Em tratamento</span>
+    </div>
+    </div>
+    </div>
+    <!-- Vaccines Section -->
+    <div class="glass-card overflow-hidden border-0">
+    <div class="p-3 border-bottom border-white">
+    <h3 class="text-primary-custom mb-0 d-flex align-items-center gap-2">
+    <span class="material-symbols-outlined">vaccines</span> Vacinas
+                            </h3>
+    </div>
+    <div class="table-responsive">
+    <table class="table table-borderless mb-0">
+    <tbody>
+    <tr class="small">
+    <td class="fw-medium">Influenza</td>
+    <td class="text-outline text-end">10/05/23</td>
+    <td class="text-primary-custom fw-semibold text-end">Mai/24</td>
+    </tr>
+    <tr class="small">
+    <td class="fw-medium">COVID-19 (Biv)</td>
+    <td class="text-outline text-end">15/03/23</td>
+    <td class="text-outline text-end">---</td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+    </aside>
+    </div>
+    <!-- Medical Observations (Timeline) -->
+    <section class="mt-4">
+    <h2 class="text-primary-custom mb-4">Observações Médicas</h2>
+    <div class="d-flex flex-column gap-4">
+    <!-- Timeline Item 1 -->
+    <div class="timeline-container">
+    <div class="timeline-line"></div>
+    <div class="timeline-dot"></div>
+    <div class="glass-card p-3">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+    <div>
+    <h4 class="mb-1">Nota de Evolução - Cardiologia</h4>
+    <p class="label-caps text-outline mb-0">Dr. Ricardo Mello • 15 de Outubro, 2023</p>
+    </div>
+    <span class="material-symbols-outlined text-primary-container">description</span>
+    </div>
+    <p class="small text-on-surface-variant mb-0" style="line-height: 1.6;">
+                            Paciente apresenta boa evolução clínica. Exames de ECG sem alterações significativas. Pressão arterial controlada com a medicação atual. Recomendado manter dieta hipossódica e exercícios leves 3x por semana. Retorno em 6 meses.
+                        </p>
+    </div>
+    </div>
+    <!-- Timeline Item 2 -->
+    <div class="timeline-container">
+    <div class="timeline-line"></div>
+    <div class="timeline-dot timeline-dot-secondary"></div>
+    <div class="glass-card p-3">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+    <div>
+    <h4 class="mb-1">Ajuste de Terapêutica - Endocrinologia</h4>
+    <p class="label-caps text-outline mb-0">Dra. Elisa Sanches • 02 de Setembro, 2023</p>
+    </div>
+    <span class="material-symbols-outlined text-secondary-custom">medication</span>
+    </div>
+    <p class="small text-on-surface-variant mb-0" style="line-height: 1.6;">
+                            Níveis de TSH ligeiramente elevados (5.2 mIU/L). Ajustado Levotiroxina para 75mcg/dia. Paciente relata melhora na fadiga após início da nova dosagem. Próximo controle laboratorial em 60 dias.
+                        </p>
+    </div>
+    </div>
+    </div>
+    </section>
+    </main>
+</div>>
+
+{% endblock %}

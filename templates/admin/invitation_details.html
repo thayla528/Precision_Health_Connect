@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}
+Detalhes da Solicitação | Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<style>
+        :root {
+            --primary: #34005d;
+            --primary-container: #500989;
+            --secondary: #7b41b4;
+            --secondary-fixed: #f0dbff;
+            --surface: #f8f9ff;
+            --on-surface: #0b1c30;
+            --on-surface-variant: #4c4452;
+            --outline-variant: #cec3d3;
+            --error: #ba1a1a;
+            --success: #10b981;
+            --pending: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0dbff 0%, #ffffff 100%);
+            background-attachment: fixed;
+            color: var(--on-surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
+        h1, h2, h3, h4, .headline {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+            height: 80px;
+            box-shadow: 0 10px 30px rgba(80, 9, 137, 0.04);
+        }
+
+        .navbar-brand {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            color: var(--primary) !important;
+            font-size: 1.5rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-fixed);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 20px 40px rgba(80, 9, 137, 0.05);
+        }
+
+        /* Fixed Overlap for Avatar Header */
+        .status-header-container {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .request-avatar {
+            width: 64px;
+            height: 64px;
+            flex-shrink: 0;
+            border-radius: 1rem;
+            background-color: var(--secondary-fixed);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .status-pending { background-color: #fef3c7; color: #b45309; }
+        .status-approved { background-color: #d1fae5; color: #047857; }
+        .status-rejected { background-color: #fee2e2; color: #b91c1c; }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .label-text {
+            color: var(--on-surface-variant);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .invite-code-card {
+            background: linear-gradient(135deg, #7b41b4 0%, #2c0067 100%);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invite-code-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, #7b41b4 0%, #2c0067 100%);
+            border: none;
+            border-radius: 1rem;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary-gradient:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        .btn-outline-error {
+            border: 2px solid rgba(186, 26, 26, 0.2);
+            color: var(--error);
+            border-radius: 1rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            background: transparent;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-outline-error:hover {
+            background: rgba(186, 26, 26, 0.05);
+            border-color: var(--error);
+        }
+
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1050;
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        main {
+            padding-top: 120px;
+            padding-bottom: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+
+<main class="container">
+<div class="max-width-900 mx-auto" style="max-width: 900px;">
+<!-- Header -->
+<header class="mb-4 text-center text-md-start">
+<h1 class="h2 text-primary mb-1">Detalhes da Solicitação</h1>
+<p class="text-muted">Visualize todas as informações do convite e gerencie o acesso do usuário.</p>
+</header>
+<!-- Status Card -->
+<div class="glass-card mb-4">
+<div class="row align-items-center gy-3">
+<div class="col-md-auto">
+<div class="status-header-container">
+<div class="request-avatar">
+                            {{ invitation.full_name[:2]|upper }}
+                        </div>
+<div>
+<h2 class="h5 mb-0 text-dark">{{ invitation.full_name }}</h2>
+<p class="small text-muted mb-0">{{ invitation.email }}</p>
+</div>
+</div>
+</div>
+<div class="col-md text-md-end">
+<span class="status-badge {% if invitation.status == 'pending' %}status-pending{% elif invitation.status == 'approved' %}status-approved{% else %}status-rejected{% endif %}">
+                        {{ invitation.status }}
+                    </span>
+</div>
+</div>
+</div>
+<div class="row g-4">
+<!-- Left Col -->
+<div class="col-lg-8">
+<div class="glass-card mb-4">
+<h3 class="section-title">
+<span class="material-symbols-outlined">person</span>
+                        Dados Pessoais
+                    </h3>
+<div class="row g-4">
+<div class="col-sm-6">
+<p class="label-text">Telefone</p>
+<p class="info-value">{{ invitation.phone }}</p>
+</div>
+<div class="col-sm-6">
+<p class="label-text">Data de Nascimento</p>
+<p class="info-value">{{ invitation.birth_date }}</p>
+</div>
+<div class="col-sm-12">
+<p class="label-text">Tipo de Perfil</p>
+<p class="info-value">{{ invitation.profile_type }}</p>
+</div>
+</div>
+</div>
+<div class="glass-card">
+<h3 class="section-title">
+<span class="material-symbols-outlined">info</span>
+                        Informações da Solicitação
+                    </h3>
+<div class="mb-4">
+<p class="label-text">Motivo do Interesse</p>
+<p class="info-value text-muted" style="line-height: 1.6;">{{ invitation.interest_reason }}</p>
+</div>
+<div>
+<p class="label-text">Data da Solicitação</p>
+<p class="info-value">{{ invitation.requested_at }}</p>
+</div>
+</div>
+</div>
+<!-- Right Col -->
+<div class="col-lg-4">
+                {% if invitation.invitation_code %}
+                <div class="invite-code-card mb-4">
+<p class="small fw-bold opacity-75 mb-3 d-flex align-items-center gap-1">
+<span class="material-symbols-outlined fs-6">key</span>
+                        CÓDIGO DE CONVITE
+                    </p>
+<div class="invite-code-box">
+<span class="h4 mb-0 fw-bold tracking-widest" id="inviteCode">{{ invitation.invitation_code }}</span>
+<button class="btn btn-link text-white p-0" onclick="copyToClipboard()">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+</div>
+</div>
+                {% endif %}
+
+                <div class="glass-card">
+<h4 class="h5 text-primary mb-4">Gerenciamento</h4>
+
+                    {% if invitation.status == 'pending' %}
+                    <div class="d-grid gap-3">
+<form action="{{ url_for('web.approve_invitation', id=invitation.id) }}" method="POST">
+                            <input
+                                  type="hidden"
+                                  name="csrf_token"
+                                  value="{{ csrf_token() }}">
+                            <input name="invitation_id" type="hidden" value="{{ invitation.id }}"/>
+<button class="btn btn-primary-gradient d-flex align-items-center justify-content-center gap-2" type="submit">
+<span class="material-symbols-outlined">check_circle</span>
+                                Aprovar Solicitação
+                            </button>
+</form>
+<form action="{{ url_for('web.reject_invitation', id=invitation.id) }}" method="POST">
+                            <input
+                                  type="hidden"
+                                  name="csrf_token"
+                                  value="{{ csrf_token() }}">
+                            <input name="invitation_id" type="hidden" value="{{ invitation.id }}"/>
+<button class="btn btn-outline-error d-flex align-items-center justify-content-center gap-2" type="submit">
+<span class="material-symbols-outlined">cancel</span>
+                                Recusar Solicitação
+                            </button>
+</form>
+</div>
+                    {% elif invitation.status == 'approved' %}
+                    <div class="text-center py-3">
+<div class="mb-3 text-success">
+<span class="material-symbols-outlined" style="font-size: 3rem;">verified</span>
+</div>
+<p class="h6 text-success mb-4">Convite aprovado</p>
+<a class="text-decoration-none text-primary fw-bold small d-inline-flex align-items-center gap-1" href="javascript:history.back()">
+<span class="material-symbols-outlined">arrow_back</span>
+                            Voltar para Lista
+                        </a>
+</div>
+                    {% else %}
+                    <div class="text-center py-3">
+<div class="mb-3 text-danger">
+<span class="material-symbols-outlined" style="font-size: 3rem;">block</span>
+</div>
+<p class="h6 text-danger mb-4">Solicitação recusada</p>
+<a class="text-decoration-none text-primary fw-bold small d-inline-flex align-items-center gap-1" href="javascript:history.back()">
+<span class="material-symbols-outlined">arrow_back</span>
+                            Voltar para Lista
+                        </a>
+</div>
+                    {% endif %}
+                </div>
+</div>
+</div>
+</div>
+
+
+<!-- Toast Notification -->
+<div class="glass-card shadow-lg py-2 px-3 border-0" id="toast">
+<div class="d-flex align-items-center gap-2">
+<span class="material-symbols-outlined text-success">check_circle</span>
+<span class="small fw-semibold">Código copiado com sucesso!</span>
+</div>
+</div>
+</main>
+
+<script>
+    function copyToClipboard() {
+        const codeElement = document.getElementById('inviteCode');
+        if (!codeElement) return;
+        const code = codeElement.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const toast = document.getElementById('toast');
+            toast.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(150%)';
+            }, 3000);
+        });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
