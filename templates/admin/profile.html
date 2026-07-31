@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}
+Meu Perfil | Precision Health Connect
+{% endblock %}
+
+{% block content %}
+
+<!-- Importação do Material Symbols Rounded (caso não esteja no base.html) -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+<style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #EDE9FE;
+        --phc-bg: #FFFFFF;
+        --phc-hover: #F5F3FF;
+        --phc-text-main: #2D2D2D;
+        --phc-text-sec: #6B7280;
+        --phc-border: #DDD6FE;
+        --phc-btn-hover: #7C3AED;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        color: var(--phc-text-main);
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .page-subtitle {
+        color: var(--phc-text-sec);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .profile-card {
+        background-color: var(--phc-bg);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-image-container {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        margin: 0 auto 1.5rem auto;
+    }
+
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--phc-light);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    }
+
+    .form-label {
+        color: var(--phc-text-main);
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 1px solid var(--phc-border);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        color: var(--phc-text-main);
+        background-color: var(--phc-bg);
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        background-color: var(--phc-bg);
+        color: var(--phc-text-main);
+    }
+
+    .form-control[readonly] {
+        background-color: var(--phc-hover);
+        color: var(--phc-text-sec);
+        border-color: var(--phc-border);
+        cursor: not-allowed;
+    }
+
+    .form-control[readonly]:focus {
+        box-shadow: none;
+    }
+
+    .input-group-text {
+        background-color: var(--phc-bg);
+        border: 1px solid var(--phc-border);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        color: var(--phc-secondary);
+    }
+
+    .input-group .form-control {
+        border-left: none;
+        border-radius: 0 12px 12px 0;
+    }
+
+    .input-group .form-control:focus {
+        border-left: none;
+    }
+
+    .input-group:focus-within .input-group-text {
+        border-color: var(--phc-primary);
+        color: var(--phc-primary);
+    }
+
+    .btn-toggle-password {
+        border: 1px solid var(--phc-border);
+        border-left: none;
+        background-color: var(--phc-bg);
+        border-radius: 0 12px 12px 0;
+        color: var(--phc-text-sec);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 1rem;
+    }
+
+    .btn-toggle-password:hover {
+        background-color: var(--phc-hover);
+        color: var(--phc-primary);
+    }
+
+    .input-group:focus-within .btn-toggle-password {
+        border-color: var(--phc-primary);
+    }
+
+    .btn-primary-custom {
+        background-color: var(--phc-primary);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary-custom:hover {
+        background-color: var(--phc-btn-hover);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-secondary-custom {
+        background-color: var(--phc-bg);
+        border: 1.5px solid var(--phc-secondary);
+        color: var(--phc-primary);
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-secondary-custom:hover {
+        background-color: var(--phc-hover);
+        color: var(--phc-btn-hover);
+        border-color: var(--phc-btn-hover);
+    }
+
+    .btn-outline-photo {
+        background-color: var(--phc-bg);
+        border: 1.5px dashed var(--phc-secondary);
+        color: var(--phc-primary);
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 0.5rem 1.5rem;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+
+    .btn-outline-photo:hover {
+        background-color: var(--phc-hover);
+        border-color: var(--phc-primary);
+        color: var(--phc-btn-hover);
+    }
+
+    .material-symbols-rounded {
+        font-size: 20px;
+        vertical-align: middle;
+    }
+</style>
+
+<div class="container py-4">
+    
+    <!-- Cabeçalho -->
+    <div class="page-header">
+        <h1 class="page-title">Meu Perfil</h1>
+        <p class="page-subtitle">Gerencie suas informações pessoais e as configurações da sua conta.</p>
+    </div>
+
+    <!-- Card Principal: Dados Pessoais -->
+    <div class="profile-card">
+        <div class="row g-5">
+            <!-- Coluna da Esquerda: Foto -->
+            <div class="col-12 col-lg-4 text-center border-end-lg">
+                <div class="profile-image-container">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256&q=80" 
+                         alt="Foto do Administrador" 
+                         class="profile-image">
+                </div>
+                <button type="button" class="btn btn-outline-photo d-flex align-items-center justify-content-center gap-2">
+                    <span class="material-symbols-rounded">add_a_photo</span>
+                    Alterar Foto
+                </button>
+            </div>
+
+            <!-- Coluna da Direita: Formulário -->
+            <div class="col-12 col-lg-8">
+                <h5 class="fw-bold mb-4" style="color: var(--phc-primary);">Dados Pessoais</h5>
+                <form>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label for="fullName" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="fullName" value="Carlos Henrique Oliveira">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="carlos.oliveira@precisionhealth.com">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="phone" class="form-label">Telefone</label>
+                            <input type="tel" class="form-control" id="phone" value="(11) 99876-5432">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="role" class="form-label">Cargo</label>
+                            <input type="text" class="form-control" id="role" value="Administrador" readonly>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="registerDate" class="form-label">Data de Cadastro</label>
+                            <input type="text" class="form-control" id="registerDate" value="12/02/2026" readonly>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="lastLogin" class="form-label">Último Login</label>
+                            <input type="text" class="form-control" id="lastLogin" value="31/07/2026 às 08:42" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Secundário: Alterar Senha -->
+    <div class="profile-card">
+        <h5 class="fw-bold mb-4" style="color: var(--phc-primary);">Alterar Senha</h5>
+        <form>
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <label for="currentPassword" class="form-label">Senha Atual</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="material-symbols-rounded">lock</span></span>
+                        <input type="password" class="form-control" id="currentPassword" placeholder="••••••••">
+                        <button class="btn-toggle-password" type="button" onclick="togglePassword('currentPassword', this)">
+                            <span class="material-symbols-rounded">visibility</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="newPassword" class="form-label">Nova Senha</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="material-symbols-rounded">lock_reset</span></span>
+                        <input type="password" class="form-control" id="newPassword" placeholder="••••••••">
+                        <button class="btn-toggle-password" type="button" onclick="togglePassword('newPassword', this)">
+                            <span class="material-symbols-rounded">visibility</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="confirmPassword" class="form-label">Confirmar Nova Senha</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="material-symbols-rounded">verified</span></span>
+                        <input type="password" class="form-control" id="confirmPassword" placeholder="••••••••">
+                        <button class="btn-toggle-password" type="button" onclick="togglePassword('confirmPassword', this)">
+                            <span class="material-symbols-rounded">visibility</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-4">
+        <button type="button" class="btn btn-secondary-custom">Cancelar</button>
+        <button type="submit" class="btn btn-primary-custom">Salvar Alterações</button>
+    </div>
+
+</div>
+
+<!-- Script simples e leve apenas para a funcionalidade de mostrar/ocultar senha -->
+<script>
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('.material-symbols-rounded');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.textContent = 'visibility_off';
+        } else {
+            input.type = 'password';
+            icon.textContent = 'visibility';
+        }
+    }
+</script>
+
+{% endblock %}

@@ -318,6 +318,20 @@ def exams():
         "patient/exams.html"
     )
 
+@web_bp.route("/admin/profile")
+def profiles():
+
+    return render_template(
+        "admin/profile.html"
+    )
+
+@web_bp.route("/admin/users")
+def users():
+
+    return render_template(
+        "admin/users.html"
+    )
+
 @web_bp.route("/professional")
 def health_professional_zone():
 

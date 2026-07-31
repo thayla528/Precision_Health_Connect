@@ -815,7 +815,19 @@ Paciente
 MENU ADMIN
 ===================== -->
 
-<a href="/admin"
+<a href="{{ url_for('web.profiles') }}"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+account_circle
+</span>
+
+Meu Perfil
+
+</a>
+
+
+<a href="{{ url_for('web.admin_invitations') }}"
 class="nav-link">
 
 <span class="material-symbols-outlined">
@@ -826,18 +838,9 @@ Dashboard
 
 </a>
 
-<a href="{{ url_for('web.admin_invitations') }}"
-class="nav-link">
 
-<span class="material-symbols-outlined">
-mail
-</span>
 
-Convites
-
-</a>
-
-<a href="/admin/users"
+<a href="{{ url_for('web.users') }}"
 class="nav-link">
 
 <span class="material-symbols-outlined">
@@ -848,18 +851,42 @@ Usuários
 
 </a>
 
-<a href="/admin/patients"
+<a href="#"
 class="nav-link">
 
 <span class="material-symbols-outlined">
-personal_injury
+shield_person
 </span>
 
-Pacientes
+Administradores
 
 </a>
 
-<a href="/admin/settings"
+
+
+<a href="#"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+history
+</span>
+
+Últimos Logins
+
+</a>
+
+<a href="#"
+class="nav-link">
+
+<span class="material-symbols-outlined">
+receipt_long
+</span>
+
+Logs
+
+</a>
+
+<a href="#"
 class="nav-link">
 
 <span class="material-symbols-outlined">
@@ -869,6 +896,8 @@ settings
 Configurações
 
 </a>
+
+
 
 {% elif session.get("role") == "professional" %}
 
