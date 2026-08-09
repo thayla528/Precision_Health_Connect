@@ -144,6 +144,85 @@
         border-color: var(--brand-purple);
         box-shadow: 0 0 0 0.25rem rgba(80, 9, 137, 0.15);
     }
+
+    /* ===========================
+       VERIFICATION MODAL
+    =========================== */
+    .verification-modal .modal-content {
+        border-radius: 1.5rem;
+        border: none;
+        box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.25);
+    }
+    .verification-modal .modal-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    .verification-modal .modal-body {
+        padding: 1.5rem;
+    }
+    .verification-modal .modal-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 1.5rem 1.5rem;
+    }
+    .verification-code-input {
+        font-size: 2rem;
+        letter-spacing: 0.5rem;
+        text-align: center;
+        font-weight: 700;
+        padding: 1rem;
+    }
+    .verification-code-input::placeholder {
+        letter-spacing: 0.1rem;
+        font-size: 1rem;
+        font-weight: 400;
+    }
+    .verification-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(80, 9, 137, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    .verification-message {
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-top: 1rem;
+        display: none;
+        font-weight: 600;
+    }
+    .verification-message.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .verification-message.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .verification-message.expired {
+        background: rgba(251, 191, 36, 0.1);
+        color: #d97706;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    .verification-spinner {
+        display: none;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .btn-verify {
+        min-width: 200px;
+    }
 </style>
 </head>
 <body>
@@ -220,7 +299,7 @@
                     <h2 class="h3 fw-bold text-dark">Solicite seu convite</h2>
                     <p class="text-muted">Junte-se à revolução da medicina de precisão.</p>
                 </div>
-                <form action="{{ url_for('web.invitation') }}" method="POST">
+                <form action="{{ url_for('web.invitation') }}" method="POST" id="invitation-form">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <!-- Name Field -->
@@ -286,7 +365,569 @@
     </div>
 </main>
 
+<!-- Verification Modal -->
+<div class="modal fade verification-modal" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="verificationModalLabel">Verifique seu e-mail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="verification-icon">
+                        <svg fill="none" stroke="currentColor" style="width: 40px; height: 40px; color: var(--brand-purple);" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                    </div>
+                    <p class="text-muted mb-4">Enviamos um código de verificação de 6 dígitos para seu endereço de e-mail.</p>
+
+                    <input
+                        type="text"
+                        class="form-control form-control-lg verification-code-input"
+                        id="verificationCode"
+                        placeholder="000000"
+                        maxlength="6"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        autocomplete="off"
+                    />
+
+                    <div id="verificationMessage" class="verification-message"></div>
+                </div>
+            </div>
+            <div class="modal-footer flex-column">
+                <button type="button" class="btn btn-precision btn-verify rounded-3 d-flex align-items-center justify-content-center gap-2" id="verifyCodeBtn">
+                    <span class="btn-text">Verificar e-mail</span>
+                    <div class="verification-spinner"></div>
+                </button>
+                <button type="button" class="btn btn-link text-muted mt-2" data-bs-dismiss="modal">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Bootstrap 5 JS Bundle CDN -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Verification Script -->
+```html
+<script>
+(function () {
+    'use strict';
+
+    // =====================================================
+    // CONFIGURAÇÃO RECEBIDA DO FLASK
+    // =====================================================
+
+    const showVerificationModal =
+        {{ 'true' if show_verification_modal is defined and show_verification_modal else 'false' }};
+
+    const verificationId =
+        {{ verification_id | tojson if verification_id is defined else 'null' }};
+
+
+    // =====================================================
+    // ELEMENTOS DO MODAL
+    // =====================================================
+
+    const verificationModal =
+        document.getElementById('verificationModal');
+
+    const verificationCodeInput =
+        document.getElementById('verificationCode');
+
+    const verifyCodeBtn =
+        document.getElementById('verifyCodeBtn');
+
+    const verificationMessage =
+        document.getElementById('verificationMessage');
+
+
+    // =====================================================
+    // VERIFICAR SE OS ELEMENTOS EXISTEM
+    // =====================================================
+
+    if (!verificationModal) {
+
+        console.error(
+            'ERRO: Elemento #verificationModal não encontrado.'
+        );
+
+        return;
+    }
+
+    if (!verificationCodeInput) {
+
+        console.error(
+            'ERRO: Elemento #verificationCode não encontrado.'
+        );
+
+        return;
+    }
+
+    if (!verifyCodeBtn) {
+
+        console.error(
+            'ERRO: Elemento #verifyCodeBtn não encontrado.'
+        );
+
+        return;
+    }
+
+    if (!verificationMessage) {
+
+        console.error(
+            'ERRO: Elemento #verificationMessage não encontrado.'
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // ELEMENTOS INTERNOS DO BOTÃO
+    // =====================================================
+
+    const btnText =
+        verifyCodeBtn.querySelector('.btn-text');
+
+    const spinner =
+        verifyCodeBtn.querySelector('.verification-spinner');
+
+
+    // =====================================================
+    // INSTÂNCIA DO BOOTSTRAP MODAL
+    // =====================================================
+
+    let modalInstance = null;
+
+    if (typeof bootstrap !== 'undefined') {
+
+        modalInstance = new bootstrap.Modal(
+            verificationModal,
+            {
+                backdrop: 'static',
+                keyboard: false
+            }
+        );
+
+    } else {
+
+        console.error(
+            'ERRO: Bootstrap JavaScript não foi carregado.'
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // MOSTRAR MODAL
+    // =====================================================
+
+    if (showVerificationModal) {
+
+        console.log(
+            'Abrindo modal de verificação.'
+        );
+
+        console.log(
+            'Verification ID:',
+            verificationId
+        );
+
+        modalInstance.show();
+    }
+
+
+    // =====================================================
+    // FORMATAR CÓDIGO
+    // =====================================================
+
+    verificationCodeInput.addEventListener(
+        'input',
+        function (event) {
+
+            event.target.value =
+                event.target.value
+                    .replace(/[^0-9]/g, '')
+                    .slice(0, 6);
+
+        }
+    );
+
+
+    // =====================================================
+    // MOSTRAR MENSAGEM
+    // =====================================================
+
+    function showMessage(message, type) {
+
+        verificationMessage.textContent =
+            message;
+
+        verificationMessage.className =
+            'verification-message ' + type;
+
+        verificationMessage.style.display =
+            'block';
+    }
+
+
+    // =====================================================
+    // ESCONDER MENSAGEM
+    // =====================================================
+
+    function hideMessage() {
+
+        verificationMessage.style.display =
+            'none';
+    }
+
+
+    // =====================================================
+    // ESTADO DE CARREGAMENTO
+    // =====================================================
+
+    function setLoading(loading) {
+
+        if (loading) {
+
+            if (btnText) {
+
+                btnText.textContent =
+                    'Verificando...';
+            }
+
+            if (spinner) {
+
+                spinner.style.display =
+                    'block';
+            }
+
+            verifyCodeBtn.disabled =
+                true;
+
+        } else {
+
+            if (btnText) {
+
+                btnText.textContent =
+                    'Verificar e-mail';
+            }
+
+            if (spinner) {
+
+                spinner.style.display =
+                    'none';
+            }
+
+            verifyCodeBtn.disabled =
+                false;
+        }
+    }
+
+
+    // =====================================================
+    // VERIFICAR CÓDIGO
+    // =====================================================
+
+    async function verifyCode() {
+
+        const code =
+            verificationCodeInput.value.trim();
+
+
+        // -------------------------------------------------
+        // VALIDAR CÓDIGO
+        // -------------------------------------------------
+
+        if (!code) {
+
+            showMessage(
+                'Digite o código recebido por e-mail.',
+                'error'
+            );
+
+            return;
+        }
+
+
+        if (code.length !== 6) {
+
+            showMessage(
+                'Por favor, insira o código de 6 dígitos.',
+                'error'
+            );
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // VALIDAR ID
+        // -------------------------------------------------
+
+        if (
+            verificationId === null ||
+            verificationId === undefined ||
+            verificationId === ''
+        ) {
+
+            console.error(
+                'Verification ID não encontrado.'
+            );
+
+            showMessage(
+                'Erro: ID de verificação não encontrado. Recarregue a página e tente novamente.',
+                'error'
+            );
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // LOADING
+        // -------------------------------------------------
+
+        setLoading(true);
+
+        hideMessage();
+
+
+        // -------------------------------------------------
+        // ENVIAR CÓDIGO PARA A WEB
+        // -------------------------------------------------
+        //
+        // IMPORTANTE:
+        // O navegador NÃO acessa a API diretamente.
+        //
+        // Fluxo:
+        //
+        // Browser
+        //     ↓
+        // Web /verification/email
+        //     ↓
+        // API /api/verification/email
+        //
+        // -------------------------------------------------
+
+        try {
+
+            console.log(
+                'Enviando código para a Web...'
+            );
+
+            console.log(
+                'Verification ID:',
+                verificationId
+            );
+
+            console.log(
+                'Código:',
+                code
+            );
+
+
+            const response = await fetch(
+                '/verification/email',
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify({
+
+                        verification_id:
+                            verificationId,
+
+                        code:
+                            code
+
+                    })
+                }
+            );
+
+
+            console.log(
+                'Status da Web:',
+                response.status
+            );
+
+
+            // -------------------------------------------------
+            // TENTAR LER JSON
+            // -------------------------------------------------
+
+            let data;
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (jsonError) {
+
+                console.error(
+                    'Servidor não retornou JSON:',
+                    jsonError
+                );
+
+                showMessage(
+                    'O servidor retornou uma resposta inválida.',
+                    'error'
+                );
+
+                return;
+            }
+
+
+            console.log(
+                'Resposta da Web:',
+                data
+            );
+
+
+            // -------------------------------------------------
+            // SUCESSO
+            // -------------------------------------------------
+
+            if (
+                response.ok &&
+                data.success
+            ) {
+
+                showMessage(
+                    data.message ||
+                    'E-mail verificado com sucesso.',
+                    'success'
+                );
+
+
+                setTimeout(
+                    function () {
+
+                        modalInstance.hide();
+
+                    },
+                    1500
+                );
+
+
+                return;
+            }
+
+
+            // -------------------------------------------------
+            // CÓDIGO EXPIRADO
+            // -------------------------------------------------
+
+            if (
+                data.message &&
+                data.message
+                    .toLowerCase()
+                    .includes('expir')
+            ) {
+
+                showMessage(
+                    data.message,
+                    'expired'
+                );
+
+                return;
+            }
+
+
+            // -------------------------------------------------
+            // ERRO DE VERIFICAÇÃO
+            // -------------------------------------------------
+
+            showMessage(
+                data.message ||
+                'Código inválido. Tente novamente.',
+                'error'
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                'ERRO COMPLETO DA VERIFICAÇÃO:',
+                error
+            );
+
+
+            showMessage(
+                'Não foi possível conectar ao servidor de verificação.',
+                'error'
+            );
+
+
+        } finally {
+
+            setLoading(false);
+
+        }
+    }
+
+
+    // =====================================================
+    // BOTÃO VERIFICAR
+    // =====================================================
+
+    verifyCodeBtn.addEventListener(
+        'click',
+        verifyCode
+    );
+
+
+    // =====================================================
+    // ENTER NO CAMPO
+    // =====================================================
+
+    verificationCodeInput.addEventListener(
+        'keypress',
+        function (event) {
+
+            if (event.key === 'Enter') {
+
+                event.preventDefault();
+
+                verifyCode();
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // QUANDO MODAL FOR FECHADO
+    // =====================================================
+
+    verificationModal.addEventListener(
+        'hidden.bs.modal',
+        function () {
+
+            verificationCodeInput.value =
+                '';
+
+            hideMessage();
+
+            setLoading(false);
+
+        }
+    );
+
+
+})();
+</script>
+```
+
 </body>
 </html>

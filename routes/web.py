@@ -1,5 +1,5 @@
 from click import style
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session, abort
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, abort, jsonify
 import requests
 
 import math
@@ -590,38 +590,335 @@ def prescriptions():
 def appointments():
     return  render_template("patient/appointments.html")
 
+
+
+
 @web_bp.route("/invitation", methods=["GET", "POST"])
 def invitation():
 
+    # =====================================================
+    # ABRIR PÁGINA
+    # =====================================================
+
     if request.method == "GET":
-        return render_template("invitation.html")
+
+        return render_template(
+            "invitation.html"
+        )
+
+
+    # =====================================================
+    # RECEBER DADOS DO FORMULÁRIO
+    # =====================================================
 
     data = {
+
         "full_name": request.form.get("full_name"),
+
         "email": request.form.get("email"),
+
         "phone": request.form.get("phone"),
+
         "birth_date": request.form.get("birth_date"),
+
         "profile_type": request.form.get("profile_type"),
+
         "interest": request.form.get("interest")
+
     }
 
-    response = requests.post(
-        "http://127.0.0.1:5001/api/invitation",
-        json=data
-    )
 
-    if response.status_code == 201:
-        flash("Solicitação enviada com sucesso!", "success")
-    else:
+    # =====================================================
+    # INICIAR VERIFICAÇÃO DO E-MAIL
+    # =====================================================
+
+    try:
+
+        verification_response = requests.post(
+
+            f"{API_URL}/api/verification/start",
+
+            json={
+
+                "email": data["email"],
+
+                "phone": data["phone"]
+
+            },
+
+            timeout=10
+
+        )
+
+    except requests.RequestException:
+
         flash(
-            response.json().get(
-                "message",
-                "Erro ao enviar solicitação."
-            ),
+            "Não foi possível conectar ao servidor de verificação.",
             "danger"
         )
 
-    return redirect("/public_page")
+        return redirect(
+            url_for("web.invitation")
+        )
+
+
+    # =====================================================
+    # VERIFICAR RESPOSTA DA API
+    # =====================================================
+
+    try:
+
+        verification_data = verification_response.json()
+
+    except ValueError:
+
+        flash(
+            "Resposta inválida do servidor de verificação.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("web.invitation")
+        )
+
+
+    if verification_response.status_code != 200:
+
+        flash(
+
+            verification_data.get(
+                "message",
+                "Não foi possível enviar o código de verificação."
+            ),
+
+            "danger"
+
+        )
+
+        return redirect(
+            url_for("web.invitation")
+        )
+
+
+    # =====================================================
+    # GUARDAR DADOS TEMPORARIAMENTE NA SESSION
+    # =====================================================
+
+    session["invitation_data"] = data
+
+    session["verification_id"] = (
+        verification_data["verification_id"]
+    )
+
+
+    # =====================================================
+    # ABRIR MODAL DE VERIFICAÇÃO
+    # =====================================================
+
+    return render_template(
+
+        "invitation.html",
+
+        show_verification_modal=True,
+
+        verification_id=verification_data["verification_id"]
+
+    )
+
+
+
+@web_bp.route("/verification/email", methods=["POST"])
+def verification_email():
+
+    print("", flush=True)
+    print("====================================================", flush=True)
+    print("WEB - VERIFICAÇÃO DE E-MAIL", flush=True)
+    print("====================================================", flush=True)
+
+
+    # =====================================================
+    # RECEBER JSON DO NAVEGADOR
+    # =====================================================
+
+    data = request.get_json(silent=True)
+
+    print("JSON RECEBIDO:", data, flush=True)
+
+
+    # =====================================================
+    # VALIDAR JSON
+    # =====================================================
+
+    if not data:
+
+        print(
+            "ERRO: JSON NÃO RECEBIDO.",
+            flush=True
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "Dados de verificação não enviados."
+        }), 400
+
+
+    # =====================================================
+    # PEGAR DADOS
+    # =====================================================
+
+    verification_id = data.get("verification_id")
+    code = data.get("code")
+
+
+    print(
+        "VERIFICATION ID:",
+        repr(verification_id),
+        flush=True
+    )
+
+    print(
+        "CODE:",
+        repr(code),
+        flush=True
+    )
+
+
+    # =====================================================
+    # VALIDAR VERIFICATION ID
+    # =====================================================
+
+    if not verification_id:
+
+        print(
+            "ERRO: verification_id AUSENTE.",
+            flush=True
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "ID da verificação é obrigatório."
+        }), 400
+
+
+    # =====================================================
+    # VALIDAR CÓDIGO
+    # =====================================================
+
+    if not code:
+
+        print(
+            "ERRO: code AUSENTE.",
+            flush=True
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "Código de verificação é obrigatório."
+        }), 400
+
+
+    # =====================================================
+    # ENVIAR PARA API
+    # =====================================================
+
+    print(
+        "ENVIANDO PARA API...",
+        flush=True
+    )
+
+    print(
+        "URL:",
+        f"{API_URL}/api/verification/email",
+        flush=True
+    )
+
+
+    try:
+
+        response = requests.post(
+
+            f"{API_URL}/api/verification/email",
+
+            json={
+                "verification_id": verification_id,
+                "code": code
+            },
+
+            timeout=10
+        )
+
+
+    except requests.RequestException as e:
+
+        print(
+            "ERRO AO CONECTAR COM API:",
+            repr(e),
+            flush=True
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "Não foi possível conectar ao servidor de verificação."
+        }), 500
+
+
+    # =====================================================
+    # RESPOSTA DA API
+    # =====================================================
+
+    print(
+        "STATUS DA API:",
+        response.status_code,
+        flush=True
+    )
+
+    print(
+        "RESPOSTA DA API:",
+        response.text,
+        flush=True
+    )
+
+
+    # =====================================================
+    # CONVERTER RESPOSTA PARA JSON
+    # =====================================================
+
+    try:
+
+        result = response.json()
+
+    except ValueError:
+
+        print(
+            "ERRO: API NÃO RETORNOU JSON.",
+            flush=True
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "A API retornou uma resposta inválida."
+        }), 500
+
+
+    # =====================================================
+    # RESULTADO
+    # =====================================================
+
+    print(
+        "RESULTADO FINAL:",
+        result,
+        flush=True
+    )
+
+    print(
+        "====================================================",
+        flush=True
+    )
+
+
+    return jsonify(result), response.status_code
+
+
 
 @web_bp.route("/patient/profile")
 def patient_profile():

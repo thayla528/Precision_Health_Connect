@@ -23,8 +23,6 @@ csrf = CSRFProtect()
 
 
 
-
-
 csrf.init_app(app)
 
 csrf.exempt(auth_bp)
