@@ -1,3 +1,4 @@
+
 from flask import (
     Blueprint,
     render_template,
@@ -10,10 +11,12 @@ from flask import (
 
 import requests
 
+
 auth_bp = Blueprint(
     "auth",
     __name__
 )
+
 
 API_URL = "http://127.0.0.1:5001"
 
@@ -22,14 +25,46 @@ API_URL = "http://127.0.0.1:5001"
 # FINALIZAR CADASTRO
 # =====================================================
 
-@auth_bp.route("/register", methods=["GET", "POST"])
+@auth_bp.route(
+    "/register",
+    methods=["GET", "POST"]
+)
 def register():
 
     if request.method == "POST":
 
-        invitation_code = request.form["invitation_code"]
-        password = request.form["password"]
-        confirm_password = request.form["confirm_password"]
+        invitation_code = request.form.get(
+            "invitation_code"
+        )
+
+        password = request.form.get(
+            "password"
+        )
+
+        confirm_password = request.form.get(
+            "confirm_password"
+        )
+
+
+        # =================================================
+        # VALIDAR CAMPOS
+        # =================================================
+
+        if not invitation_code or not password or not confirm_password:
+
+            flash(
+                "Todos os campos são obrigatórios.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("auth.register")
+            )
+
+
+        # =================================================
+        # VALIDAR SENHAS
+        # =================================================
 
         if password != confirm_password:
 
@@ -42,23 +77,89 @@ def register():
                 url_for("auth.register")
             )
 
-        response = requests.post(
-            f"{API_URL}/api/register",
-            json={
-                "invitation_code": invitation_code,
-                "password": password
-            }
-        )
 
-        print("STATUS API:", response.status_code)
-        print("RESPOSTA API:", response.text)
+        # =================================================
+        # ENVIAR PARA API
+        # =================================================
 
-        result = response.json()
+        try:
 
-        if result["success"]:
+            response = requests.post(
+
+                f"{API_URL}/api/register",
+
+                json={
+                    "invitation_code": invitation_code,
+                    "password": password
+                },
+
+                timeout=10
+            )
+
+
+        except requests.RequestException as e:
+
+            print(
+                "ERRO AO CONECTAR COM API:",
+                e
+            )
 
             flash(
-                "Cadastro realizado com sucesso!",
+                "Não foi possível conectar ao servidor.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.register")
+            )
+
+
+        # =================================================
+        # DEBUG
+        # =================================================
+
+        print(
+            "STATUS API:",
+            response.status_code
+        )
+
+        print(
+            "RESPOSTA API:",
+            response.text
+        )
+
+
+        # =================================================
+        # CONVERTER RESPOSTA
+        # =================================================
+
+        try:
+
+            result = response.json()
+
+        except ValueError:
+
+            flash(
+                "A API retornou uma resposta inválida.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.register")
+            )
+
+
+        # =================================================
+        # CADASTRO REALIZADO
+        # =================================================
+
+        if response.status_code == 201 and result.get("success"):
+
+            flash(
+                result.get(
+                    "message",
+                    "Conta criada com sucesso!"
+                ),
                 "success"
             )
 
@@ -66,10 +167,19 @@ def register():
                 url_for("auth.login")
             )
 
+
+        # =================================================
+        # ERRO NO CADASTRO
+        # =================================================
+
         flash(
-            result["message"],
+            result.get(
+                "message",
+                "Não foi possível finalizar o cadastro."
+            ),
             "danger"
         )
+
 
     return render_template(
         "user_registration.html"
@@ -80,29 +190,83 @@ def register():
 # LOGIN
 # =====================================================
 
-@auth_bp.route("/login", methods=["GET", "POST"])
+@auth_bp.route(
+    "/login",
+    methods=["GET", "POST"]
+)
 def login():
 
     if request.method == "POST":
 
-        email = request.form["email"]
-        password = request.form["password"]
-
-        response = requests.post(
-            f"{API_URL}/login",
-            json={
-                "email": email,
-                "password": password
-            }
+        email = request.form.get(
+            "email"
         )
 
+        password = request.form.get(
+            "password"
+        )
+
+
+        # =================================================
+        # ENVIAR PARA API
+        # =================================================
+
         try:
-            print("STATUS API:", response.status_code)
-            print("RESPOSTA API:", response.text)
+
+            response = requests.post(
+
+                f"{API_URL}/login",
+
+                json={
+                    "email": email,
+                    "password": password
+                },
+
+                timeout=10
+            )
+
+
+        except requests.RequestException as e:
+
+            print(
+                "ERRO AO CONECTAR COM API:",
+                e
+            )
+
+            flash(
+                "Não foi possível conectar ao servidor.",
+                "danger"
+            )
+
+            return render_template(
+                "login.html"
+            )
+
+
+        # =================================================
+        # DEBUG
+        # =================================================
+
+        print(
+            "STATUS API:",
+            response.status_code
+        )
+
+        print(
+            "RESPOSTA API:",
+            response.text
+        )
+
+
+        # =================================================
+        # CONVERTER RESPOSTA
+        # =================================================
+
+        try:
 
             result = response.json()
 
-        except Exception:
+        except ValueError:
 
             flash(
                 "A API retornou uma resposta inválida.",
@@ -113,36 +277,89 @@ def login():
                 "login.html"
             )
 
-        if result["success"]:
 
-            session["user_id"] = result["user"]["id"]
-            session["user_name"] = result["user"]["full_name"]
-            session["user_email"] = result["user"]["email"]
-            session["role"] = result["user"]["role"]
-            session["profile_type"] = result["user"]["profile_type"]
+        # =================================================
+        # LOGIN REALIZADO
+        # =================================================
+
+        if result.get("success"):
+
+            user = result.get(
+                "user"
+            )
+
+
+            if not user:
+
+                flash(
+                    "Dados do usuário não foram retornados pela API.",
+                    "danger"
+                )
+
+                return render_template(
+                    "login.html"
+                )
+
+
+            session["user_id"] = user["id"]
+
+            session["user_name"] = user["full_name"]
+
+            session["user_email"] = user["email"]
+
+            session["role"] = user["role"]
+
+            session["profile_type"] = user["profile_type"]
+
 
             flash(
                 f"Bem-vindo(a), {session['user_name']}!",
                 "success"
             )
 
+
+            # =================================================
+            # ADMINISTRADOR
+            # =================================================
+
             if session["role"] == "administrator":
 
                 return redirect(
-                    url_for("web.admin_invitations")
+                    url_for(
+                        "web.admin_invitations"
+                    )
                 )
+
+
+            # =================================================
+            # PACIENTE
+            # =================================================
 
             elif session["role"] == "patient":
 
                 return redirect(
-                    url_for("web.patient_dashboard")
+                    url_for(
+                        "web.patient_dashboard"
+                    )
                 )
+
+
+            # =================================================
+            # PROFISSIONAL
+            # =================================================
 
             elif session["role"] == "professional":
 
                 return redirect(
-                    url_for("web.health_professional_zone")
+                    url_for(
+                        "web.health_professional_zone"
+                    )
                 )
+
+
+            # =================================================
+            # ROLE INVÁLIDA
+            # =================================================
 
             else:
 
@@ -155,10 +372,19 @@ def login():
                     url_for("auth.login")
                 )
 
+
+        # =================================================
+        # ERRO DE LOGIN
+        # =================================================
+
         flash(
-            result["message"],
+            result.get(
+                "message",
+                "E-mail ou senha inválidos."
+            ),
             "danger"
         )
+
 
     return render_template(
         "login.html"
@@ -169,16 +395,23 @@ def login():
 # LOGOUT
 # =====================================================
 
-@auth_bp.route("/logout")
+@auth_bp.route(
+    "/logout"
+)
 def logout():
 
     session.clear()
+
 
     flash(
         "Logout realizado com sucesso.",
         "info"
     )
 
+
     return redirect(
-        url_for("web.public_page")
+        url_for(
+            "web.public_page"
+        )
     )
+

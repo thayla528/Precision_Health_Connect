@@ -144,6 +144,150 @@
         border-color: var(--brand-purple);
         box-shadow: 0 0 0 0.25rem rgba(80, 9, 137, 0.15);
     }
+
+    /* ===========================
+       MODAL RECUPERAÇÃO DE SENHA
+    =========================== */
+    .modal-backdrop-custom {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        z-index: 1050;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    .modal-backdrop-custom.active {
+        display: flex;
+    }
+    .modal-recovery {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 1.5rem;
+        box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.25);
+        max-width: 500px;
+        width: 100%;
+        padding: 2rem;
+        position: relative;
+        animation: modalSlideIn 0.3s ease;
+    }
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #6c757d;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    .modal-close:hover {
+        color: var(--brand-purple);
+    }
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 0.5rem;
+    }
+    .modal-subtitle {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+    .btn-back {
+        background: none;
+        border: none;
+        color: var(--brand-purple);
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: opacity 0.3s ease;
+    }
+    .btn-back:hover {
+        opacity: 0.7;
+    }
+    .modal-message {
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: none;
+    }
+    .modal-message.active {
+        display: block;
+    }
+    .modal-message.success {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1.5px solid rgba(34, 197, 94, 0.3);
+        color: #166534;
+    }
+    .modal-message.error {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1.5px solid rgba(239, 68, 68, 0.3);
+        color: #991b1b;
+    }
+    .modal-message.info {
+        background: rgba(237,233,254,.55);
+        border: 1.5px solid #8b5cf6;
+        color: #500989;
+    }
+    .step {
+        display: none;
+    }
+    .step.active {
+        display: block;
+    }
+    .code-input {
+        text-align: center;
+        font-size: 1.5rem;
+        letter-spacing: 0.5rem;
+        font-weight: 700;
+    }
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.8;
+    }
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-left: 20px;
+        margin-top: -8px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spinner 0.6s linear infinite;
+    }
+    @keyframes spinner {
+        to {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 </head>
 <body>
@@ -238,7 +382,7 @@
                             <input class="form-check-input" id="remember" name="remember" type="checkbox"/>
                             <label class="form-check-label text-muted" for="remember" style="font-size: 0.85rem;">Lembrar de mim</label>
                         </div>
-                        <a class="text-decoration-none" href="#" style="color: var(--brand-purple); font-size: 0.85rem;">Esqueceu a senha?</a>
+                        <a class="text-decoration-none" href="#" id="forgotPasswordLink" style="color: var(--brand-purple); font-size: 0.85rem;">Esqueceu a senha?</a>
                     </div>
 
                     <button class="btn btn-precision w-100 rounded-3" type="submit">Entrar</button>
@@ -262,7 +406,1057 @@
     </div>
 </main>
 
+<!-- Modal de Recuperação de Senha -->
+<div class="modal-backdrop-custom" id="recoveryModal">
+    <div class="modal-recovery">
+        <button class="modal-close" id="closeModal">&times;</button>
+
+        <!-- Mensagem de feedback -->
+        <div class="modal-message" id="modalMessage"></div>
+
+        <!-- Etapa 1: Solicitar código -->
+        <div class="step active" id="step1">
+            <h3 class="modal-title">Recuperar senha</h3>
+            <p class="modal-subtitle">Digite seu e-mail para receber o código de recuperação</p>
+
+            <form id="forgotPasswordForm">
+                <div class="mb-3">
+                    <label class="form-label-custom" for="recoveryEmail">E-mail</label>
+                    <input type="email" class="form-control form-control-lg" id="recoveryEmail" placeholder="seu@email.com">
+                </div>
+
+                <button type="submit" class="btn btn-precision w-100 rounded-3" id="sendCodeBtn">
+                    Enviar código
+                </button>
+            </form>
+        </div>
+
+        <!-- Etapa 2: Redefinir senha -->
+        <div class="step" id="step2">
+            <button class="btn-back mb-3" id="backToEmail">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                Voltar
+            </button>
+
+            <h3 class="modal-title">Redefinir senha</h3>
+            <p class="modal-subtitle">Digite o código recebido e sua nova senha</p>
+
+            <form id="resetPasswordForm">
+                <div class="mb-3">
+                    <label class="form-label-custom" for="resetCode">Código de recuperação</label>
+                    <input type="text" class="form-control form-control-lg code-input" id="resetCode" placeholder="000000" maxlength="6">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom" for="newPassword">Nova senha</label>
+                    <input type="password" class="form-control form-control-lg" id="newPassword" placeholder="Digite sua nova senha">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label-custom" for="confirmPassword">Confirmar nova senha</label>
+                    <input type="password" class="form-control form-control-lg" id="confirmPassword" placeholder="Confirme sua nova senha">
+                </div>
+
+                <button type="submit" class="btn btn-precision w-100 rounded-3" id="resetPasswordBtn">
+                    Redefinir senha
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Bootstrap 5 JS Bundle CDN -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+<script>
+(function() {
+
+    // =====================================================
+    // ELEMENTOS DO DOM
+    // =====================================================
+
+    const modal =
+        document.getElementById('recoveryModal');
+
+    const forgotPasswordLink =
+        document.getElementById('forgotPasswordLink');
+
+    const closeModal =
+        document.getElementById('closeModal');
+
+    const step1 =
+        document.getElementById('step1');
+
+    const step2 =
+        document.getElementById('step2');
+
+    const backToEmail =
+        document.getElementById('backToEmail');
+
+    const forgotPasswordForm =
+        document.getElementById('forgotPasswordForm');
+
+    const resetPasswordForm =
+        document.getElementById('resetPasswordForm');
+
+    const sendCodeBtn =
+        document.getElementById('sendCodeBtn');
+
+    const resetPasswordBtn =
+        document.getElementById('resetPasswordBtn');
+
+    const modalMessage =
+        document.getElementById('modalMessage');
+
+
+    // =====================================================
+    // CAMPOS
+    // =====================================================
+
+    const recoveryEmail =
+        document.getElementById('recoveryEmail');
+
+    const resetCode =
+        document.getElementById('resetCode');
+
+    const newPassword =
+        document.getElementById('newPassword');
+
+    const confirmPassword =
+        document.getElementById('confirmPassword');
+
+
+    // =====================================================
+    // VERIFICAR ELEMENTOS PRINCIPAIS
+    // =====================================================
+
+    if (!modal) {
+        console.error(
+            'Modal de recuperação não encontrado.'
+        );
+        return;
+    }
+
+    if (!forgotPasswordLink) {
+        console.error(
+            'Link "Esqueceu a senha?" não encontrado.'
+        );
+        return;
+    }
+
+    if (!forgotPasswordForm) {
+        console.error(
+            'Formulário de recuperação não encontrado.'
+        );
+        return;
+    }
+
+    if (!resetPasswordForm) {
+        console.error(
+            'Formulário de redefinição não encontrado.'
+        );
+        return;
+    }
+
+
+    // =====================================================
+    // ABRIR MODAL
+    // =====================================================
+
+    forgotPasswordLink.addEventListener(
+        'click',
+        function(e) {
+
+            e.preventDefault();
+
+            openModal();
+
+        }
+    );
+
+
+    // =====================================================
+    // FECHAR MODAL
+    // =====================================================
+
+    if (closeModal) {
+
+        closeModal.addEventListener(
+            'click',
+            function() {
+
+                closeModalElement();
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // FECHAR CLICANDO FORA
+    // =====================================================
+
+    modal.addEventListener(
+        'click',
+        function(e) {
+
+            if (e.target === modal) {
+
+                closeModalElement();
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // VOLTAR PARA ETAPA DO E-MAIL
+    // =====================================================
+
+    if (backToEmail) {
+
+        backToEmail.addEventListener(
+            'click',
+            function() {
+
+                showStep(1);
+
+                hideMessage();
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // ABRIR MODAL
+    // =====================================================
+
+    function openModal() {
+
+        modal.classList.add('active');
+
+        document.body.style.overflow = 'hidden';
+
+        resetForms();
+
+        showStep(1);
+
+        hideMessage();
+
+    }
+
+
+    // =====================================================
+    // FECHAR MODAL
+    // =====================================================
+
+    function closeModalElement() {
+
+        modal.classList.remove('active');
+
+        document.body.style.overflow = '';
+
+        resetForms();
+
+        showStep(1);
+
+        hideMessage();
+
+    }
+
+
+    // =====================================================
+    // MOSTRAR ETAPA
+    // =====================================================
+
+    function showStep(stepNumber) {
+
+        if (!step1 || !step2) {
+            return;
+        }
+
+        if (stepNumber === 1) {
+
+            step1.classList.add('active');
+
+            step2.classList.remove('active');
+
+        } else {
+
+            step1.classList.remove('active');
+
+            step2.classList.add('active');
+
+        }
+
+    }
+
+
+    // =====================================================
+    // LIMPAR FORMULÁRIOS
+    // =====================================================
+
+    function resetForms() {
+
+        if (forgotPasswordForm) {
+
+            forgotPasswordForm.reset();
+
+        }
+
+        if (resetPasswordForm) {
+
+            resetPasswordForm.reset();
+
+        }
+
+    }
+
+
+    // =====================================================
+    // MOSTRAR MENSAGEM
+    // =====================================================
+
+    function showMessage(message, type) {
+
+        if (!modalMessage) {
+            return;
+        }
+
+        modalMessage.textContent = message;
+
+        modalMessage.className =
+            'modal-message active ' + type;
+
+    }
+
+
+    // =====================================================
+    // ESCONDER MENSAGEM
+    // =====================================================
+
+    function hideMessage() {
+
+        if (modalMessage) {
+
+            modalMessage.classList.remove(
+                'active'
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // VALIDAR E-MAIL
+    // =====================================================
+
+    function isValidEmail(email) {
+
+        const re =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        return re.test(email);
+
+    }
+
+
+    // =====================================================
+    // VALIDAR CÓDIGO
+    // =====================================================
+
+    function isValidCode(code) {
+
+        return /^\d{6}$/.test(code);
+
+    }
+
+
+    // =====================================================
+    // ETAPA 1
+    // ENVIAR CÓDIGO POR E-MAIL
+    //
+    // NAVEGADOR
+    //      ↓
+    // WEB :5000
+    //      ↓
+    // API :5001
+    // =====================================================
+
+    forgotPasswordForm.addEventListener(
+        'submit',
+        async function(e) {
+
+            e.preventDefault();
+
+
+            // -------------------------------------------------
+            // VERIFICAR CAMPO
+            // -------------------------------------------------
+
+            if (!recoveryEmail) {
+
+                showMessage(
+                    'Campo de e-mail não encontrado.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            // -------------------------------------------------
+            // PEGAR E-MAIL
+            // -------------------------------------------------
+
+            const email =
+                recoveryEmail.value.trim();
+
+
+            console.log(
+                'E-mail informado:',
+                email
+            );
+
+
+            // -------------------------------------------------
+            // VALIDAR E-MAIL
+            // -------------------------------------------------
+
+            if (!email) {
+
+                showMessage(
+                    'Digite seu e-mail.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            if (!isValidEmail(email)) {
+
+                showMessage(
+                    'Digite um e-mail válido.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            // -------------------------------------------------
+            // DESABILITAR BOTÃO
+            // -------------------------------------------------
+
+            if (sendCodeBtn) {
+
+                sendCodeBtn.classList.add(
+                    'btn-loading'
+                );
+
+                sendCodeBtn.disabled = true;
+
+                sendCodeBtn.textContent =
+                    'Enviando...';
+
+            }
+
+            hideMessage();
+
+
+            // -------------------------------------------------
+            // ENVIAR PARA A WEB
+            //
+            // IMPORTANTE:
+            // NÃO usamos mais a porta 5001 aqui.
+            //
+            // O navegador chama:
+            //
+            // /api/password/forgot
+            //
+            // A WEB encaminha para:
+            //
+            // http://127.0.0.1:5001/api/password/forgot
+            // -------------------------------------------------
+
+            try {
+
+                console.log(
+                    'Enviando solicitação para a WEB...'
+                );
+
+                console.log(
+                    'URL:',
+                    '/api/password/forgot'
+                );
+
+
+                const response = await fetch(
+                    '/api/password/forgot',
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body: JSON.stringify({
+                            email: email
+                        })
+                    }
+                );
+
+
+                console.log(
+                    'Status da WEB:',
+                    response.status
+                );
+
+                console.log(
+                    'Response OK:',
+                    response.ok
+                );
+
+
+                // -------------------------------------------------
+                // LER RESPOSTA
+                // -------------------------------------------------
+
+                const text =
+                    await response.text();
+
+
+                console.log(
+                    'Resposta da WEB:',
+                    text
+                );
+
+
+                // -------------------------------------------------
+                // CONVERTER JSON
+                // -------------------------------------------------
+
+                let data;
+
+
+                try {
+
+                    data = JSON.parse(text);
+
+                } catch (jsonError) {
+
+                    console.error(
+                        'Erro ao interpretar JSON:',
+                        jsonError
+                    );
+
+                    showMessage(
+                        'A Web recebeu uma resposta inválida.',
+                        'error'
+                    );
+
+                    return;
+
+                }
+
+
+                console.log(
+                    'Dados recebidos:',
+                    data
+                );
+
+
+                // -------------------------------------------------
+                // SUCESSO
+                // -------------------------------------------------
+
+                if (
+                    response.ok &&
+                    data.success
+                ) {
+
+                    showMessage(
+                        'Código enviado! Verifique seu e-mail.',
+                        'success'
+                    );
+
+
+                    setTimeout(
+                        function() {
+
+                            showStep(2);
+
+                            hideMessage();
+
+                            if (resetCode) {
+
+                                resetCode.focus();
+
+                            }
+
+                        },
+                        1500
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // ERRO DA WEB/API
+                // -------------------------------------------------
+
+                else {
+
+                    showMessage(
+                        data.message ||
+                        'Não foi possível enviar o código.',
+                        'error'
+                    );
+
+                }
+
+            }
+
+
+            // -------------------------------------------------
+            // ERRO DE COMUNICAÇÃO
+            // -------------------------------------------------
+
+            catch (error) {
+
+                console.error(
+                    'ERRO NO FETCH:',
+                    error
+                );
+
+
+                showMessage(
+                    'Erro de comunicação com o servidor.',
+                    'error'
+                );
+
+            }
+
+
+            // -------------------------------------------------
+            // RESTAURAR BOTÃO
+            // -------------------------------------------------
+
+            finally {
+
+                if (sendCodeBtn) {
+
+                    sendCodeBtn.classList.remove(
+                        'btn-loading'
+                    );
+
+                    sendCodeBtn.disabled = false;
+
+                    sendCodeBtn.textContent =
+                        'Enviar código';
+
+                }
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // PERMITIR APENAS NÚMEROS NO CÓDIGO
+    // =====================================================
+
+    if (resetCode) {
+
+        resetCode.addEventListener(
+            'input',
+            function() {
+
+                this.value =
+                    this.value
+                        .replace(/\D/g, '')
+                        .slice(0, 6);
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // ETAPA 2
+    // REDEFINIR SENHA
+    //
+    // NAVEGADOR
+    //      ↓
+    // WEB :5000
+    //      ↓
+    // API :5001
+    // =====================================================
+
+    resetPasswordForm.addEventListener(
+        'submit',
+        async function(e) {
+
+            e.preventDefault();
+
+
+            // -------------------------------------------------
+            // VERIFICAR CAMPOS
+            // -------------------------------------------------
+
+            if (
+                !resetCode ||
+                !newPassword ||
+                !confirmPassword
+            ) {
+
+                showMessage(
+                    'Campos de redefinição não encontrados.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            // -------------------------------------------------
+            // PEGAR DADOS
+            // -------------------------------------------------
+
+            const code =
+                resetCode.value.trim();
+
+            const password =
+                newPassword.value;
+
+            const confirm =
+                confirmPassword.value;
+
+
+            console.log(
+                'Código recebido:',
+                code
+            );
+
+
+            // -------------------------------------------------
+            // VALIDAR CÓDIGO
+            // -------------------------------------------------
+
+            if (!code) {
+
+                showMessage(
+                    'Digite o código de recuperação.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            if (!isValidCode(code)) {
+
+                showMessage(
+                    'Digite um código de 6 dígitos.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            // -------------------------------------------------
+            // VALIDAR SENHA
+            // -------------------------------------------------
+
+            if (!password) {
+
+                showMessage(
+                    'Digite sua nova senha.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            if (!confirm) {
+
+                showMessage(
+                    'Confirme sua nova senha.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            if (password !== confirm) {
+
+                showMessage(
+                    'As senhas não coincidem.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            // -------------------------------------------------
+            // DESABILITAR BOTÃO
+            // -------------------------------------------------
+
+            if (resetPasswordBtn) {
+
+                resetPasswordBtn.classList.add(
+                    'btn-loading'
+                );
+
+                resetPasswordBtn.disabled = true;
+
+                resetPasswordBtn.textContent =
+                    'Redefinindo...';
+
+            }
+
+            hideMessage();
+
+
+            // -------------------------------------------------
+            // ENVIAR PARA A WEB
+            //
+            // NÃO usamos mais:
+            //
+            // http://127.0.0.1:5001/api/password/reset
+            //
+            // Usamos:
+            //
+            // /api/password/reset
+            //
+            // A WEB faz a comunicação com a API.
+            // -------------------------------------------------
+
+            try {
+
+                console.log(
+                    'Enviando nova senha para a WEB...'
+                );
+
+                console.log(
+                    'URL:',
+                    '/api/password/reset'
+                );
+
+
+                const response = await fetch(
+                    '/api/password/reset',
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body: JSON.stringify({
+
+                            reset_code:
+                                code,
+
+                            new_password:
+                                password,
+
+                            confirm_password:
+                                confirm
+
+                        })
+                    }
+                );
+
+
+                console.log(
+                    'Status da WEB:',
+                    response.status
+                );
+
+                console.log(
+                    'Response OK:',
+                    response.ok
+                );
+
+
+                // -------------------------------------------------
+                // LER RESPOSTA
+                // -------------------------------------------------
+
+                const text =
+                    await response.text();
+
+
+                console.log(
+                    'Resposta da WEB:',
+                    text
+                );
+
+
+                // -------------------------------------------------
+                // CONVERTER JSON
+                // -------------------------------------------------
+
+                let data;
+
+
+                try {
+
+                    data = JSON.parse(text);
+
+                } catch (jsonError) {
+
+                    console.error(
+                        'Erro ao interpretar JSON:',
+                        jsonError
+                    );
+
+                    showMessage(
+                        'A Web recebeu uma resposta inválida.',
+                        'error'
+                    );
+
+                    return;
+
+                }
+
+
+                console.log(
+                    'Dados recebidos:',
+                    data
+                );
+
+
+                // -------------------------------------------------
+                // SENHA REDEFINIDA
+                // -------------------------------------------------
+
+                if (
+                    response.ok &&
+                    data.success
+                ) {
+
+                    showMessage(
+                        'Senha redefinida com sucesso!',
+                        'success'
+                    );
+
+
+                    console.log(
+                        'Senha redefinida com sucesso.'
+                    );
+
+
+                    // ---------------------------------------------
+                    // FECHAR MODAL
+                    // ---------------------------------------------
+
+                    setTimeout(
+                        function() {
+
+                            closeModalElement();
+
+                        },
+                        3000
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // ERRO DA WEB/API
+                // -------------------------------------------------
+
+                else {
+
+                    showMessage(
+                        data.message ||
+                        'Não foi possível redefinir a senha.',
+                        'error'
+                    );
+
+                }
+
+            }
+
+
+            // -------------------------------------------------
+            // ERRO DE COMUNICAÇÃO
+            // -------------------------------------------------
+
+            catch (error) {
+
+                console.error(
+                    'ERRO NO FETCH:',
+                    error
+                );
+
+
+                showMessage(
+                    'Erro de comunicação com o servidor.',
+                    'error'
+                );
+
+            }
+
+
+            // -------------------------------------------------
+            // RESTAURAR BOTÃO
+            // -------------------------------------------------
+
+            finally {
+
+                if (resetPasswordBtn) {
+
+                    resetPasswordBtn.classList.remove(
+                        'btn-loading'
+                    );
+
+                    resetPasswordBtn.disabled = false;
+
+                    resetPasswordBtn.textContent =
+                        'Redefinir senha';
+
+                }
+
+            }
+
+        }
+    );
+
+})();
+</script>
+
+
+
+
 </body>
 </html>
