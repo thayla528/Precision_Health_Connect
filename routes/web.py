@@ -1008,3 +1008,6 @@ def patient_dashboard():
 
         notifications=data["notifications"]
     )
+
+
+
