@@ -300,16 +300,14 @@ def login():
                     "login.html"
                 )
 
-
             session["user_id"] = user["id"]
-
             session["user_name"] = user["full_name"]
-
             session["user_email"] = user["email"]
-
             session["role"] = user["role"]
-
             session["profile_type"] = user["profile_type"]
+
+            session["access_token"] = result.get("access_token")
+            session["refresh_token"] = result.get("refresh_token")
 
 
             flash(
