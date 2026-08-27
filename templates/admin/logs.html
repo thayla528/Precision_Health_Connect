@@ -295,252 +295,1105 @@ Logs do Sistema | Precision Health Connect
     }
 </style>
 
+
+
 <div class="container-fluid py-4">
-    
-    <!-- Cabeçalho -->
+
+    <!-- ===================================================== -->
+    <!-- CABEÇALHO -->
+    <!-- ===================================================== -->
+
     <div class="page-header">
         <h1 class="page-title">Logs do Sistema</h1>
-        <p class="page-subtitle">Acompanhe todas as ações administrativas realizadas dentro da plataforma.</p>
+
+        <p class="page-subtitle">
+            Acompanhe todas as ações administrativas realizadas dentro da plataforma.
+        </p>
     </div>
 
-    <!-- Card Principal -->
+
+    <!-- ===================================================== -->
+    <!-- CARD PRINCIPAL -->
+    <!-- ===================================================== -->
+
     <div class="card-custom">
-        
-        <!-- Filtros -->
-        <form class="row g-3 mb-4">
+
+        <!-- ================================================= -->
+        <!-- FILTROS -->
+        <!-- ================================================= -->
+
+        <form
+            method="GET"
+            action="{{ url_for('web.logs') }}"
+            class="row g-3 mb-4"
+        >
+
+            <!-- Pesquisa -->
+
             <div class="col-12 col-md-6 col-lg-4">
+
                 <div class="input-group">
-                    <input type="text" class="form-control-custom" placeholder="Pesquisar por administrador ou usuário...">
-                    <button class="btn-custom-primary" type="button" style="border-radius: 0 12px 12px 0;">
-                        <span class="material-symbols-rounded">search</span>
+
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ search or '' }}"
+                        class="form-control-custom"
+                        placeholder="Pesquisar por administrador ou usuário..."
+                    >
+
+                    <button
+                        class="btn-custom-primary"
+                        type="submit"
+                        style="border-radius: 0 12px 12px 0;"
+                    >
+
+                        <span class="material-symbols-rounded">
+                            search
+                        </span>
+
                     </button>
+
                 </div>
-            </div>
-            
-            <div class="col-12 col-md-6 col-lg-3">
-                <select class="form-select-custom">
-                    <option selected>Administrador</option>
-                    <option>Todos</option>
-                    <option>Carlos Henrique Oliveira</option>
-                    <option>Fernanda Alves</option>
-                    <option>Gabriel Costa</option>
-                    <option>Amanda Ribeiro</option>
-                </select>
+
             </div>
 
+
+            <!-- Administrador -->
+
             <div class="col-12 col-md-6 col-lg-3">
-                <select class="form-select-custom">
-                    <option selected>Tipo de ação</option>
-                    <option>Todas</option>
-                    <option>Login</option>
-                    <option>Logout</option>
-                    <option>Criação de Convite</option>
-                    <option>Cancelamento de Convite</option>
-                    <option>Aceite de Convite</option>
-                    <option>Cadastro de Usuário</option>
-                    <option>Atualização de Usuário</option>
-                    <option>Desativação de Usuário</option>
-                    <option>Ativação de Usuário</option>
-                    <option>Cadastro de Administrador</option>
-                    <option>Alteração de Senha</option>
-                    <option>Alteração de Foto</option>
+
+                <select
+                    name="role"
+                    class="form-select-custom"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="">
+                        Todos os administradores
+                    </option>
+
+                    <option
+                        value="administrator"
+                        {% if role == "administrator" %}selected{% endif %}
+                    >
+                        Administradores
+                    </option>
+
                 </select>
+
             </div>
-            
+
+
+            <!-- Tipo da ação -->
+
+            <div class="col-12 col-md-6 col-lg-3">
+
+                <select
+                    name="action"
+                    class="form-select-custom"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="">
+                        Todas as ações
+                    </option>
+
+                    <option
+                        value="login"
+                        {% if action == "login" %}selected{% endif %}
+                    >
+                        Login
+                    </option>
+
+                    <option
+                        value="logout"
+                        {% if action == "logout" %}selected{% endif %}
+                    >
+                        Logout
+                    </option>
+
+                    <option
+                        value="create_invite"
+                        {% if action == "create_invite" %}selected{% endif %}
+                    >
+                        Criação de Convite
+                    </option>
+
+                    <option
+                        value="cancel_invite"
+                        {% if action == "cancel_invite" %}selected{% endif %}
+                    >
+                        Cancelamento de Convite
+                    </option>
+
+                    <option
+                        value="accept_invite"
+                        {% if action == "accept_invite" %}selected{% endif %}
+                    >
+                        Aceite de Convite
+                    </option>
+
+                    <option
+                        value="create_user"
+                        {% if action == "create_user" %}selected{% endif %}
+                    >
+                        Cadastro de Usuário
+                    </option>
+
+                    <option
+                        value="update_user"
+                        {% if action == "update_user" %}selected{% endif %}
+                    >
+                        Atualização de Usuário
+                    </option>
+
+                    <option
+                        value="deactivate_user"
+                        {% if action == "deactivate_user" %}selected{% endif %}
+                    >
+                        Desativação de Usuário
+                    </option>
+
+                    <option
+                        value="activate_user"
+                        {% if action == "activate_user" %}selected{% endif %}
+                    >
+                        Ativação de Usuário
+                    </option>
+
+                    <option
+                        value="create_admin"
+                        {% if action == "create_admin" %}selected{% endif %}
+                    >
+                        Cadastro de Administrador
+                    </option>
+
+                    <option
+                        value="change_password"
+                        {% if action == "change_password" %}selected{% endif %}
+                    >
+                        Alteração de Senha
+                    </option>
+
+                    <option
+                        value="change_photo"
+                        {% if action == "change_photo" %}selected{% endif %}
+                    >
+                        Alteração de Foto
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Período -->
+
             <div class="col-12 col-md-6 col-lg-2">
-                <select class="form-select-custom">
-                    <option selected>Período</option>
-                    <option>Hoje</option>
-                    <option>Últimos 7 dias</option>
-                    <option>Últimos 30 dias</option>
-                    <option>Todos</option>
+
+                <select
+                    name="period"
+                    class="form-select-custom"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="">
+                        Todos
+                    </option>
+
+                    <option
+                        value="today"
+                        {% if period == "today" %}selected{% endif %}
+                    >
+                        Hoje
+                    </option>
+
+                    <option
+                        value="7"
+                        {% if period == "7" %}selected{% endif %}
+                    >
+                        Últimos 7 dias
+                    </option>
+
+                    <option
+                        value="30"
+                        {% if period == "30" %}selected{% endif %}
+                    >
+                        Últimos 30 dias
+                    </option>
+
                 </select>
+
             </div>
+
         </form>
 
-        <!-- Tabela -->
-        <div class="table-responsive">
-            <table class="table-custom">
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Hora</th>
-                        <th>Administrador</th>
-                        <th>Ação</th>
-                        <th>Usuário Afetado</th>
-                        <th>Resultado</th>
-                        <th class="text-end">Detalhes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% set logs = [
-                        {"date": "31/07/2026", "time": "09:42", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Criação de Convite", "action_icon": "mail", "affected_user": "Roberto Silva", "affected_email": "roberto.silva@clinica.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Novo convite enviado para o profissional Roberto Silva (CRM SP-123456) com validade de 72 horas. Código do convite: PREC-2026-RS.", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
-                        {"date": "31/07/2026", "time": "09:18", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Aceite de Convite", "action_icon": "task_alt", "affected_user": "Mariana Souza Lima", "affected_email": "mariana.lima@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Convite aceito pela profissional Mariana Souza Lima. Conta ativada com sucesso e perfil configurado como Profissional de Saúde.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"},
-                        {"date": "31/07/2026", "time": "08:55", "admin": "Gabriel Costa", "admin_email": "gabriel.costa@precisionhealth.com", "action": "Alteração de Senha", "action_icon": "lock_reset", "affected_user": "Lucas Almeida Ferreira", "affected_email": "lucas.ferreira@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Senha do usuário Lucas Almeida Ferreira alterada com sucesso. Notificação enviada ao e-mail cadastrado.", "ip": "177.89.14.220", "browser": "Google Chrome", "os": "Android 14"},
-                        {"date": "31/07/2026", "time": "08:30", "admin": "Amanda Ribeiro", "admin_email": "amanda.ribeiro@precisionhealth.com", "action": "Atualização de Usuário", "action_icon": "edit", "affected_user": "Pedro Henrique Costa", "affected_email": "pedro.costa@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Dados cadastrais do paciente Pedro Henrique Costa atualizados: telefone e endereço modificados.", "ip": "192.168.1.201", "browser": "Google Chrome", "os": "macOS Sonoma"},
-                        {"date": "31/07/2026", "time": "08:05", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Desativação de Usuário", "action_icon": "person_off", "affected_user": "Juliana Rocha Mendes", "affected_email": "juliana.mendes@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Conta do paciente Juliana Rocha Mendes desativada conforme solicitação por inatividade superior a 90 dias.", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
-                        {"date": "31/07/2026", "time": "07:42", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Cadastro de Usuário", "action_icon": "person_add", "affected_user": "Ana Beatriz Martins", "affected_email": "ana.martins@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Novo profissional cadastrado: Ana Beatriz Martins (CRM MG-789012). Perfil configurado como Profissional de Saúde.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"},
-                        {"date": "30/07/2026", "time": "18:20", "admin": "Gabriel Costa", "admin_email": "gabriel.costa@precisionhealth.com", "action": "Login", "action_icon": "login", "affected_user": "Gabriel Costa", "affected_email": "gabriel.costa@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Login realizado com sucesso no sistema. Autenticação de dois fatores confirmada.", "ip": "177.89.14.220", "browser": "Google Chrome", "os": "Android 14"},
-                        {"date": "30/07/2026", "time": "17:45", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Cancelamento de Convite", "action_icon": "cancel", "affected_user": "Bruno Nascimento", "affected_email": "bruno.nascimento@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Convite PREC-2026-BN cancelado antes do aceite. Código invalidado e notificação enviada ao destinatário.", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
-                        {"date": "30/07/2026", "time": "16:30", "admin": "Amanda Ribeiro", "admin_email": "amanda.ribeiro@precisionhealth.com", "action": "Cadastro de Administrador", "action_icon": "admin_panel_settings", "affected_user": "Patrícia Gomes", "affected_email": "patricia.gomes@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Novo administrador cadastrado: Patrícia Gomes. Permissões de nível Administrador atribuídas.", "ip": "192.168.1.201", "browser": "Google Chrome", "os": "macOS Sonoma"},
-                        {"date": "30/07/2026", "time": "15:12", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Alteração de Foto", "action_icon": "photo_camera", "affected_user": "Fernanda Alves", "affected_email": "fernanda.alves@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Foto de perfil do administrador Fernanda Alves atualizada com sucesso. Arquivo processado e otimizado.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"},
-                        {"date": "30/07/2026", "time": "14:05", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Ativação de Usuário", "action_icon": "person", "affected_user": "Ricardo Santos", "affected_email": "ricardo.santos@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Conta do profissional Ricardo Santos reativada após solicitação formal por e-mail.", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
-                        {"date": "30/07/2026", "time": "11:30", "admin": "Gabriel Costa", "admin_email": "gabriel.costa@precisionhealth.com", "action": "Criação de Convite", "action_icon": "mail", "affected_user": "Camila Dias", "affected_email": "camila.dias@email.com", "result": "Aviso", "result_class": "badge-warning", "result_icon": "warning", "description": "Convite enviado, porém o e-mail do destinatário retornou como pendente de verificação. Recomenda-se validar o endereço.", "ip": "177.89.14.220", "browser": "Google Chrome", "os": "Android 14"},
-                        {"date": "30/07/2026", "time": "10:15", "admin": "Amanda Ribeiro", "admin_email": "amanda.ribeiro@precisionhealth.com", "action": "Atualização de Usuário", "action_icon": "edit", "affected_user": "João Henrique", "affected_email": "joao.henrique@email.com", "result": "Erro", "result_class": "badge-error", "result_icon": "error", "description": "Falha ao atualizar dados do usuário: campo CPF com formato inválido. Operação cancelada automaticamente.", "ip": "192.168.1.201", "browser": "Google Chrome", "os": "macOS Sonoma"},
-                        {"date": "30/07/2026", "time": "09:00", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Logout", "action_icon": "logout", "affected_user": "Fernanda Alves", "affected_email": "fernanda.alves@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Logout realizado manualmente pelo administrador. Sessão encerrada com sucesso.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"},
-                        {"date": "29/07/2026", "time": "17:40", "admin": "Carlos Henrique Oliveira", "admin_email": "carlos.oliveira@precisionhealth.com", "action": "Alteração de Senha", "action_icon": "lock_reset", "affected_user": "Carlos Henrique Oliveira", "affected_email": "carlos.oliveira@precisionhealth.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Senha do administrador alterada conforme política de segurança (renovação trimestral obrigatória).", "ip": "192.168.1.105", "browser": "Google Chrome", "os": "Windows 11"},
-                        {"date": "29/07/2026", "time": "15:22", "admin": "Gabriel Costa", "admin_email": "gabriel.costa@precisionhealth.com", "action": "Cadastro de Usuário", "action_icon": "person_add", "affected_user": "Felipe Nascimento", "affected_email": "felipe.nascimento@precisionhealth.com", "result": "Erro", "result_class": "badge-error", "result_icon": "error", "description": "Falha ao cadastrar usuário: e-mail já existente na base de dados. Cadastro não concluído.", "ip": "177.89.14.220", "browser": "Google Chrome", "os": "Android 14"},
-                        {"date": "29/07/2026", "time": "13:10", "admin": "Amanda Ribeiro", "admin_email": "amanda.ribeiro@precisionhealth.com", "action": "Desativação de Usuário", "action_icon": "person_off", "affected_user": "Bruno Costa", "affected_email": "bruno.costa@email.com", "result": "Sucesso", "result_class": "badge-success", "result_icon": "check_circle", "description": "Conta do paciente Bruno Costa desativada por solicitação do titular via canal oficial de atendimento.", "ip": "192.168.1.201", "browser": "Google Chrome", "os": "macOS Sonoma"},
-                        {"date": "29/07/2026", "time": "10:45", "admin": "Fernanda Alves", "admin_email": "fernanda.alves@precisionhealth.com", "action": "Aceite de Convite", "action_icon": "task_alt", "affected_user": "Ricardo Santos", "affected_email": "ricardo.santos@precisionhealth.com", "result": "Aviso", "result_class": "badge-warning", "result_icon": "warning", "description": "Convite aceito, porém o profissional não possui registro ativo no conselho de classe. Pendência identificada para validação manual.", "ip": "192.168.1.142", "browser": "Microsoft Edge", "os": "Windows 10"}
-                    ] %}
 
-                    {% for log in logs %}
-                    <tr>
-                        <td class="text-muted">{{ log.date }}</td>
-                        <td class="text-muted">{{ log.time }}</td>
-                        <td class="fw-semibold">{{ log.admin }}</td>
-                        <td>
-                            <span class="badge-action">
-                                <span class="material-symbols-rounded">{{ log.action_icon }}</span>
-                                {{ log.action }}
-                            </span>
-                        </td>
-                        <td class="text-muted">{{ log.affected_user }}</td>
-                        <td>
-                            <span class="badge-result {{ log.result_class }}">
-                                <span class="material-symbols-rounded">{{ log.result_icon }}</span>
-                                {{ log.result }}
-                            </span>
-                        </td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#logDetailsModal{{ loop.index }}">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <!-- ================================================= -->
+        <!-- BOTÃO LIMPAR -->
+        <!-- ================================================= -->
+
+        {% if search or role or action or period %}
+
+        <div class="mb-4">
+
+            <a
+                href="{{ url_for('web.logs') }}"
+                class="btn-custom-secondary"
+            >
+
+                <span class="material-symbols-rounded">
+                    filter_alt_off
+                </span>
+
+                Limpar filtros
+
+            </a>
+
         </div>
 
-        <!-- Paginação -->
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- ESTATÍSTICAS -->
+        <!-- ================================================= -->
+
+        {% if statistics %}
+
+        <div class="row g-3 mb-4">
+
+            {% if statistics.total is defined %}
+
+            <div class="col-12 col-md-4">
+
+                <div class="card-custom">
+
+                    <div class="detail-label">
+                        Total de registros
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        {{ statistics.total }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            {% if statistics.success is defined %}
+
+            <div class="col-12 col-md-4">
+
+                <div class="card-custom">
+
+                    <div class="detail-label">
+                        Sucessos
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        {{ statistics.success }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            {% if statistics.errors is defined %}
+
+            <div class="col-12 col-md-4">
+
+                <div class="card-custom">
+
+                    <div class="detail-label">
+                        Erros
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        {{ statistics.errors }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- TABELA -->
+        <!-- ================================================= -->
+
+        <div class="table-responsive">
+
+            <table class="table-custom">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Data</th>
+
+                        <th>Hora</th>
+
+                        <th>Administrador</th>
+
+                        <th>Ação</th>
+
+                        <th>Usuário Afetado</th>
+
+                        <th>Resultado</th>
+
+                        <th class="text-end">
+                            Detalhes
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% if logs %}
+
+                        {% for log in logs %}
+
+                        <tr>
+
+                            <!-- DATA -->
+
+                            <td class="text-muted">
+
+                                {{ log.date or log.created_at or "-" }}
+
+                            </td>
+
+
+                            <!-- HORA -->
+
+                            <td class="text-muted">
+
+                                {{ log.time or "-" }}
+
+                            </td>
+
+
+                            <!-- ADMINISTRADOR -->
+
+                            <td class="fw-semibold">
+
+                                {{ log.admin or log.admin_name or "-" }}
+
+                            </td>
+
+
+                            <!-- AÇÃO -->
+
+                            <td>
+
+                                <span class="badge-action">
+
+                                    <span class="material-symbols-rounded">
+
+                                        {{ log.action_icon or "history" }}
+
+                                    </span>
+
+                                    {{ log.action or log.action_type or "-" }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- USUÁRIO AFETADO -->
+
+                            <td class="text-muted">
+
+                                {{ log.affected_user or log.user_name or "-" }}
+
+                            </td>
+
+
+                            <!-- RESULTADO -->
+
+                            <td>
+
+                                {% set result = (log.result or log.status or "") | lower %}
+
+                                {% if result in ["success", "sucesso", "successful"] %}
+
+                                    <span class="badge-result badge-success">
+
+                                        <span class="material-symbols-rounded">
+                                            check_circle
+                                        </span>
+
+                                        Sucesso
+
+                                    </span>
+
+                                {% elif result in ["warning", "aviso", "pending"] %}
+
+                                    <span class="badge-result badge-warning">
+
+                                        <span class="material-symbols-rounded">
+                                            warning
+                                        </span>
+
+                                        Aviso
+
+                                    </span>
+
+                                {% elif result in ["error", "erro", "failed", "failure"] %}
+
+                                    <span class="badge-result badge-error">
+
+                                        <span class="material-symbols-rounded">
+                                            error
+                                        </span>
+
+                                        Erro
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge-result">
+
+                                        {{ log.result or log.status or "-" }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- DETALHES -->
+
+                            <td class="text-end">
+
+                                <button
+                                    type="button"
+                                    class="btn-action-details"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#logDetailsModal{{ loop.index }}"
+                                >
+
+                                    <span class="material-symbols-rounded">
+                                        visibility
+                                    </span>
+
+                                    Detalhes
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center py-5"
+                            >
+
+                                <span
+                                    class="material-symbols-rounded"
+                                    style="font-size: 42px;"
+                                >
+                                    history
+                                </span>
+
+                                <div class="mt-2 fw-semibold">
+                                    Nenhum log encontrado
+                                </div>
+
+                                <div class="text-muted">
+                                    Não existem registros para os filtros selecionados.
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- PAGINAÇÃO -->
+        <!-- ================================================= -->
+
+        {% if pagination %}
+
         <nav class="mt-4">
+
             <ul class="pagination pagination-custom justify-content-end mb-0">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+
+
+                <!-- ANTERIOR -->
+
+                {% if pagination.has_prev %}
+
                 <li class="page-item">
-                    <a class="page-link" href="#">Próximo</a>
+
+                    <a
+                        class="page-link"
+                        href="{{ url_for(
+                            'web.logs',
+                            page=pagination.prev_num,
+                            search=search,
+                            role=role,
+                            action=action,
+                            period=period
+                        ) }}"
+                    >
+
+                        Anterior
+
+                    </a>
+
                 </li>
+
+                {% else %}
+
+                <li class="page-item disabled">
+
+                    <span class="page-link">
+                        Anterior
+                    </span>
+
+                </li>
+
+                {% endif %}
+
+
+                <!-- PÁGINAS -->
+
+                {% if pagination.iter_pages %}
+
+                    {% for page_num in pagination.iter_pages() %}
+
+                        {% if page_num %}
+
+                            {% if page_num == pagination.page %}
+
+                            <li class="page-item active">
+
+                                <span class="page-link">
+                                    {{ page_num }}
+                                </span>
+
+                            </li>
+
+                            {% else %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="{{ url_for(
+                                        'web.logs',
+                                        page=page_num,
+                                        search=search,
+                                        role=role,
+                                        action=action,
+                                        period=period
+                                    ) }}"
+                                >
+
+                                    {{ page_num }}
+
+                                </a>
+
+                            </li>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <li class="page-item disabled">
+
+                                <span class="page-link">
+                                    ...
+                                </span>
+
+                            </li>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                {% endif %}
+
+
+                <!-- PRÓXIMO -->
+
+                {% if pagination.has_next %}
+
+                <li class="page-item">
+
+                    <a
+                        class="page-link"
+                        href="{{ url_for(
+                            'web.logs',
+                            page=pagination.next_num,
+                            search=search,
+                            role=role,
+                            action=action,
+                            period=period
+                        ) }}"
+                    >
+
+                        Próximo
+
+                    </a>
+
+                </li>
+
+                {% else %}
+
+                <li class="page-item disabled">
+
+                    <span class="page-link">
+                        Próximo
+                    </span>
+
+                </li>
+
+                {% endif %}
+
             </ul>
+
         </nav>
 
+        {% endif %}
+
     </div>
+
 </div>
 
-<!-- Modal: Detalhes do Log -->
+{% if logs %}
 {% for log in logs %}
-<div class="modal fade" id="logDetailsModal{{ loop.index }}" tabindex="-1" aria-labelledby="logDetailsModalLabel{{ loop.index }}" aria-hidden="true">
+<div
+    class="modal fade"
+    id="logDetailsModal{{ loop.index }}"
+    tabindex="-1"
+    aria-labelledby="logDetailsModalLabel{{ loop.index }}"
+    aria-hidden="true"
+>
+
     <div class="modal-dialog modal-xl-custom modal-dialog-centered">
+
         <div class="modal-content modal-content-custom">
-            
+
+
+            <!-- ================================================= -->
+            <!-- CABEÇALHO -->
+            <!-- ================================================= -->
+
             <div class="modal-header modal-header-custom">
-                <h5 class="modal-title fw-bold" id="logDetailsModalLabel{{ loop.index }}" style="color: var(--phc-primary);">
+
+                <h5
+                    class="modal-title fw-bold"
+                    id="logDetailsModalLabel{{ loop.index }}"
+                    style="color: var(--phc-primary);"
+                >
+
                     Detalhes do Log
+
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                ></button>
+
             </div>
-            
+
+
+            <!-- ================================================= -->
+            <!-- CORPO -->
+            <!-- ================================================= -->
+
             <div class="modal-body modal-body-custom">
+
                 <div class="row g-3">
-                    <!-- Coluna Esquerda: Informações da Ação -->
+
+
+                    <!-- ========================================= -->
+                    <!-- INFORMAÇÕES DA AÇÃO -->
+                    <!-- ========================================= -->
+
                     <div class="col-lg-6">
-                        <div class="section-title">Informações da Ação</div>
+
+                        <div class="section-title">
+                            Informações da Ação
+                        </div>
+
+
                         <div class="row g-2">
+
+
+                            <!-- DATA -->
+
                             <div class="col-6">
-                                <div class="detail-label">Data</div>
-                                <div class="detail-value">{{ log.date }}</div>
-                            </div>
-                            <div class="col-6">
-                                <div class="detail-label">Hora</div>
-                                <div class="detail-value">{{ log.time }}</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="detail-label">Administrador Responsável</div>
-                                <div class="detail-value fw-semibold">{{ log.admin }}</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="detail-label">Email do Administrador</div>
-                                <div class="detail-value text-break">{{ log.admin_email }}</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="detail-label">Tipo da Ação</div>
+
+                                <div class="detail-label">
+                                    Data
+                                </div>
+
                                 <div class="detail-value">
+
+                                    {{ log.date or log.created_at or "-" }}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- HORA -->
+
+                            <div class="col-6">
+
+                                <div class="detail-label">
+                                    Hora
+                                </div>
+
+                                <div class="detail-value">
+
+                                    {{ log.time or "-" }}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ADMIN -->
+
+                            <div class="col-12">
+
+                                <div class="detail-label">
+                                    Administrador Responsável
+                                </div>
+
+                                <div class="detail-value fw-semibold">
+
+                                    {{ log.admin or log.admin_name or "-" }}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- EMAIL ADMIN -->
+
+                            <div class="col-12">
+
+                                <div class="detail-label">
+                                    Email do Administrador
+                                </div>
+
+                                <div class="detail-value text-break">
+
+                                    {{ log.admin_email or "-" }}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- AÇÃO -->
+
+                            <div class="col-12">
+
+                                <div class="detail-label">
+                                    Tipo da Ação
+                                </div>
+
+                                <div class="detail-value">
+
                                     <span class="badge-action">
-                                        <span class="material-symbols-rounded">{{ log.action_icon }}</span>
-                                        {{ log.action }}
+
+                                        <span class="material-symbols-rounded">
+
+                                            {{ log.action_icon or "history" }}
+
+                                        </span>
+
+                                        {{ log.action or log.action_type or "-" }}
+
                                     </span>
+
                                 </div>
+
                             </div>
+
+
+                            <!-- DESCRIÇÃO -->
+
                             <div class="col-12">
-                                <div class="detail-label mb-2">Descrição Completa</div>
-                                <div class="description-box">{{ log.description }}</div>
+
+                                <div class="detail-label mb-2">
+                                    Descrição Completa
+                                </div>
+
+                                <div class="description-box">
+
+                                    {{ log.description or "Nenhuma descrição disponível." }}
+
+                                </div>
+
                             </div>
+
                         </div>
+
                     </div>
 
-                    <!-- Coluna Direita: Usuário Afetado e Dados Técnicos -->
+
+
+                    <!-- ========================================= -->
+                    <!-- USUÁRIO AFETADO -->
+                    <!-- ========================================= -->
+
                     <div class="col-lg-6">
-                        <div class="section-title">Usuário Afetado</div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-12">
-                                <div class="detail-label">Nome</div>
-                                <div class="detail-value fw-semibold">{{ log.affected_user }}</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="detail-label">Email</div>
-                                <div class="detail-value text-break">{{ log.affected_email }}</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="detail-label">Resultado</div>
-                                <div class="detail-value">
-                                    <span class="badge-result {{ log.result_class }}">
-                                        <span class="material-symbols-rounded">{{ log.result_icon }}</span>
-                                        {{ log.result }}
-                                    </span>
-                                </div>
-                            </div>
+
+                        <div class="section-title">
+                            Usuário Afetado
                         </div>
 
-                        <div class="section-title">Dados Técnicos</div>
-                        <div class="row g-2">
+
+                        <div class="row g-2 mb-3">
+
+
+                            <!-- NOME -->
+
                             <div class="col-12">
-                                <div class="detail-label">Endereço IP</div>
-                                <div class="detail-value" style="font-family: monospace;">{{ log.ip }}</div>
+
+                                <div class="detail-label">
+                                    Nome
+                                </div>
+
+                                <div class="detail-value fw-semibold">
+
+                                    {{ log.affected_user or log.user_name or "-" }}
+
+                                </div>
+
                             </div>
-                            <div class="col-6">
-                                <div class="detail-label">Navegador</div>
-                                <div class="detail-value">{{ log.browser }}</div>
+
+
+                            <!-- EMAIL -->
+
+                            <div class="col-12">
+
+                                <div class="detail-label">
+                                    Email
+                                </div>
+
+                                <div class="detail-value text-break">
+
+                                    {{ log.affected_email or log.user_email or "-" }}
+
+                                </div>
+
                             </div>
-                            <div class="col-6">
-                                <div class="detail-label">Sistema Operacional</div>
-                                <div class="detail-value">{{ log.os }}</div>
+
+
+                            <!-- RESULTADO -->
+
+                            <div class="col-12">
+
+                                <div class="detail-label">
+                                    Resultado
+                                </div>
+
+                                <div class="detail-value">
+
+                                    {% set result = (log.result or log.status or "") | lower %}
+
+
+                                    {% if result in ["success", "sucesso", "successful"] %}
+
+                                    <span class="badge-result badge-success">
+
+                                        <span class="material-symbols-rounded">
+                                            check_circle
+                                        </span>
+
+                                        Sucesso
+
+                                    </span>
+
+
+                                    {% elif result in ["warning", "aviso", "pending"] %}
+
+                                    <span class="badge-result badge-warning">
+
+                                        <span class="material-symbols-rounded">
+                                            warning
+                                        </span>
+
+                                        Aviso
+
+                                    </span>
+
+
+                                    {% elif result in ["error", "erro", "failed", "failure"] %}
+
+                                    <span class="badge-result badge-error">
+
+                                        <span class="material-symbols-rounded">
+                                            error
+                                        </span>
+
+                                        Erro
+
+                                    </span>
+
+
+                                    {% else %}
+
+                                    <span class="badge-result">
+
+                                        {{ log.result or log.status or "-" }}
+
+                                    </span>
+
+                                    {% endif %}
+
+                                </div>
+
                             </div>
+
                         </div>
+
+
+
+                        <!-- ========================================= -->
+                        <!-- DADOS TÉCNICOS -->
+                        <!-- ========================================= -->
+
+                        <div class="section-title">
+                            Dados Técnicos
+                        </div>
+
+
+                        <div class="row g-2">
+
+
+                            <!-- IP -->
+
+                            <div class="col-12">
+
+                                <div class="detail-label">
+                                    Endereço IP
+                                </div>
+
+                                <div
+                                    class="detail-value"
+                                    style="font-family: monospace;"
+                                >
+
+                                    {{ log.ip or ip or "-" }}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- BROWSER -->
+
+                            <div class="col-6">
+
+                                <div class="detail-label">
+                                    Navegador
+                                </div>
+
+                                <div class="detail-value">
+
+                                    {{ log.browser or "-" }}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- OS -->
+
+                            <div class="col-6">
+
+                                <div class="detail-label">
+                                    Sistema Operacional
+                                </div>
+
+                                <div class="detail-value">
+
+                                    {{ log.os or "-" }}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
                     </div>
+
                 </div>
+
             </div>
-            
+
+
+            <!-- ================================================= -->
+            <!-- RODAPÉ -->
+            <!-- ================================================= -->
+
             <div class="modal-footer modal-footer-custom">
-                <button type="button" class="btn-custom-secondary px-4" data-bs-dismiss="modal">Fechar</button>
+
+                <button
+                    type="button"
+                    class="btn-custom-secondary px-4"
+                    data-bs-dismiss="modal"
+                >
+
+                    Fechar
+
+                </button>
+
             </div>
-            
+
         </div>
+
     </div>
+
 </div>
 {% endfor %}
-
+{% endif %}
 {% endblock %}

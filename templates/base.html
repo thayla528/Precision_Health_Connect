@@ -815,16 +815,13 @@ Paciente
 MENU ADMIN
 ===================== -->
 
-<a href="{{ url_for('web.profiles') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-account_circle
-</span>
-
-Meu Perfil
-
+<a href="/admin/profile" class="nav-link">
+    <span class="material-symbols-outlined">
+        account_circle
+    </span>
+    Meu Perfil
 </a>
+
 
 
 <a href="{{ url_for('web.admin_invitations') }}"

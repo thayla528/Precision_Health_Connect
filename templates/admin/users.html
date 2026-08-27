@@ -319,210 +319,1019 @@ Usuários | Precision Health Connect
 
 <div class="container-fluid py-4">
 
-    <!-- Cabeçalho -->
+    <!-- =====================================================
+         CABEÇALHO
+    ====================================================== -->
+
     <div class="page-header">
         <h1 class="page-title">Usuários</h1>
-        <p class="page-subtitle">Gerencie todos os usuários cadastrados no sistema.</p>
+
+        <p class="page-subtitle">
+            Gerencie os usuários cadastrados no sistema.
+        </p>
     </div>
 
-    <!-- Card Principal -->
+
+    <!-- =====================================================
+         CARD PRINCIPAL
+    ====================================================== -->
+
     <div class="card-custom">
 
-        <!-- Filtros -->
-        <form class="row g-3 mb-4">
+
+        <!-- =================================================
+             FILTROS
+        ================================================== -->
+
+        <form
+            method="GET"
+            action="{{ url_for('web.users') }}"
+            class="row g-3 mb-4"
+        >
+
+            <!-- BUSCA -->
+
             <div class="col-12 col-md-5 col-lg-4">
+
                 <div class="input-group">
-                    <input type="text" class="form-control-custom" placeholder="Pesquisar por nome ou e-mail...">
-                    <button class="btn-custom-primary" type="button">
-                        <span class="material-symbols-rounded">search</span>
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control-custom"
+                        placeholder="Pesquisar por nome ou e-mail..."
+                        value="{{ search or '' }}"
+                    >
+
+                    <button
+                        class="btn-custom-primary"
+                        type="submit"
+                    >
+
+                        <span class="material-symbols-rounded">
+                            search
+                        </span>
+
                     </button>
+
                 </div>
+
             </div>
 
-            <div class="col-12 col-md-3 col-lg-3">
-                <select class="form-select-custom">
-                    <option selected>Tipo de usuário</option>
-                    <option>Todos</option>
-                    <option>Administrador</option>
-                    <option>Profissional</option>
-                    <option>Paciente</option>
-                </select>
-            </div>
+
+            <!-- TIPO DE USUÁRIO -->
 
             <div class="col-12 col-md-3 col-lg-3">
-                <select class="form-select-custom">
-                    <option selected>Status</option>
-                    <option>Todos</option>
-                    <option>Ativo</option>
-                    <option>Inativo</option>
+
+                <select
+                    name="type"
+                    class="form-select-custom"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="">
+                        Tipo de usuário
+                    </option>
+
+                    <option
+                        value="administrator"
+                        {% if request.args.get('type') == 'administrator' %}
+                            selected
+                        {% endif %}
+                    >
+                        Administrador
+                    </option>
+
+                    <option
+                        value="professional"
+                        {% if request.args.get('type') == 'professional' %}
+                            selected
+                        {% endif %}
+                    >
+                        Profissional
+                    </option>
+
+                    <option
+                        value="patient"
+                        {% if request.args.get('type') == 'patient' %}
+                            selected
+                        {% endif %}
+                    >
+                        Paciente
+                    </option>
+
                 </select>
+
             </div>
+
+
+            <!-- STATUS -->
+
+            <div class="col-12 col-md-3 col-lg-3">
+
+                <select
+                    name="status"
+                    class="form-select-custom"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="">
+                        Status
+                    </option>
+
+                    <option
+                        value="true"
+                        {% if status == 'true' %}
+                            selected
+                        {% endif %}
+                    >
+                        Ativo
+                    </option>
+
+                    <option
+                        value="false"
+                        {% if status == 'false' %}
+                            selected
+                        {% endif %}
+                    >
+                        Inativo
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- LIMPAR -->
 
             <div class="col-12 col-md-1 col-lg-2 d-flex align-items-end">
-                <button type="button" class="btn-custom-secondary w-100">Limpar</button>
+
+                <a
+                    href="{{ url_for('web.users') }}"
+                    class="btn-custom-secondary w-100 text-center"
+                >
+                    Limpar
+                </a>
+
             </div>
+
         </form>
 
-        <!-- Tabela -->
-        <div class="table-responsive">
-            <table class="table-custom">
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">Foto</th>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>Tipo</th>
-                        <th>Status</th>
-                        <th>Último Login</th>
-                        <th class="text-end">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% set users = [
-                        {"name": "Carlos Henrique Oliveira", "email": "carlos.oliveira@precisionhealth.com", "type": "Administrador", "type_class": "badge-admin", "status": "Ativo", "status_class": "badge-active", "phone": "(11) 99876-5432", "dob": "15/03/1985", "cpf": "123.456.789-00", "sex": "Masculino", "register_date": "12/02/2026", "last_login": "31/07/2026 às 08:42", "invite_code": "PREC-2026-X9", "invited_by": "Sistema", "has_photo": true},
-                        {"name": "Mariana Souza Lima", "email": "mariana.lima@precisionhealth.com", "type": "Profissional", "type_class": "badge-prof", "status": "Ativo", "status_class": "badge-active", "phone": "(11) 98765-4321", "dob": "22/07/1990", "cpf": "987.654.321-00", "sex": "Feminino", "register_date": "15/03/2026", "last_login": "30/07/2026 às 14:15", "invite_code": "PREC-2026-A1", "invited_by": "Carlos Henrique Oliveira", "has_photo": true},
-                        {"name": "Pedro Henrique Costa", "email": "pedro.costa@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Inativo", "status_class": "badge-inactive", "phone": "(21) 97654-3210", "dob": "10/11/1995", "cpf": "456.789.123-00", "sex": "Masculino", "register_date": "05/06/2026", "last_login": "15/06/2026 às 09:30", "invite_code": "PREC-2026-B2", "invited_by": "Mariana Souza Lima", "has_photo": false},
-                        {"name": "Ana Beatriz Martins", "email": "ana.martins@precisionhealth.com", "type": "Profissional", "type_class": "badge-prof", "status": "Ativo", "status_class": "badge-active", "phone": "(31) 96543-2109", "dob": "05/09/1988", "cpf": "321.654.987-00", "sex": "Feminino", "register_date": "20/04/2026", "last_login": "31/07/2026 às 10:05", "invite_code": "PREC-2026-C3", "invited_by": "Carlos Henrique Oliveira", "has_photo": true},
-                        {"name": "Lucas Almeida Ferreira", "email": "lucas.ferreira@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Ativo", "status_class": "badge-active", "phone": "(41) 95432-1098", "dob": "18/01/2000", "cpf": "654.321.987-00", "sex": "Masculino", "register_date": "10/07/2026", "last_login": "29/07/2026 às 18:20", "invite_code": "PREC-2026-D4", "invited_by": "Ana Beatriz Martins", "has_photo": false},
-                        {"name": "Juliana Rocha Mendes", "email": "juliana.mendes@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Inativo", "status_class": "badge-inactive", "phone": "(51) 94321-0987", "dob": "30/04/1992", "cpf": "789.123.456-00", "sex": "Feminino", "register_date": "01/05/2026", "last_login": "10/05/2026 às 11:00", "invite_code": "PREC-2026-E5", "invited_by": "Sistema", "has_photo": true},
-                        {"name": "Fernanda Alves", "email": "fernanda.alves@precisionhealth.com", "type": "Administrador", "type_class": "badge-admin", "status": "Ativo", "status_class": "badge-active", "phone": "(61) 93210-9876", "dob": "12/12/1980", "cpf": "147.258.369-00", "sex": "Feminino", "register_date": "12/02/2026", "last_login": "31/07/2026 às 07:55", "invite_code": "PREC-2026-F6", "invited_by": "Sistema", "has_photo": true},
-                        {"name": "Ricardo Santos", "email": "ricardo.santos@precisionhealth.com", "type": "Profissional", "type_class": "badge-prof", "status": "Ativo", "status_class": "badge-active", "phone": "(71) 92109-8765", "dob": "25/08/1987", "cpf": "369.258.147-00", "sex": "Masculino", "register_date": "15/03/2026", "last_login": "28/07/2026 às 16:40", "invite_code": "PREC-2026-G7", "invited_by": "Fernanda Alves", "has_photo": false},
-                        {"name": "Camila Dias", "email": "camila.dias@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Ativo", "status_class": "badge-active", "phone": "(81) 91098-7654", "dob": "14/06/1998", "cpf": "258.147.369-00", "sex": "Feminino", "register_date": "22/07/2026", "last_login": "30/07/2026 às 20:10", "invite_code": "PREC-2026-H8", "invited_by": "Ricardo Santos", "has_photo": true},
-                        {"name": "Bruno Costa", "email": "bruno.costa@email.com", "type": "Paciente", "type_class": "badge-patient", "status": "Inativo", "status_class": "badge-inactive", "phone": "(91) 90987-6543", "dob": "03/03/1994", "cpf": "951.753.852-00", "sex": "Masculino", "register_date": "15/06/2026", "last_login": "01/07/2026 às 12:30", "invite_code": "PREC-2026-I9", "invited_by": "Sistema", "has_photo": false},
-                        {"name": "Patrícia Gomes", "email": "patricia.gomes@precisionhealth.com", "type": "Administrador", "type_class": "badge-admin", "status": "Ativo", "status_class": "badge-active", "phone": "(11) 99876-1111", "dob": "20/10/1983", "cpf": "753.951.456-00", "sex": "Feminino", "register_date": "12/02/2026", "last_login": "31/07/2026 às 09:15", "invite_code": "PREC-2026-J0", "invited_by": "Sistema", "has_photo": true},
-                        {"name": "Felipe Nascimento", "email": "felipe.nascimento@precisionhealth.com", "type": "Profissional", "type_class": "badge-prof", "status": "Ativo", "status_class": "badge-active", "phone": "(11) 98765-2222", "dob": "08/05/1991", "cpf": "159.357.456-00", "sex": "Masculino", "register_date": "10/07/2026", "last_login": "25/07/2026 às 08:00", "invite_code": "PREC-2026-K1", "invited_by": "Patrícia Gomes", "has_photo": false}
-                    ] %}
 
-                    {% for user in users %}
-                    <tr>
-                        <td>
-                            {% if user.has_photo %}
-                                <img src="https://ui-avatars.com/api/?name={{ user.name | replace(' ', '+') }}&background=8B5CF6&color=fff&size=128" alt="Foto" class="user-avatar">
-                            {% else %}
-                                <div class="user-initials">{{ user.name.split(' ')[0][0] }}{{ user.name.split(' ')[-1][0] }}</div>
-                            {% endif %}
-                        </td>
-                        <td class="fw-semibold">{{ user.name }}</td>
-                        <td class="text-muted">{{ user.email }}</td>
-                        <td><span class="badge-type {{ user.type_class }}">{{ user.type }}</span></td>
-                        <td><span class="badge-status {{ user.status_class }}">{{ user.status }}</span></td>
-                        <td class="text-muted">{{ user.last_login }}</td>
-                        <td class="text-end">
-                            <button class="btn-action-details" data-bs-toggle="modal" data-bs-target="#userDetailsModal{{ loop.index }}">
-                                <span class="material-symbols-rounded">visibility</span> Detalhes
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <!-- =================================================
+             INFORMAÇÃO DE RESULTADOS
+        ================================================== -->
 
-        <!-- Paginação -->
-        <nav class="mt-4">
-            <ul class="pagination pagination-custom justify-content-end mb-0">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Próximo</a>
-                </li>
-            </ul>
-        </nav>
+        {% if administrators %}
 
-    </div>
-</div>
+            <div class="mb-3 text-muted">
 
-<!-- Modais de Detalhes (Gerados dinamicamente para cada usuário) -->
-{% for user in users %}
-<div class="modal fade" id="userDetailsModal{{ loop.index }}" tabindex="-1" aria-labelledby="userDetailsModalLabel{{ loop.index }}" aria-hidden="true">
-    <div class="modal-dialog modal-xl-custom modal-dialog-centered">
-        <div class="modal-content modal-content-custom">
+                Mostrando
 
-            <!-- Cabeçalho do Modal -->
-            <div class="modal-header modal-header-custom">
-                <h5 class="modal-title fw-bold" id="userDetailsModalLabel{{ loop.index }}" style="color: var(--phc-primary);">
-                    Detalhes do Usuário
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <strong>
+                    {{ administrators|length }}
+                </strong>
+
+                usuário(s)
+
+                {% if pagination and pagination.total %}
+
+                    de
+
+                    <strong>
+                        {{ pagination.total }}
+                    </strong>
+
+                {% endif %}
+
             </div>
 
-            <!-- Corpo do Modal -->
+        {% endif %}
+
+
+        <!-- =================================================
+             TABELA
+        ================================================== -->
+
+        <div class="table-responsive">
+
+            <table class="table-custom">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width: 60px;">
+                            Foto
+                        </th>
+
+                        <th>
+                            Nome
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Tipo
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Último Login
+                        </th>
+
+                        <th class="text-end">
+                            Ações
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% if administrators %}
+
+
+                        {% for user in administrators %}
+
+                            <tr>
+
+                                <!-- =================================
+                                     FOTO
+                                ================================== -->
+
+                                <!-- =================================
+
+                                ================================== -->
+
+                                <td>
+
+                                    {% if user.profile_photo %}
+
+                                        {% set filename = user.profile_photo.split('\\')[-1].split('/')[-1] %}
+
+                                        <img
+                                            src="http://127.0.0.1:5001/uploads/profile_photos/{{ filename }}"
+                                            alt="Foto de {{ user.full_name }}"
+                                            class="user-avatar"
+                                            style="
+                                                width: 40px;
+                                                height: 40px;
+                                                object-fit: cover;
+                                                border-radius: 50%;
+                                            "
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                        >
+
+                                        <!-- Fallback caso a imagem não seja encontrada -->
+                                        <div
+                                            class="user-initials"
+                                            style="display: none;"
+                                        >
+                                            {% set name_parts = user.full_name.split() %}
+
+                                            {% if name_parts|length > 1 %}
+                                                {{ name_parts[0][0]|upper }}{{ name_parts[-1][0]|upper }}
+                                            {% else %}
+                                                {{ name_parts[0][:2]|upper }}
+                                            {% endif %}
+                                        </div>
+
+                                    {% else %}
+
+                                        <div class="user-initials">
+
+                                            {% set name_parts = user.full_name.split() %}
+
+                                            {% if name_parts|length > 1 %}
+
+                                                {{ name_parts[0][0]|upper }}{{ name_parts[-1][0]|upper }}
+
+                                            {% else %}
+
+                                                {{ name_parts[0][:2]|upper }}
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     NOME
+                                ================================== -->
+
+                                <td class="fw-semibold">
+
+                                    {{ user.full_name }}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     EMAIL
+                                ================================== -->
+
+                                <td class="text-muted">
+
+                                    {{ user.email }}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     TIPO
+                                ================================== -->
+
+                                <td>
+
+                                    {% set profile_type = (
+                                        user.profile_type
+                                        or user.role
+                                        or ''
+                                    )|lower %}
+
+
+                                    {% if profile_type in [
+                                        'administrator',
+                                        'admin',
+                                        'administrador'
+                                    ] %}
+
+                                        <span class="badge-type badge-admin">
+                                            Administrador
+                                        </span>
+
+
+                                    {% elif profile_type in [
+                                        'professional',
+                                        'profissional',
+                                        'health_professional'
+                                    ] %}
+
+                                        <span class="badge-type badge-prof">
+                                            Profissional
+                                        </span>
+
+
+                                    {% elif profile_type in [
+                                        'patient',
+                                        'paciente'
+                                    ] %}
+
+                                        <span class="badge-type badge-patient">
+                                            Paciente
+                                        </span>
+
+
+                                    {% else %}
+
+                                        <span class="badge-type">
+
+                                            {{ user.profile_type or user.role or 'Não informado' }}
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     STATUS
+                                ================================== -->
+
+                                <td>
+
+                                    {% if user.active %}
+
+                                        <span class="badge-status badge-active">
+                                            Ativo
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge-status badge-inactive">
+                                            Inativo
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     ÚLTIMO LOGIN
+                                ================================== -->
+
+                                <td class="text-muted">
+
+                                    {% if user.last_login %}
+
+                                        {{ user.last_login }}
+
+                                    {% else %}
+
+                                        Nunca
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- =================================
+                                     AÇÕES
+                                ================================== -->
+
+                                <td class="text-end">
+
+                                    <button
+                                        type="button"
+                                        class="btn-action-details"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#userDetailsModal{{ user.id }}"
+                                    >
+
+                                        <span class="material-symbols-rounded">
+                                            visibility
+                                        </span>
+
+                                        Detalhes
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+
+                    {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center py-5"
+                            >
+
+                                <span
+                                    class="material-symbols-rounded d-block mb-2"
+                                    style="font-size: 40px;"
+                                >
+                                    group_off
+                                </span>
+
+                                <div class="fw-semibold">
+                                    Nenhum usuário encontrado.
+                                </div>
+
+                                <div class="text-muted">
+                                    Tente alterar os filtros ou realizar uma nova busca.
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =================================================
+             PAGINAÇÃO
+        ================================================== -->
+
+        {% if pagination and pagination.pages > 1 %}
+
+            <nav class="mt-4">
+
+                <ul class="pagination pagination-custom justify-content-end mb-0">
+
+
+                    <!-- ANTERIOR -->
+
+                    {% if pagination.page > 1 %}
+
+                        <li class="page-item">
+
+                            <a
+                                class="page-link"
+                                href="{{ url_for(
+                                    'web.users',
+                                    page=pagination.page - 1,
+                                    search=search,
+                                    status=status
+                                ) }}"
+                            >
+                                Anterior
+                            </a>
+
+                        </li>
+
+                    {% else %}
+
+                        <li class="page-item disabled">
+
+                            <span class="page-link">
+                                Anterior
+                            </span>
+
+                        </li>
+
+                    {% endif %}
+
+
+                    <!-- NÚMEROS -->
+
+                    {% for page_num in pagination.iter_pages() %}
+
+                        {% if page_num %}
+
+                            {% if page_num == pagination.page %}
+
+                                <li class="page-item active">
+
+                                    <span class="page-link">
+                                        {{ page_num }}
+                                    </span>
+
+                                </li>
+
+                            {% else %}
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="{{ url_for(
+                                            'web.users',
+                                            page=page_num,
+                                            search=search,
+                                            status=status
+                                        ) }}"
+                                    >
+                                        {{ page_num }}
+                                    </a>
+
+                                </li>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <li class="page-item disabled">
+
+                                <span class="page-link">
+                                    …
+                                </span>
+
+                            </li>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+
+                    <!-- PRÓXIMO -->
+
+                    {% if pagination.page < pagination.pages %}
+
+                        <li class="page-item">
+
+                            <a
+                                class="page-link"
+                                href="{{ url_for(
+                                    'web.users',
+                                    page=pagination.page + 1,
+                                    search=search,
+                                    status=status
+                                ) }}"
+                            >
+                                Próximo
+                            </a>
+
+                        </li>
+
+                    {% else %}
+
+                        <li class="page-item disabled">
+
+                            <span class="page-link">
+                                Próximo
+                            </span>
+
+                        </li>
+
+                    {% endif %}
+
+
+                </ul>
+
+            </nav>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     MODAIS DE DETALHES
+========================================================= -->
+
+{% for user in administrators %}
+
+<div
+    class="modal fade"
+    id="userDetailsModal{{ user.id }}"
+    tabindex="-1"
+    aria-labelledby="userDetailsModalLabel{{ user.id }}"
+    aria-hidden="true"
+>
+
+    <div class="modal-dialog modal-xl-custom modal-dialog-centered">
+
+        <div class="modal-content modal-content-custom">
+
+
+            <!-- =============================================
+                 CABEÇALHO
+            ============================================== -->
+
+            <div class="modal-header modal-header-custom">
+
+                <h5
+                    class="modal-title fw-bold"
+                    id="userDetailsModalLabel{{ user.id }}"
+                    style="color: var(--phc-primary);"
+                >
+                    Detalhes do Usuário
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                ></button>
+
+            </div>
+
+
+            <!-- =============================================
+                 CORPO
+            ============================================== -->
+
             <div class="modal-body modal-body-custom">
 
-                <div class="row g-3">
-                    <!-- Coluna Esquerda: Dados Pessoais -->
-                    <div class="col-lg-6">
-                        <div class="section-title">Dados Pessoais</div>
-                        <div class="row g-2">
-                            <div class="col-4 text-center">
-                                {% if user.has_photo %}
-                                    <img src="https://ui-avatars.com/api/?name={{ user.name | replace(' ', '+') }}&background=8B5CF6&color=fff&size=256" alt="Foto" class="modal-avatar">
-                                {% else %}
-                                    <div class="modal-avatar-initials">
-                                        {{ user.name.split(' ')[0][0] }}{{ user.name.split(' ')[-1][0] }}
-                                    </div>
-                                {% endif %}
-                                <div class="modal-user-name text-break">{{ user.name }}</div>
-                                <span class="badge-type {{ user.type_class }} d-inline-block">{{ user.type }}</span>
-                                <span class="badge-status {{ user.status_class }} d-inline-block ms-1">{{ user.status }}</span>
-                            </div>
-                            <div class="col-8">
-                                <div class="detail-label">Email</div>
-                                <div class="detail-value text-break">{{ user.email }}</div>
+                <div class="row g-4">
 
-                                <div class="detail-label">Telefone</div>
-                                <div class="detail-value">{{ user.phone }}</div>
 
-                                <div class="detail-label">Data de Nascimento</div>
-                                <div class="detail-value">{{ user.dob }}</div>
+                    <!-- =====================================
+                         IDENTIFICAÇÃO
+                    ====================================== -->
 
-                                <div class="detail-label">CPF</div>
-                                <div class="detail-value">{{ user.cpf }}</div>
+                    <div class="col-lg-5">
 
-                                <div class="detail-label">Sexo</div>
-                                <div class="detail-value mb-0">{{ user.sex }}</div>
-                            </div>
+                        <div class="section-title">
+                            Dados do Usuário
                         </div>
+
+
+                        <div class="text-center">
+
+
+                            {% if user.profile_photo %}
+
+                                <img
+                                    src="{{ user.profile_photo }}"
+                                    alt="Foto de {{ user.full_name }}"
+                                    class="modal-avatar"
+                                >
+
+                            {% else %}
+
+                                <div class="modal-avatar-initials">
+
+                                    {% set name_parts = user.full_name.split() %}
+
+                                    {% if name_parts|length > 1 %}
+
+                                        {{ name_parts[0][0] }}{{ name_parts[-1][0] }}
+
+                                    {% else %}
+
+                                        {{ name_parts[0][0] }}
+
+                                    {% endif %}
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <div class="modal-user-name text-break mt-2">
+
+                                {{ user.full_name }}
+
+                            </div>
+
+
+                            <!-- TIPO -->
+
+                            {% set profile_type = (
+                                user.profile_type
+                                or user.role
+                                or ''
+                            )|lower %}
+
+
+                            {% if profile_type in [
+                                'administrator',
+                                'admin',
+                                'administrador'
+                            ] %}
+
+                                <span class="badge-type badge-admin d-inline-block">
+                                    Administrador
+                                </span>
+
+                            {% elif profile_type in [
+                                'professional',
+                                'profissional',
+                                'health_professional'
+                            ] %}
+
+                                <span class="badge-type badge-prof d-inline-block">
+                                    Profissional
+                                </span>
+
+                            {% elif profile_type in [
+                                'patient',
+                                'paciente'
+                            ] %}
+
+                                <span class="badge-type badge-patient d-inline-block">
+                                    Paciente
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge-type d-inline-block">
+                                    {{ user.profile_type or user.role or 'Não informado' }}
+                                </span>
+
+                            {% endif %}
+
+
+                            <!-- STATUS -->
+
+                            {% if user.active %}
+
+                                <span class="badge-status badge-active d-inline-block ms-1">
+                                    Ativo
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge-status badge-inactive d-inline-block ms-1">
+                                    Inativo
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
                     </div>
 
-                    <!-- Coluna Direita: Dados da Conta -->
-                    <div class="col-lg-6">
-                        <div class="section-title">Dados da Conta</div>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <div class="detail-label">Data de Cadastro</div>
-                                <div class="detail-value">{{ user.register_date }}</div>
-                            </div>
-                            <div class="col-6">
-                                <div class="detail-label">Último Login</div>
-                                <div class="detail-value">{{ user.last_login }}</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="detail-label">Convite Utilizado</div>
-                                <div class="detail-value" style="font-family: monospace; background: var(--phc-hover); padding: 4px 8px; border-radius: 6px; display: inline-block;">{{ user.invite_code }}</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="detail-label">Administrador Responsável</div>
-                                <div class="detail-value mb-0">{{ user.invited_by }}</div>
-                            </div>
+
+
+                    <!-- =====================================
+                         INFORMAÇÕES DA CONTA
+                    ====================================== -->
+
+                    <div class="col-lg-7">
+
+                        <div class="section-title">
+                            Informações da Conta
                         </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- ID -->
+
+                            <div class="col-md-6">
+
+                                <div class="detail-label">
+                                    ID do Usuário
+                                </div>
+
+                                <div class="detail-value">
+                                    {{ user.id }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- EMAIL -->
+
+                            <div class="col-md-6">
+
+                                <div class="detail-label">
+                                    Email
+                                </div>
+
+                                <div class="detail-value text-break">
+                                    {{ user.email }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- ROLE -->
+
+                            <div class="col-md-6">
+
+                                <div class="detail-label">
+                                    Role
+                                </div>
+
+                                <div class="detail-value">
+                                    {{ user.role or 'Não informado' }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- PROFILE TYPE -->
+
+                            <div class="col-md-6">
+
+                                <div class="detail-label">
+                                    Tipo de Perfil
+                                </div>
+
+                                <div class="detail-value">
+                                    {{ user.profile_type or 'Não informado' }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- DATA DE CADASTRO -->
+
+                            <div class="col-md-6">
+
+                                <div class="detail-label">
+                                    Data de Cadastro
+                                </div>
+
+                                <div class="detail-value">
+
+                                    {% if user.created_at %}
+
+                                        {{ user.created_at }}
+
+                                    {% else %}
+
+                                        Não informado
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ÚLTIMO LOGIN -->
+
+                            <div class="col-md-6">
+
+                                <div class="detail-label">
+                                    Último Login
+                                </div>
+
+                                <div class="detail-value">
+
+                                    {% if user.last_login %}
+
+                                        {{ user.last_login }}
+
+                                    {% else %}
+
+                                        Nunca
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- STATUS -->
+
+                            <div class="col-md-6">
+
+                                <div class="detail-label">
+                                    Status da Conta
+                                </div>
+
+                                <div class="detail-value">
+
+                                    {% if user.active %}
+
+                                        <span class="badge-status badge-active">
+                                            Ativo
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge-status badge-inactive">
+                                            Inativo
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- FOTO -->
+
+                            <div class="col-md-6">
+
+                                <div class="detail-label">
+                                    Foto de Perfil
+                                </div>
+
+                                <div class="detail-value">
+
+                                    {% if user.profile_photo %}
+
+                                        Cadastrada
+
+                                    {% else %}
+
+                                        Não cadastrada
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
                     </div>
+
                 </div>
 
             </div>
 
-            <!-- Rodapé do Modal -->
+
+            <!-- =============================================
+                 RODAPÉ
+            ============================================== -->
+
             <div class="modal-footer modal-footer-custom">
-                <button type="button" class="btn-custom-secondary px-4" data-bs-dismiss="modal">Fechar</button>
+
+                <button
+                    type="button"
+                    class="btn-custom-secondary px-4"
+                    data-bs-dismiss="modal"
+                >
+                    Fechar
+                </button>
+
             </div>
 
         </div>
-    </div>
-</div>
-{% endfor %}
 
+    </div>
+
+</div>
+
+{% endfor %}
 {% endblock %}

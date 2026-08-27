@@ -656,65 +656,6 @@ def exams():
         "patient/exams.html"
     )
 
-@web_bp.route("/admin/profile")
-def profiles():
-
-    if session.get("role") != "administrator":
-        abort(403)
-
-    user_id = session.get("user_id")
-
-    if not user_id:
-        abort(401)
-
-    try:
-
-        response = requests.get(
-            f"{API_URL}/api/admin/profile",
-            params={
-                "user_id": user_id
-            }
-        )
-
-        data = response.json()
-
-        if not response.ok or not data.get("success"):
-
-            flash(
-                "Não foi possível carregar o perfil.",
-                "danger"
-            )
-
-            return render_template(
-                "admin/profile.html",
-                user=None,
-                administrator=None
-            )
-
-        return render_template(
-            "admin/profile.html",
-            user=data.get("user"),
-            administrator=data.get("administrator")
-        )
-
-    except Exception as e:
-
-        print(
-            "ERRO AO BUSCAR PERFIL DO ADMINISTRADOR:",
-            e,
-            flush=True
-        )
-
-        flash(
-            "Erro ao conectar com a API.",
-            "danger"
-        )
-
-        return render_template(
-            "admin/profile.html",
-            user=None,
-            administrator=None
-        )
 
 @web_bp.route("/admin/users")
 def users():
@@ -763,26 +704,34 @@ def users():
 
 
     # =====================================================
-    # PEGAR FILTROS
+    # PEGAR FILTROS DA WEB
     # =====================================================
 
     search = request.args.get(
         "search",
         "",
         type=str
-    )
+    ).strip()
 
     status = request.args.get(
         "status",
         "",
         type=str
-    )
+    ).strip()
 
     page = request.args.get(
         "page",
         1,
         type=int
     )
+
+
+    # =====================================================
+    # GARANTIR PÁGINA VÁLIDA
+    # =====================================================
+
+    if page < 1:
+        page = 1
 
 
     # =====================================================
@@ -798,29 +747,6 @@ def users():
 
 
     # =====================================================
-    # PARÂMETROS PARA API
-    # =====================================================
-
-    params = {
-
-        "page": page,
-
-        "per_page": 10
-
-    }
-
-
-    if search:
-
-        params["search"] = search
-
-
-    if status:
-
-        params["status"] = status
-
-
-    # =====================================================
     # CONSUMIR API
     # =====================================================
 
@@ -828,11 +754,9 @@ def users():
 
         response = requests.get(
 
-            f"{API_URL}/administrators",
+            f"{API_URL}/users/active",
 
             headers=headers,
-
-            params=params,
 
             timeout=10
 
@@ -842,7 +766,7 @@ def users():
     except requests.RequestException as e:
 
         print(
-            "ERRO AO CONECTAR COM API DE ADMINISTRADORES:",
+            "ERRO AO CONECTAR COM API DE USUÁRIOS:",
             repr(e),
             flush=True
         )
@@ -872,13 +796,13 @@ def users():
     # =====================================================
 
     print(
-        "STATUS API ADMINISTRADORES:",
+        "STATUS API USUÁRIOS:",
         response.status_code,
         flush=True
     )
 
     print(
-        "RESPOSTA API ADMINISTRADORES:",
+        "RESPOSTA API USUÁRIOS:",
         response.text,
         flush=True
     )
@@ -942,7 +866,7 @@ def users():
 
             result.get(
                 "message",
-                "Não foi possível carregar os administradores."
+                "Não foi possível carregar os usuários."
             ),
 
             "danger"
@@ -965,14 +889,375 @@ def users():
 
 
     # =====================================================
-    # DADOS DOS ADMINISTRADORES
+    # DADOS VINDOS DA API
     # =====================================================
 
-    administrators = result.get(
-        "administrators",
+    users = result.get(
+        "users",
         []
     )
 
+
+    # =====================================================
+    # BUSCA
+    # =====================================================
+
+    if search:
+
+        search_lower = search.lower()
+
+        users = [
+
+            user
+            for user in users
+
+            if (
+
+                search_lower
+                in str(
+                    user.get(
+                        "full_name",
+                        ""
+                    )
+                ).lower()
+
+            )
+
+            or (
+
+                search_lower
+                in str(
+                    user.get(
+                        "email",
+                        ""
+                    )
+                ).lower()
+
+            )
+
+            or (
+
+                search_lower
+                in str(
+                    user.get(
+                        "role",
+                        ""
+                    )
+                ).lower()
+
+            )
+
+        ]
+
+
+    # =====================================================
+    # FILTRO DE STATUS
+    # =====================================================
+
+    if status:
+
+        status_lower = status.lower()
+
+        users = [
+
+            user
+            for user in users
+
+            if str(
+                user.get(
+                    "active",
+                    ""
+                )
+            ).lower() == status_lower
+
+        ]
+
+
+    # =====================================================
+    # PAGINAÇÃO LOCAL
+    # =====================================================
+
+    per_page = 10
+
+    total = len(users)
+
+    start = (
+        page - 1
+    ) * per_page
+
+    end = start + per_page
+
+    paginated_users = users[
+        start:end
+    ]
+
+
+    # =====================================================
+    # OBJETO DE PAGINAÇÃO
+    # =====================================================
+
+    pagination = Pagination(
+
+        paginated_users,
+
+        page,
+
+        per_page,
+
+        total
+
+    )
+
+
+    # =====================================================
+    # ENVIAR PARA O TEMPLATE
+    # =====================================================
+
+    return render_template(
+
+        "admin/users.html",
+
+        administrators=paginated_users,
+
+        pagination=pagination,
+
+        search=search,
+
+        status=status
+
+    )
+
+@web_bp.route("/admin/logs", methods=["GET"])
+@admin_required
+def logs():
+
+    # =====================================================
+    # VERIFICAR AUTENTICAÇÃO
+    # =====================================================
+
+    if "user_id" not in session:
+        return redirect(
+            url_for("auth.login")
+        )
+
+    # =====================================================
+    # VERIFICAR PERMISSÃO
+    # =====================================================
+
+    if session.get("role") != "administrator":
+        abort(403)
+
+    # =====================================================
+    # PEGAR TOKEN JWT
+    # =====================================================
+
+    access_token = session.get("access_token")
+
+    if not access_token:
+
+        flash(
+            "Sessão de autenticação expirada. Faça login novamente.",
+            "warning"
+        )
+
+        session.clear()
+
+        return redirect(
+            url_for("auth.login")
+        )
+
+    # =====================================================
+    # FILTROS
+    # =====================================================
+
+    search = request.args.get(
+        "search",
+        "",
+        type=str
+    )
+
+    role = request.args.get(
+        "role",
+        "",
+        type=str
+    )
+
+    status = request.args.get(
+        "status",
+        "",
+        type=str
+    )
+
+    period = request.args.get(
+        "period",
+        "",
+        type=str
+    )
+
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
+
+    # =====================================================
+    # HEADERS
+    # =====================================================
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    # =====================================================
+    # PARÂMETROS
+    # =====================================================
+
+    params = {
+        "page": page,
+        "per_page": 10
+    }
+
+    if search:
+        params["search"] = search
+
+    if role:
+        params["role"] = role
+
+    if status:
+        params["status"] = status
+
+    if period:
+        params["period"] = period
+
+    # =====================================================
+    # CONSUMIR API
+    # =====================================================
+
+    try:
+
+        response = requests.get(
+            f"{API_URL}/admin/logins",
+            headers=headers,
+            params=params,
+            timeout=10
+        )
+
+    except requests.RequestException as e:
+
+        print(
+            "ERRO AO CONECTAR COM API DE LOGS:",
+            repr(e),
+            flush=True
+        )
+
+        flash(
+            "Não foi possível conectar ao servidor.",
+            "danger"
+        )
+
+        return render_template(
+            "admin/logs.html",
+            logs=[],
+            pagination=None,
+            statistics={},
+            search=search,
+            role=role,
+            status=status,
+            period=period
+        )
+
+    # =====================================================
+    # DEBUG
+    # =====================================================
+
+    print(
+        "STATUS API LOGS:",
+        response.status_code,
+        flush=True
+    )
+
+    print(
+        "RESPOSTA API LOGS:",
+        response.text,
+        flush=True
+    )
+
+    # =====================================================
+    # TOKEN EXPIRADO
+    # =====================================================
+
+    if response.status_code in [401, 422]:
+
+        session.clear()
+
+        flash(
+            "Sua sessão expirou. Faça login novamente.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("auth.login")
+        )
+
+    # =====================================================
+    # JSON
+    # =====================================================
+
+    try:
+
+        result = response.json()
+
+    except ValueError:
+
+        flash(
+            "A API retornou uma resposta inválida.",
+            "danger"
+        )
+
+        return render_template(
+            "admin/logs.html",
+            logs=[],
+            pagination=None,
+            statistics={},
+            search=search,
+            role=role,
+            status=status,
+            period=period
+        )
+
+    # =====================================================
+    # ERRO DA API
+    # =====================================================
+
+    if not response.ok or not result.get("success"):
+
+        flash(
+            result.get(
+                "message",
+                "Não foi possível carregar os logs."
+            ),
+            "danger"
+        )
+
+        return render_template(
+            "admin/logs.html",
+            logs=[],
+            pagination=None,
+            statistics={},
+            search=search,
+            role=role,
+            status=status,
+            period=period
+        )
+
+    # =====================================================
+    # LOGS
+    # =====================================================
+
+    logs_data = result.get(
+        "logins",
+        []
+    )
 
     # =====================================================
     # PAGINAÇÃO
@@ -983,53 +1268,328 @@ def users():
         {}
     )
 
-
     pagination = Pagination(
-
-        administrators,
-
-        pagination_data.get(
-            "page",
-            page
-        ),
-
-        pagination_data.get(
-            "per_page",
-            10
-        ),
-
-        pagination_data.get(
-            "total",
-            0
-        )
-
+        logs_data,
+        pagination_data.get("page", page),
+        pagination_data.get("per_page", 10),
+        pagination_data.get("total", 0)
     )
 
+    # =====================================================
+    # ESTATÍSTICAS
+    # =====================================================
+
+    statistics = result.get(
+        "statistics",
+        {}
+    )
 
     # =====================================================
-    # ENVIAR PARA TEMPLATE
+    # TEMPLATE
     # =====================================================
 
     return render_template(
-
-        "admin/users.html",
-
-        administrators=administrators,
-
+        "admin/logs.html",
+        logs=logs_data,
         pagination=pagination,
-
+        statistics=statistics,
         search=search,
-
-        status=status
-
+        role=role,
+        status=status,
+        period=period
     )
 
-@web_bp.route("/admin/admin")
+
+@web_bp.route("/admin/admin", methods=["GET", "POST"])
+@admin_required  # Garante que apenas administradores logados acessem
 def admin():
+    # 1. Recupera o token JWT que foi salvo na sessão durante o login
+    token = session.get("access_token")
+    if not token:
+        flash("Sessão expirada. Faça login novamente.", "danger")
+        return redirect(url_for("auth.login"))
+
+    # Configura o cabeçalho de autenticação exigido pelo @jwt_required() da API
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    # =====================================================
+    # TRATAMENTO DO POST (PROCESSAMENTO DE AÇÕES)
+    # =====================================================
+    if request.method == "POST":
+        action = request.form.get("action")
+        target_id = request.form.get("administrator_id")
+
+        # -------------------------------------------------
+        # AÇÃO A: CADASTRAR NOVO ADMINISTRADOR DIRETO
+        # -------------------------------------------------
+        if action == "create_admin":
+            full_name = request.form.get("full_name")
+            email = request.form.get("email")
+            password = request.form.get("password")
+            phone = request.form.get("phone")
+
+            api_url_create = f"{API_URL}/administrators"
+            try:
+                response = requests.post(
+                    api_url_create,
+                    json={
+                        "full_name": full_name,
+                        "email": email,
+                        "password": password,
+                        "phone": phone,
+                        "profile_photo": None
+                    },
+                    headers=headers,
+                    timeout=10
+                )
+                result = response.json()
+
+                if response.status_code == 201:
+                    flash("Administrador adicionado e convite enviado com sucesso!", "success")
+                else:
+                    flash(result.get("message", "Erro ao criar administrador."), "danger")
+
+            except requests.RequestException:
+                flash("Não foi possível conectar ao servidor para criar o administrador.", "danger")
+
+        # -------------------------------------------------
+        # AÇÃO B: DESATIVAR ADMINISTRADOR DA TABELA
+        # -------------------------------------------------
+        elif action == "deactivate":
+            api_url_deactivate = f"{API_URL}/administrators/{target_id}/deactivate"
+            try:
+                response = requests.put(api_url_deactivate, headers=headers, timeout=10)
+                result = response.json()
+
+                if response.status_code == 200 and result.get("success"):
+                    flash("Administrador desativado com sucesso!", "success")
+                else:
+                    flash(result.get("message", "Erro ao desativar administrador."), "danger")
+            except requests.RequestException:
+                flash("Erro de conexão ao tentar desativar o administrador.", "danger")
+
+        # -------------------------------------------------
+        # AÇÃO C: REATIVAR ADMINISTRADOR DA TABELA
+        # -------------------------------------------------
+        elif action == "activate":
+            api_url_activate = f"{API_URL}/administrators/{target_id}/activate"
+            try:
+                response = requests.put(api_url_activate, headers=headers, timeout=10)
+                result = response.json()
+
+                if response.status_code == 200 and result.get("success"):
+                    flash("Administrador ativado com sucesso!", "success")
+                else:
+                    flash(result.get("message", "Erro ao ativar administrador."), "danger")
+            except requests.RequestException:
+                flash("Erro de conexão ao tentar ativar o administrador.", "danger")
+
+        # Padrão Post/Redirect/Get para evitar reenvio acidental de formulários
+        return redirect(url_for("web.admin"))
+
+    # =====================================================
+    # TRATAMENTO DO GET (LISTAGEM, BUSCA E FILTROS)
+    # =====================================================
+    search = request.args.get("search", default="", type=str)
+    status = request.args.get("status", default="", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=10, type=int)
+
+    params = {
+        "page": page,
+        "per_page": per_page
+    }
+    if search.strip():
+        params["search"] = search.strip()
+    if status.strip():
+        params["status"] = status.strip()
+
+    api_url_list = f"{API_URL}/administrators"
+    administrators_list = []
+    pagination = Pagination([], page, per_page, 0)
+
+    try:
+        response = requests.get(api_url_list, params=params, headers=headers, timeout=10)
+        if response.status_code == 200:
+            result = response.json()
+            if result.get("success"):
+                administrators_list = result.get("administrators", [])
+                pag_data = result.get("pagination", {})
+                pagination = Pagination(
+                    items=administrators_list,
+                    page=pag_data.get("page", page),
+                    per_page=pag_data.get("per_page", per_page),
+                    total=pag_data.get("total", 0)
+                )
+        else:
+            try:
+                flash(response.json().get("message", "Erro ao carregar administradores."), "danger")
+            except ValueError:
+                flash("Resposta inválida do servidor de dados.", "danger")
+    except requests.RequestException:
+        flash("Não foi possível conectar ao servidor de dados.", "danger")
 
     return render_template(
-        "admin/admin.html"
+        "admin/admin.html",
+        administrators=administrators_list,
+        pagination=pagination,
+        search=search,
+        status=status
     )
+
+@web_bp.route("/api/administrators/<int:administrator_id>", methods=["GET"])
+@admin_required
+def web_get_administrator_details(administrator_id):
+    token = session.get("access_token")
+    if not token:
+        return jsonify({"success": False, "message": "Sessão expirada."}), 401
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    # Faz a busca segura por dentro do servidor (Porta 5001)
+    api_url = f"{API_URL}/administrators/{administrator_id}"
+    try:
+        response = requests.get(api_url, headers=headers, timeout=10)
+        return jsonify(response.json()), response.status_code
+    except requests.RequestException:
+        return jsonify({"success": False, "message": "Erro de conexão com a API."}), 503
+
+
+
+@web_bp.route("/admin/profile", methods=["GET", "POST"])
+@admin_required
+def profiles():  # Sincronizado no plural para bater com o url_for('web.profiles') do base.html
+    token = session.get("access_token")
+    user_id = session.get("user_id") or session.get("id")
+
+    if not token or not user_id:
+        flash("Sessão expirada. Faça login novamente.", "danger")
+        return redirect(url_for("auth.login"))
+
+    # O requests define o Content-Type correto com o boundary automaticamente ao usar o parâmetro 'files'.
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    # =====================================================
+    # PROCESSAMENTO DO SALVAMENTO (POST)
+    # =====================================================
+    if request.method == "POST":
+        full_name = request.form.get("full_name")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+
+        if new_password:
+            if new_password != confirm_password:
+                flash("A confirmação da nova senha não coincide.", "warning")
+                return redirect(url_for("web.profiles"))
+            password_to_send = new_password
+        else:
+            password_to_send = ""  # Enviamos vazio para indicar que não houve alteração de senha
+
+        # 1. Prepara os campos de texto comuns (FormData para a API)
+        payload = {
+            "full_name": full_name,
+            "email": email,
+            "password": password_to_send,
+            "phone": phone
+        }
+
+        # 2. Captura o arquivo de foto vindo do HTML e prepara o dicionário de arquivos
+        files = {}
+        if "profile_photo" in request.files:
+            file = request.files["profile_photo"]
+            if file and file.filename != "":
+                # Passamos o arquivo diretamente para o requests com o nome do campo esperado pela API
+                files = {"profile_photo": (file.filename, file.stream, file.mimetype)}
+            else:
+                # Se o usuário não enviou um arquivo novo, mantemos o valor atual da sessão
+                payload["profile_photo"] = session.get("profile_photo", "")
+
+        api_url_update = f"{API_URL}/administrators/{user_id}"
+        try:
+            # Enviamos usando data= (para textos) e files= (para arquivos)
+            response = requests.put(
+                api_url_update,
+                data=payload,
+                files=files if files else None,
+                headers=headers,
+                timeout=10
+            )
+
+            try:
+                result = response.json()
+                if response.status_code == 200 and result.get("success"):
+                    session["user_name"] = full_name
+                    session["user_email"] = email
+
+                    # Sincronização: Atualiza a session do frontend com a string da nova foto retornada pela API
+                    if "administrator" in result and "profile_photo" in result["administrator"]:
+                        session["profile_photo"] = result["administrator"]["profile_photo"]
+
+                    flash("Informações do perfil atualizadas com sucesso!", "success")
+                else:
+                    flash(result.get("message", "Erro ao atualizar perfil."), "danger")
+            except ValueError:
+                flash("A API retornou uma resposta inválida ao salvar.", "danger")
+
+        except requests.RequestException:
+            flash("Erro de conexão ao salvar alterações.", "danger")
+
+        return redirect(url_for("web.profiles"))
+
+    # =====================================================
+    # CARREGAMENTO INICIAL DOS DADOS (GET)
+    # =====================================================
+    # Configuração inicial baseada nos dados da sessão atual
+    admin_data = {
+        "full_name": session.get("user_name", ""),
+        "email": session.get("user_email", ""),
+        "phone": "",
+        "role": "Administrador",
+        "created_at": "--",
+        "last_login": "Nunca",
+        "profile_photo": session.get("profile_photo", "")
+    }
+
+    # Mantemos o Content-Type original para a rota GET já que ela não envia arquivos binários
+    headers_get = {**headers, "Content-Type": "application/json"}
+    api_url_details = f"{API_URL}/administrators/{user_id}"
+    try:
+        response = requests.get(api_url_details, headers=headers_get, timeout=10)
+        if response.status_code == 200:
+            try:
+                res_json = response.json()
+                if res_json.get("success") and res_json.get("administrator"):
+                    # Substitui os dados locais pelos dados reais vindos da API
+                    admin_data = res_json.get("administrator")
+
+                    # Sincronização Crítica: Garante que o template HTML tenha acesso ao arquivo guardado na API
+                    if not admin_data.get("profile_photo"):
+                        admin_data["profile_photo"] = session.get("profile_photo", "")
+                    else:
+                        session["profile_photo"] = admin_data["profile_photo"]
+            except ValueError:
+                print("Resposta da API de detalhes não continha um JSON válido.")
+        else:
+            print(f"API de detalhes retornou status HTTP {response.status_code}")
+
+    except requests.RequestException as e:
+        print("Erro de conexão ao buscar detalhes do perfil:", e)
+
+    return render_template(
+        "admin/profile.html",
+        admin_data=admin_data
+    )
+
 
 @web_bp.route("/admin/recent_logins")
 def recent_logins():
@@ -1048,12 +1608,7 @@ def health_professional_zone():
         url_for("web.health_professional_dashboard")
     )
 
-@web_bp.route("/admin/logs")
-def logs():
 
-    return render_template(
-        "admin/logs.html"
-    )
 
 
 @web_bp.route("/admin/settings")
