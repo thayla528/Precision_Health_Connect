@@ -68,15 +68,7 @@ def home():
     )
 
 
-# =====================================================
-# RECUPERAÇÃO DE SENHA
-# WEB -> API
-# =====================================================
 
-# =====================================================
-# RECUPERAÇÃO DE SENHA
-# WEB -> API
-# =====================================================
 
 @web_bp.route("/api/password/forgot", methods=["POST"])
 def web_password_forgot():
@@ -2782,101 +2774,6 @@ def professional_medical_record():
         "profession/professional_medical_record.html"
     )
 
-@web_bp.route("/profession/appointments", methods=["POST"])
-def create_appointment():
-
-    # =====================================================
-    # VERIFICAR AUTENTICAÇÃO
-    # =====================================================
-
-    if "user_id" not in session:
-        return jsonify({
-            "success": False,
-            "message": "Não autenticado."
-        }), 401
-
-    # =====================================================
-    # VERIFICAR PERMISSÃO
-    # =====================================================
-
-    if session.get("role") != "professional":
-        return jsonify({
-            "success": False,
-            "message": "Acesso negado."
-        }), 403
-
-    # =====================================================
-    # TOKEN JWT
-    # =====================================================
-
-    access_token = session.get("access_token")
-
-    if not access_token:
-        session.clear()
-
-        return jsonify({
-            "success": False,
-            "message": "Sessão expirada."
-        }), 401
-
-    # =====================================================
-    # CONSUMIR API
-    # =====================================================
-
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
-
-    try:
-
-        response = requests.post(
-            f"{API_URL}/appointments/professional/create",
-            json=request.get_json(),
-            headers=headers,
-            timeout=10
-        )
-
-    except requests.RequestException as e:
-
-        print(
-            f"Erro ao conectar com API de appointments: {e}"
-        )
-
-        return jsonify({
-            "success": False,
-            "message": "Não foi possível conectar à API."
-        }), 500
-
-    # =====================================================
-    # TOKEN INVÁLIDO
-    # =====================================================
-
-    if response.status_code in [401, 422]:
-
-        session.clear()
-
-        return jsonify({
-            "success": False,
-            "message": "Sessão expirada."
-        }), 401
-
-    # =====================================================
-    # RESPOSTA DA API
-    # =====================================================
-
-    try:
-
-        data = response.json()
-
-    except ValueError:
-
-        return jsonify({
-            "success": False,
-            "message": "Resposta inválida da API."
-        }), 500
-
-    return jsonify(data), response.status_code
-
 @web_bp.route(
     "/profession/appointments/<int:appointment_id>/reschedule",
     methods=["PUT"]
@@ -3634,8 +3531,6 @@ def professional_patients_data():
     return jsonify(data), 200
 
 
-
-
 @web_bp.route(
     "/profession/prescriptions",
     methods=["GET", "POST"]
@@ -3904,8 +3799,6 @@ def professional_prescriptions(
         professional_id=professional_id,
         api_error=None
     )
-
-
 
 
 @web_bp.route("/profession/prescriptions/data", methods=["GET"])
@@ -4797,6 +4690,61 @@ def recipes():
 
 
 
+
+@web_bp.route("/profession/clinical-records", methods=["GET", "POST"])
+def professional_clinical_records():
+    if session.get("role") != "professional":
+        abort(403)
+
+    token = session.get("access_token")
+    user_id = session.get("user_id")
+
+    if not token or not user_id:
+        session.clear()
+        flash("Sua sessão expirou. Faça login novamente.", "warning")
+        return redirect(url_for("auth.login"))
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    api_url = f"{API_URL}/clinical-records"
+
+    if request.method == "POST":
+        data = {
+            "appointment_id": request.form.get("appointment_id"),
+            "diagnosis": request.form.get("diagnosis"),
+            "treatment": request.form.get("treatment"),
+            "prescription": request.form.get("prescription"),
+            "notes": request.form.get("notes")
+        }
+
+        try:
+            response = requests.post(
+                f"{api_url}/create",
+                headers=headers,
+                json=data,
+                timeout=10
+            )
+
+            result = response.json()
+
+            if response.status_code == 201 and result.get("success"):
+                flash("Prontuário criado com sucesso.", "success")
+            else:
+                flash(
+                    result.get("message", "Não foi possível criar o prontuário."),
+                    "danger"
+                )
+
+        except requests.RequestException:
+            flash("Não foi possível conectar à API.", "danger")
+
+        return redirect(url_for("web.professional_clinical_records"))
+
+    return render_template("profession/clinical_records.html")
+
 @web_bp.route("/patient/messages")
 def messages():
     # 1. Verificar Autenticação
@@ -4883,12 +4831,6 @@ def prescriptions():
     return render_template(
         "patient/prescriptions.html"
     )
-
-@web_bp.route("/appointments")
-def appointments():
-    return  render_template("patient/appointments.html")
-
-
 
 
 @web_bp.route("/invitation", methods=["GET", "POST"])
@@ -5024,6 +4966,329 @@ def invitation():
     )
 
 
+
+# =====================================================
+# AGENDAMENTOS — PACIENTE
+# API: POST /appointments/create
+# =====================================================
+
+@web_bp.route("/patient/appointments", methods=["GET", "POST"])
+def patient_appointments():
+
+    if request.method == "GET":
+        return render_template("patient/appointments.html")
+
+    if "user_id" not in session:
+        flash("Faça login para continuar.", "warning")
+        return redirect(url_for("auth.login"))
+
+    if session.get("role") != "patient":
+        flash("Acesso negado.", "danger")
+        return redirect(url_for("web.index"))
+
+    data = {
+        "professional_id": request.form.get("professional_id"),
+        "appointment_date": request.form.get("appointment_date"),
+        "appointment_reason": request.form.get("appointment_reason"),
+        "notes": request.form.get("notes")
+    }
+
+    try:
+        response = requests.post(
+            f"{API_URL}/appointments/create",
+            json=data,
+            headers={
+                "Authorization": f"Bearer {session.get('access_token')}"
+            },
+            timeout=10
+        )
+        result = response.json()
+
+    except (requests.RequestException, ValueError) as e:
+        print("ERRO AO CRIAR AGENDAMENTO:", e)
+        flash("Não foi possível conectar à API.", "danger")
+        return redirect(url_for("web.patient_appointments"))
+
+    if response.status_code == 201 and result.get("success"):
+        flash(result.get("message", "Agendamento solicitado com sucesso!"), "success")
+    else:
+        flash(result.get("message", "Não foi possível criar o agendamento."), "danger")
+
+    return redirect(url_for("web.appointments"))
+
+
+# =====================================================
+# AGENDAMENTOS — PROFISSIONAL
+# API: POST /appointments/professional/create
+# =====================================================
+
+@web_bp.route("/profession/appointments", methods=["GET", "POST"])
+def create_appointment():
+
+    if request.method == "GET":
+        return render_template("profession/professional_appointments.html")
+
+    if "user_id" not in session:
+        flash("Faça login para continuar.", "warning")
+        return redirect(url_for("auth.login"))
+
+    if session.get("role") != "professional":
+        flash("Acesso negado.", "danger")
+        return redirect(url_for("web.index"))
+
+    data = {
+        "patient_id": request.form.get("patient_id"),
+        "appointment_date": request.form.get("appointment_date"),
+        "appointment_reason": request.form.get("appointment_reason"),
+        "notes": request.form.get("notes")
+    }
+
+    try:
+        response = requests.post(
+            f"{API_URL}/appointments/professional/create",
+            json=data,
+            headers={
+                "Authorization": f"Bearer {session.get('access_token')}"
+            },
+            timeout=10
+        )
+        result = response.json()
+
+    except (requests.RequestException, ValueError) as e:
+        print("ERRO AO CRIAR AGENDAMENTO:", e)
+        flash("Não foi possível conectar à API.", "danger")
+        return redirect(url_for("web.create_appointment"))
+
+    if response.status_code == 201 and result.get("success"):
+        flash(result.get("message", "Agendamento criado com sucesso!"), "success")
+    else:
+        flash(result.get("message", "Não foi possível criar o agendamento."), "danger")
+
+    return redirect(url_for("web.appointments"))
+
+
+# =====================================================
+# MEUS AGENDAMENTOS
+# API: GET /appointments/my
+# =====================================================
+
+@web_bp.route("/appointments", methods=["GET"])
+def appointments():
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    role = session.get("role")
+
+    if role == "patient":
+        template = "patient/appointments.html"
+    elif role == "professional":
+        template = "profession/professional_appointments.html"
+    elif role == "administrator":
+        template = "admin/appointments.html"
+    else:
+        flash("Perfil inválido.", "danger")
+        return redirect(url_for("auth.login"))
+
+    try:
+        response = requests.get(
+            f"{API_URL}/appointments/my",
+            headers={
+                "Authorization": f"Bearer {session.get('access_token')}"
+            },
+            timeout=10
+        )
+        result = response.json()
+
+    except (requests.RequestException, ValueError) as e:
+        print("ERRO AO BUSCAR AGENDAMENTOS:", e)
+        flash("Não foi possível carregar os agendamentos.", "danger")
+        return render_template(template, appointments=[])
+
+    if response.status_code != 200:
+        flash(result.get("message", "Erro ao carregar agendamentos."), "danger")
+        return render_template(template, appointments=[])
+
+    if isinstance(result, list):
+        appointments_data = result
+    else:
+        appointments_data = result.get("appointments", [])
+
+    return render_template(
+        template,
+        appointments=appointments_data
+    )
+
+
+# =====================================================
+# REAGENDAR
+# API: PUT /appointments/<id>/reschedule
+# =====================================================
+
+@web_bp.route(
+    "/profession/appointments/<int:appointment_id>/reschedule",
+    methods=["POST"]
+)
+def reschedule_appointment(appointment_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session.get("role") != "professional":
+        flash("Acesso negado.", "danger")
+        return redirect(url_for("web.index"))
+
+    data = {
+        "appointment_date": request.form.get("appointment_date"),
+        "reason": request.form.get("reason")
+    }
+
+    try:
+        response = requests.put(
+            f"{API_URL}/appointments/{appointment_id}/reschedule",
+            json=data,
+            headers={
+                "Authorization": f"Bearer {session.get('access_token')}"
+            },
+            timeout=10
+        )
+        result = response.json()
+
+    except (requests.RequestException, ValueError) as e:
+        print("ERRO AO REAGENDAR:", e)
+        flash("Não foi possível conectar à API.", "danger")
+        return redirect(url_for("web.appointments"))
+
+    if response.ok and result.get("success"):
+        flash(result.get("message", "Agendamento reagendado!"), "success")
+    else:
+        flash(result.get("message", "Não foi possível reagendar."), "danger")
+
+    return redirect(url_for("web.appointments"))
+
+
+# =====================================================
+# ACEITAR AGENDAMENTO
+# API: PUT /appointments/<id>/accept
+# =====================================================
+
+@web_bp.route(
+    "/profession/appointments/<int:appointment_id>/accept",
+    methods=["POST"]
+)
+def accept_appointment(appointment_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session.get("role") != "professional":
+        flash("Acesso negado.", "danger")
+        return redirect(url_for("web.index"))
+
+    try:
+        response = requests.put(
+            f"{API_URL}/appointments/{appointment_id}/accept",
+            headers={
+                "Authorization": f"Bearer {session.get('access_token')}"
+            },
+            timeout=10
+        )
+        result = response.json()
+
+    except (requests.RequestException, ValueError) as e:
+        print("ERRO AO ACEITAR AGENDAMENTO:", e)
+        flash("Não foi possível conectar à API.", "danger")
+        return redirect(url_for("web.appointments"))
+
+    if response.ok and result.get("success"):
+        flash(result.get("message", "Agendamento aceito!"), "success")
+    else:
+        flash(result.get("message", "Não foi possível aceitar o agendamento."), "danger")
+
+    return redirect(url_for("web.appointments"))
+
+
+# =====================================================
+# CANCELAR AGENDAMENTO
+# API: PUT /appointments/<id>/cancel
+# =====================================================
+
+@web_bp.route(
+    "/appointments/<int:appointment_id>/cancel",
+    methods=["POST"]
+)
+def cancel_appointment(appointment_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    try:
+        response = requests.put(
+            f"{API_URL}/appointments/{appointment_id}/cancel",
+            headers={
+                "Authorization": f"Bearer {session.get('access_token')}"
+            },
+            timeout=10
+        )
+        result = response.json()
+
+    except (requests.RequestException, ValueError) as e:
+        print("ERRO AO CANCELAR AGENDAMENTO:", e)
+        flash("Não foi possível conectar à API.", "danger")
+        return redirect(url_for("web.appointments"))
+
+    if response.ok and result.get("success"):
+        flash(result.get("message", "Agendamento cancelado!"), "success")
+    else:
+        flash(result.get("message", "Não foi possível cancelar o agendamento."), "danger")
+
+    return redirect(url_for("web.appointments"))
+
+
+# =====================================================
+# ADMINISTRADOR — TODOS OS AGENDAMENTOS
+# API: GET /appointments/all
+# =====================================================
+
+@web_bp.route("/admin/appointments", methods=["GET"])
+def all_appointments():
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session.get("role") != "administrator":
+        flash("Acesso negado.", "danger")
+        return redirect(url_for("web.index"))
+
+    try:
+        response = requests.get(
+            f"{API_URL}/appointments/all",
+            headers={
+                "Authorization": f"Bearer {session.get('access_token')}"
+            },
+            timeout=10
+        )
+        result = response.json()
+
+    except (requests.RequestException, ValueError) as e:
+        print("ERRO AO BUSCAR AGENDAMENTOS:", e)
+        flash("Não foi possível carregar os agendamentos.", "danger")
+        return render_template(
+            "admin/appointments.html",
+            appointments=[]
+        )
+
+    if response.status_code != 200:
+        flash(result.get("message", "Erro ao carregar agendamentos."), "danger")
+        return render_template(
+            "admin/appointments.html",
+            appointments=[]
+        )
+
+    return render_template(
+        "admin/appointments.html",
+        appointments=result.get("appointments", [])
+    )
 
 
 @web_bp.route("/verification/email", methods=["POST"])
