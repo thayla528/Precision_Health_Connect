@@ -1,64 +1,131 @@
 {% extends "base.html" %}
 
 {% block title %}
-Precision Health Connect - Mensagens
+Mensagens | Precision Health Connect
 {% endblock %}
 
 {% block content %}
+
+<!-- Importação do Material Symbols Rounded -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
 <style>
+    :root {
+        --phc-primary: #8B5CF6;
+        --phc-secondary: #A78BFA;
+        --phc-light: #F5F3FF;
+        --phc-white: #FFFFFF;
+        --phc-text: #111827;
+        --phc-muted: #6B7280;
+        --phc-border: #E5E7EB;
+        --phc-bg: #F3F4F6;
+
+        --phc-chat-bg: #EAE6DF;
+        --phc-chat-pattern: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%238b5cf6' fill-opacity='0.04' fill-rule='evenodd'/%3E%3C/svg%3E");
+    }
+
+    body {
+        background-color: var(--phc-bg);
+        color: var(--phc-text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
     .messages-container {
         max-width: 1400px;
         margin: 0 auto;
-        padding: 24px;
+        padding: 1.5rem;
+        height: calc(100vh - 80px);
     }
 
     .page-header {
-        margin-bottom: 24px;
+        margin-bottom: 1rem;
+        padding: 0 0.5rem;
     }
 
     .page-title {
-        font-size: 28px;
+        font-size: 1.5rem;
         font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 8px;
+        color: var(--phc-text);
+        margin: 0 0 0.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .page-title .material-symbols-rounded {
+        color: var(--phc-primary);
     }
 
     .page-subtitle {
-        font-size: 15px;
-        color: #6b7280;
+        font-size: 0.9rem;
+        color: var(--phc-muted);
+        margin: 0;
     }
 
-    /* Messages Layout */
     .messages-layout {
         display: grid;
         grid-template-columns: 380px 1fr;
-        background: white;
+        background: var(--phc-white);
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        height: calc(100vh - 200px);
-        min-height: 600px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+        height: 100%;
+        border: 1px solid var(--phc-border);
     }
 
     /* Conversations List */
     .conversations-panel {
-        border-right: 1px solid #e5e7eb;
+        border-right: 1px solid var(--phc-border);
         display: flex;
         flex-direction: column;
-        background: #fafbfc;
+        background: var(--phc-white);
     }
 
     .conversations-header {
-        padding: 20px;
-        border-bottom: 1px solid #e5e7eb;
-        background: white;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--phc-border);
+        background: var(--phc-bg);
+    }
+
+    /* Novo: Linha do título com botão */
+    .conversations-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
     }
 
     .conversations-title {
-        font-size: 18px;
+        font-size: 1.1rem;
         font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 12px;
+        color: var(--phc-text);
+        margin: 0;
+    }
+
+    /* Botão de buscar paciente */
+    .btn-new-conversation {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: var(--phc-primary);
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-new-conversation:hover {
+        background: #7C3AED;
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-new-conversation .material-symbols-rounded {
+        font-size: 1.2rem;
     }
 
     .search-box {
@@ -67,28 +134,30 @@ Precision Health Connect - Mensagens
 
     .search-input {
         width: 100%;
-        padding: 10px 14px 10px 40px;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        font-size: 14px;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.88rem;
         transition: all 0.2s;
-        background: #f9fafb;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        box-sizing: border-box;
     }
 
     .search-input:focus {
         outline: none;
-        border-color: #1e6fd9;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(30, 111, 217, 0.1);
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
     }
 
     .search-icon {
         position: absolute;
-        left: 14px;
+        left: 0.85rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #9ca3af;
-        font-size: 16px;
+        color: var(--phc-muted);
+        font-size: 1.1rem;
+        pointer-events: none;
     }
 
     .conversations-list {
@@ -99,46 +168,48 @@ Precision Health Connect - Mensagens
     .conversation-item {
         display: flex;
         align-items: center;
-        gap: 14px;
-        padding: 16px 20px;
+        gap: 0.85rem;
+        padding: 0.85rem 1.25rem;
         cursor: pointer;
-        transition: all 0.2s;
-        border-bottom: 1px solid #f3f4f6;
+        transition: all 0.15s ease;
+        border-bottom: 1px solid var(--phc-bg);
         position: relative;
     }
 
     .conversation-item:hover {
-        background: #f3f4f6;
+        background: var(--phc-light);
     }
 
     .conversation-item.active {
-        background: #e8f1fb;
-        border-left: 4px solid #1e6fd9;
+        background: var(--phc-light);
+        border-left: 4px solid var(--phc-primary);
+        padding-left: calc(1.25rem - 4px);
     }
 
     .conversation-avatar {
-        width: 52px;
-        height: 52px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #1e6fd9, #1557ab);
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: 600;
-        font-size: 18px;
+        font-weight: 700;
+        font-size: 1.1rem;
         flex-shrink: 0;
         position: relative;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
     }
 
     .online-indicator {
         position: absolute;
-        bottom: 2px;
-        right: 2px;
+        bottom: 1px;
+        right: 1px;
         width: 12px;
         height: 12px;
-        background: #10b981;
-        border: 2px solid white;
+        background: #10B981;
+        border: 2px solid var(--phc-white);
         border-radius: 50%;
     }
 
@@ -151,868 +222,1160 @@ Precision Health Connect - Mensagens
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 4px;
+        margin-bottom: 0.25rem;
     }
 
     .conversation-name {
-        font-size: 15px;
+        font-size: 0.95rem;
         font-weight: 600;
-        color: #1f2937;
+        color: var(--phc-text);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     .conversation-time {
-        font-size: 12px;
-        color: #9ca3af;
+        font-size: 0.75rem;
+        color: var(--phc-muted);
         flex-shrink: 0;
-        margin-left: 8px;
+        margin-left: 0.5rem;
     }
 
     .conversation-preview {
-        font-size: 13px;
-        color: #6b7280;
+        font-size: 0.85rem;
+        color: var(--phc-muted);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         display: flex;
         align-items: center;
-        gap: 6px;
+        justify-content: space-between;
+        gap: 0.5rem;
     }
 
     .unread-badge {
-        background: #1e6fd9;
+        background: var(--phc-primary);
         color: white;
-        font-size: 11px;
+        font-size: 0.7rem;
         font-weight: 700;
-        padding: 2px 7px;
-        border-radius: 10px;
+        padding: 0.15rem 0.45rem;
+        border-radius: 9999px;
         min-width: 20px;
         text-align: center;
+        flex-shrink: 0;
     }
 
     /* Chat Area */
     .chat-panel {
         display: flex;
         flex-direction: column;
-        background: white;
+        background: var(--phc-chat-bg);
+        background-image: var(--phc-chat-pattern);
+        position: relative;
     }
 
     .chat-header {
-        padding: 18px 24px;
-        border-bottom: 1px solid #e5e7eb;
+        padding: 0.75rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
         display: flex;
         align-items: center;
-        gap: 14px;
-        background: white;
+        gap: 0.85rem;
+        background: var(--phc-bg);
+        backdrop-filter: blur(8px);
+        z-index: 10;
     }
 
     .chat-avatar {
-        width: 44px;
-        height: 44px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #1e6fd9, #1557ab);
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: 600;
-        font-size: 16px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        flex-shrink: 0;
     }
 
-    .chat-info {
-        flex: 1;
-    }
+    .chat-info { flex: 1; }
 
     .chat-name {
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 2px;
+        color: var(--phc-text);
+        margin-bottom: 0.15rem;
     }
 
     .chat-status {
-        font-size: 13px;
-        color: #10b981;
+        font-size: 0.8rem;
+        color: var(--phc-muted);
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 0.35rem;
     }
 
     .status-dot {
         width: 8px;
         height: 8px;
-        background: #10b981;
+        background: #10B981;
         border-radius: 50%;
     }
 
-    .chat-actions {
-        display: flex;
-        gap: 8px;
-    }
+    .chat-actions { display: flex; gap: 0.5rem; }
 
     .chat-action-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
-        background: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
         transition: all 0.2s;
-        color: #6b7280;
+        color: var(--phc-muted);
     }
 
     .chat-action-btn:hover {
-        background: #f3f4f6;
-        color: #1e6fd9;
-        border-color: #1e6fd9;
+        background: rgba(0, 0, 0, 0.05);
+        color: var(--phc-primary);
     }
+
+    .chat-action-btn .material-symbols-rounded { font-size: 1.25rem; }
 
     /* Messages Area */
     .messages-area {
         flex: 1;
         overflow-y: auto;
-        padding: 24px;
-        background: #f9fafb;
-        background-image: 
-            radial-gradient(circle at 20% 50%, rgba(30, 111, 217, 0.03) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+        padding: 1.5rem 2rem;
+        display: flex;
+        flex-direction: column;
     }
 
     .message-date-divider {
         text-align: center;
-        margin: 20px 0;
+        margin: 1.5rem 0;
         position: relative;
-    }
-
-    .message-date-divider::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 50%;
-        height: 1px;
-        background: #e5e7eb;
     }
 
     .date-label {
-        background: white;
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-size: 12px;
-        color: #6b7280;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.35rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        color: var(--phc-muted);
         font-weight: 600;
         position: relative;
         display: inline-block;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--phc-border);
     }
 
     .message {
         display: flex;
-        margin-bottom: 16px;
-        animation: slideIn 0.3s ease;
+        margin-bottom: 0.75rem;
+        animation: slideIn 0.2s ease;
     }
 
     @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    .message.received {
-        justify-content: flex-start;
-    }
-
-    .message.sent {
-        justify-content: flex-end;
-    }
+    .message.received { justify-content: flex-start; }
+    .message.sent { justify-content: flex-end; }
 
     .message-bubble {
         max-width: 65%;
-        padding: 12px 16px;
-        border-radius: 16px;
+        padding: 0.6rem 0.85rem 0.5rem 0.85rem;
+        border-radius: 12px;
         position: relative;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .message.received .message-bubble {
-        background: white;
-        border-bottom-left-radius: 4px;
-        color: #1f2937;
-    }
-
-    .message.sent .message-bubble {
-        background: linear-gradient(135deg, #1e6fd9, #1557ab);
-        border-bottom-right-radius: 4px;
-        color: white;
-    }
-
-    .message-text {
-        font-size: 14px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        font-size: 0.92rem;
         line-height: 1.5;
         word-wrap: break-word;
     }
 
+    .message.received .message-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: -6px;
+        width: 12px;
+        height: 12px;
+        background: var(--phc-white);
+        border-bottom-right-radius: 4px;
+        transform: rotate(45deg);
+        z-index: -1;
+        border-right: 1px solid var(--phc-border);
+        border-bottom: 1px solid var(--phc-border);
+    }
+
+    .message.sent .message-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: -6px;
+        width: 12px;
+        height: 12px;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        border-bottom-left-radius: 4px;
+        transform: rotate(45deg);
+        z-index: -1;
+    }
+
+    .message.received .message-bubble {
+        background: var(--phc-white);
+        color: var(--phc-text);
+        border-top-left-radius: 4px;
+    }
+
+    .message.sent .message-bubble {
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        border-top-right-radius: 4px;
+    }
+
     .message-time {
-        font-size: 11px;
-        margin-top: 4px;
-        opacity: 0.7;
+        font-size: 0.7rem;
+        margin-top: 0.25rem;
         display: flex;
         align-items: center;
-        gap: 4px;
         justify-content: flex-end;
+        gap: 0.25rem;
+        opacity: 0.8;
     }
 
-    .message.sent .message-time {
-        color: rgba(255, 255, 255, 0.8);
+    .message.sent .message-time .material-symbols-rounded {
+        font-size: 0.9rem;
+        color: rgba(255,255,255, 0.9);
     }
 
-    .message.received .message-time {
-        color: #9ca3af;
-    }
-
-    /* File Messages */
-    .file-message {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 12px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 240px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .message.received .file-message {
-        background: #f9fafb;
-    }
-
-    .file-message:hover {
-        transform: scale(1.02);
-    }
-
-    .file-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        flex-shrink: 0;
-    }
-
-    .file-icon.pdf {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-
-    .file-icon.image {
-        background: #dbeafe;
-        color: #1e6fd9;
-    }
-
-    .file-info {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .file-name {
-        font-size: 13px;
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-bottom: 2px;
-    }
-
-    .file-size {
-        font-size: 11px;
-        opacity: 0.7;
-    }
-
-    /* Image Message */
-    .image-message {
-        border-radius: 10px;
-        overflow: hidden;
-        max-width: 280px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .image-message:hover {
-        transform: scale(1.02);
-    }
-
-    .image-message img {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
+    .message.received .message-time { color: var(--phc-muted); }
 
     /* Chat Input */
     .chat-input-area {
-        padding: 18px 24px;
-        border-top: 1px solid #e5e7eb;
-        background: white;
+        padding: 0.75rem 1.25rem;
+        border-top: 1px solid var(--phc-border);
+        background: var(--phc-bg);
         display: flex;
-        align-items: center;
-        gap: 12px;
+        align-items: flex-end;
+        gap: 0.75rem;
     }
 
     .input-actions {
         display: flex;
-        gap: 6px;
+        gap: 0.25rem;
+        padding-bottom: 0.5rem;
     }
 
     .input-action-btn {
         width: 40px;
         height: 40px;
-        border-radius: 10px;
+        border-radius: 50%;
         border: none;
-        background: #f3f4f6;
+        background: transparent;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
         transition: all 0.2s;
-        color: #6b7280;
+        color: var(--phc-muted);
     }
 
     .input-action-btn:hover {
-        background: #e5e7eb;
-        color: #1e6fd9;
+        background: rgba(0, 0, 0, 0.05);
+        color: var(--phc-primary);
+    }
+
+    .input-action-btn .material-symbols-rounded { font-size: 1.3rem; }
+
+    .message-input-wrapper {
+        flex: 1;
+        background: var(--phc-white);
+        border-radius: 24px;
+        border: 1px solid var(--phc-border);
+        display: flex;
+        align-items: center;
+        padding: 0.4rem 1rem;
+        transition: all 0.2s;
+    }
+
+    .message-input-wrapper:focus-within {
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
     }
 
     .message-input {
         flex: 1;
-        padding: 12px 16px;
-        border: 1px solid #e5e7eb;
-        border-radius: 24px;
-        font-size: 14px;
-        transition: all 0.2s;
-        background: #f9fafb;
+        border: none;
+        background: transparent;
+        font-size: 0.95rem;
+        padding: 0.5rem 0;
+        color: var(--phc-text);
+        resize: none;
+        max-height: 120px;
+        font-family: inherit;
     }
 
-    .message-input:focus {
-        outline: none;
-        border-color: #1e6fd9;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(30, 111, 217, 0.1);
-    }
+    .message-input:focus { outline: none; }
 
     .send-button {
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         border: none;
-        background: linear-gradient(135deg, #1e6fd9, #1557ab);
+        background: var(--phc-primary);
         color: white;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
         transition: all 0.2s;
-        box-shadow: 0 2px 8px rgba(30, 111, 217, 0.3);
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
     }
 
     .send-button:hover {
+        background: #7C3AED;
         transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(30, 111, 217, 0.4);
     }
 
+    .send-button .material-symbols-rounded { font-size: 1.4rem; }
+
     /* Empty State */
-    .empty-chat {
+    .empty-chat, .empty-conversations {
         flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #9ca3af;
-        padding: 40px;
-    }
-
-    .empty-chat-icon {
-        font-size: 64px;
-        margin-bottom: 16px;
-        opacity: 0.5;
-    }
-
-    .empty-chat-text {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #6b7280;
-    }
-
-    .empty-chat-subtext {
-        font-size: 14px;
+        color: var(--phc-muted);
+        padding: 2rem;
         text-align: center;
+    }
+
+    .empty-conversations { padding: 3rem 1.5rem; }
+
+    .empty-chat .material-symbols-rounded,
+    .empty-conversations .material-symbols-rounded {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+        color: var(--phc-primary);
+    }
+
+    .empty-chat h3, .empty-conversations p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .empty-chat p, .empty-conversations p {
+        font-size: 0.9rem;
+        font-weight: 400;
+        color: var(--phc-muted);
+        max-width: 300px;
+        line-height: 1.5;
     }
 
     /* Scrollbar */
     .conversations-list::-webkit-scrollbar,
-    .messages-area::-webkit-scrollbar {
-        width: 6px;
-    }
+    .messages-area::-webkit-scrollbar,
+    .patients-list::-webkit-scrollbar { width: 6px; }
 
     .conversations-list::-webkit-scrollbar-track,
-    .messages-area::-webkit-scrollbar-track {
-        background: transparent;
-    }
+    .messages-area::-webkit-scrollbar-track,
+    .patients-list::-webkit-scrollbar-track { background: transparent; }
 
     .conversations-list::-webkit-scrollbar-thumb,
-    .messages-area::-webkit-scrollbar-thumb {
-        background: #d1d5db;
+    .messages-area::-webkit-scrollbar-thumb,
+    .patients-list::-webkit-scrollbar-thumb {
+        background: #D1D5DB;
         border-radius: 3px;
     }
 
-    .conversations-list::-webkit-scrollbar-thumb:hover,
-    .messages-area::-webkit-scrollbar-thumb:hover {
-        background: #9ca3af;
+    /* ============================================ */
+    /* MODAL DE BUSCA DE PACIENTES                  */
+    /* ============================================ */
+    .search-patient-modal .modal-content {
+        border: 2px solid var(--phc-primary);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.15);
+    }
+
+    .search-patient-modal .modal-header {
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        padding: 1.25rem 1.5rem;
+        border: none;
+    }
+
+    .search-patient-modal .modal-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .search-patient-modal .modal-title .material-symbols-rounded {
+        font-size: 1.4rem;
+    }
+
+    .search-patient-modal .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+    }
+
+    .search-patient-modal .modal-body {
+        padding: 1.25rem 1.5rem;
+        background: var(--phc-white);
+    }
+
+    .search-patient-box {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    .search-patient-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.75rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 10px;
+        font-size: 0.9rem;
+        background: var(--phc-bg);
+        color: var(--phc-text);
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+
+    .search-patient-input:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        background: var(--phc-white);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .search-patient-box .material-symbols-rounded {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--phc-muted);
+        font-size: 1.2rem;
+        pointer-events: none;
+    }
+
+    .patients-list {
+        max-height: 380px;
+        overflow-y: auto;
+        border: 1px solid var(--phc-border);
+        border-radius: 10px;
+    }
+
+    .patient-search-item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.85rem 1rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        border-bottom: 1px solid var(--phc-bg);
+    }
+
+    .patient-search-item:last-child { border-bottom: none; }
+
+    .patient-search-item:hover {
+        background: var(--phc-light);
+    }
+
+    .patient-search-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
+    }
+
+    .patient-search-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .patient-search-name {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--phc-text);
+        margin-bottom: 0.15rem;
+    }
+
+    .patient-search-details {
+        font-size: 0.8rem;
+        color: var(--phc-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .patient-search-details .material-symbols-rounded {
+        font-size: 0.9rem;
+        color: var(--phc-secondary);
+    }
+
+    .patient-search-action {
+        color: var(--phc-primary);
+        font-size: 0.82rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .patient-search-item:hover .patient-search-action {
+        opacity: 1;
+    }
+
+    .no-results {
+        padding: 2rem 1rem;
+        text-align: center;
+        color: var(--phc-muted);
+    }
+
+    .no-results .material-symbols-rounded {
+        font-size: 2.5rem;
+        opacity: 0.3;
+        color: var(--phc-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    /* Toast de feedback */
+    .phc-toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--phc-text);
+        color: white;
+        padding: 0.85rem 1.25rem;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        pointer-events: none;
+        z-index: 2000;
+    }
+
+    .phc-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .phc-toast .material-symbols-rounded {
+        color: #10B981;
+        font-size: 1.3rem;
     }
 
     /* Responsive */
     @media (max-width: 1024px) {
-        .messages-layout {
-            grid-template-columns: 320px 1fr;
-        }
+        .messages-layout { grid-template-columns: 320px 1fr; }
     }
 
     @media (max-width: 768px) {
-        .messages-container {
-            padding: 12px;
-        }
-
-        .messages-layout {
-            grid-template-columns: 1fr;
-            height: calc(100vh - 160px);
-        }
-
-        .conversations-panel {
-            display: none;
-        }
-
-        .conversations-panel.mobile-active {
-            display: flex;
-        }
-
-        .chat-panel {
-            display: none;
-        }
-
-        .chat-panel.mobile-active {
-            display: flex;
-        }
-
-        .message-bubble {
-            max-width: 80%;
-        }
+        .messages-container { padding: 0; height: calc(100vh - 60px); }
+        .page-header { padding: 1rem; margin-bottom: 0; }
+        .messages-layout { grid-template-columns: 1fr; border-radius: 0; border: none; }
+        .conversations-panel { display: none; }
+        .conversations-panel.mobile-active { display: flex; position: absolute; width: 100%; height: 100%; z-index: 20; }
+        .chat-panel { display: none; }
+        .chat-panel.mobile-active { display: flex; position: absolute; width: 100%; height: 100%; z-index: 20; }
+        .chat-header { padding: 0.75rem 1rem; }
+        .messages-area { padding: 1rem; }
+        .message-bubble { max-width: 85%; }
     }
 </style>
 
 <div class="messages-container">
-    <!-- Page Header -->
+
     <div class="page-header">
-        <h1 class="page-title">Mensagens</h1>
-        <p class="page-subtitle">Comunique-se com seus pacientes.</p>
+        <h1 class="page-title">
+            <span class="material-symbols-rounded">chat</span>
+            Mensagens
+        </h1>
+        <p class="page-subtitle">Comunique-se com seus profissionais de saúde de forma segura.</p>
     </div>
 
-    <!-- Messages Layout -->
     <div class="messages-layout">
-        <!-- Conversations Panel -->
-        <div class="conversations-panel">
+
+        <!-- CONVERSATIONS PANEL -->
+        <div class="conversations-panel" id="conversationsPanel">
             <div class="conversations-header">
-                <h3 class="conversations-title">Conversas</h3>
+                <!-- Linha do título com botão de buscar paciente -->
+                <div class="conversations-title-row">
+                    <h3 class="conversations-title">Conversas</h3>
+                    <button class="btn-new-conversation" type="button" data-bs-toggle="modal" data-bs-target="#searchPatientModal" title="Buscar paciente">
+                        <span class="material-symbols-rounded">person_add</span>
+                    </button>
+                </div>
+
                 <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" class="search-input" placeholder="Buscar conversa...">
+                    <span class="material-symbols-rounded search-icon">search</span>
+                    <input type="text" class="search-input" id="conversationSearch" placeholder="Buscar conversa...">
                 </div>
             </div>
-            <div class="conversations-list">
-                <!-- Conversation 1 - Active -->
-                <div class="conversation-item active" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">
-                        MA
-                        <span class="online-indicator"></span>
-                    </div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Maria Aparecida da Silva</span>
-                            <span class="conversation-time">10:45</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>Obrigada, doutor! Vou seguir as orientações.</span>
-                            <span class="unread-badge">2</span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Conversation 2 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">JM</div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">João Carlos Mendes</span>
-                            <span class="conversation-time">09:30</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>📎 Exame_sangue.pdf</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="conversations-list" id="conversationsList">
+                {% if messages %}
+                    {% set conversations = {} %}
+                    {% for message in messages %}
+                        {% if message.sender_id not in conversations %}
+                            {% set _ = conversations.update({ message.sender_id: message }) %}
+                        {% endif %}
+                    {% endfor %}
 
-                <!-- Conversation 3 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">
-                        AP
-                        <span class="online-indicator"></span>
-                    </div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Ana Paula Rodrigues</span>
-                            <span class="conversation-time">Ontem</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>Perfeito! Até a próxima consulta.</span>
-                            <span class="unread-badge">1</span>
-                        </div>
-                    </div>
-                </div>
+                    {% for professional_id, message in conversations.items() %}
+                    <div class="conversation-item {% if loop.first %}active{% endif %}"
+                         data-user-id="{{ professional_id }}"
+                         data-name="{{ message.sender_name }}"
+                         onclick="selectConversation(this)">
 
-                <!-- Conversation 4 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">PH</div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Pedro Henrique Santos</span>
-                            <span class="conversation-time">Ontem</span>
+                        <div class="conversation-avatar">
+                            {% set name_parts = message.sender_name.split() %}
+                            {{ name_parts[0][0] | upper }}{{ name_parts[-1][0] | upper }}
+                            {% if message.is_read == 0 %}
+                                <span class="online-indicator"></span>
+                            {% endif %}
                         </div>
-                        <div class="conversation-preview">
-                            <span>Você: Os resultados estão normais.</span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Conversation 5 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">
-                        RC
-                        <span class="online-indicator"></span>
-                    </div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Roberto Almeida Costa</span>
-                            <span class="conversation-time">30/07</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>📷 Imagem enviada</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Conversation 6 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">FS</div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Fernanda Lima Souza</span>
-                            <span class="conversation-time">29/07</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>Você: Agendado para amanhã às 15h.</span>
+                        <div class="conversation-content">
+                            <div class="conversation-header">
+                                <span class="conversation-name">{{ message.sender_name }}</span>
+                                <span class="conversation-time">
+                                    {% if message.sent_at %}{{ message.sent_at[11:16] }}{% endif %}
+                                </span>
+                            </div>
+                            <div class="conversation-preview">
+                                <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ message.message }}
+                                </span>
+                                {% if message.is_read == 0 %}
+                                    <span class="unread-badge">1</span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Conversation 7 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">LP</div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Lucas Martins Pereira</span>
-                            <span class="conversation-time">28/07</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>Entendido, doutor. Obrigado!</span>
-                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-conversations">
+                        <span class="material-symbols-rounded">chat_bubble_outline</span>
+                        <p>Nenhuma conversa encontrada.</p>
                     </div>
-                </div>
-
-                <!-- Conversation 8 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">JF</div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Juliana Ferreira Gomes</span>
-                            <span class="conversation-time">27/07</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>Você: Vamos ajustar a medicação.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Conversation 9 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">MR</div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Marcos Vinícius Ribeiro</span>
-                            <span class="conversation-time">26/07</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>📎 Receita_medica.pdf</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Conversation 10 -->
-                <div class="conversation-item" onclick="selectConversation(this)">
-                    <div class="conversation-avatar">PA</div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <span class="conversation-name">Patrícia Andrade Lima</span>
-                            <span class="conversation-time">25/07</span>
-                        </div>
-                        <div class="conversation-preview">
-                            <span>Você: Cuide-se e até a próxima!</span>
-                        </div>
-                    </div>
-                </div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Chat Panel -->
-        <div class="chat-panel">
-            <!-- Chat Header -->
-            <div class="chat-header">
-                <div class="chat-avatar">MA</div>
-                <div class="chat-info">
-                    <div class="chat-name">Maria Aparecida da Silva</div>
-                    <div class="chat-status">
-                        <span class="status-dot"></span>
-                        Online
+        <!-- CHAT PANEL -->
+        <div class="chat-panel" id="chatPanel">
+            {% if messages %}
+                {% set first_message = messages[0] %}
+
+                <div class="chat-header">
+                    <button class="chat-action-btn d-md-none" onclick="showConversationsList()" style="margin-right: -8px;">
+                        <span class="material-symbols-rounded">arrow_back</span>
+                    </button>
+
+                    <div class="chat-avatar" id="chatAvatar">
+                        {% set name_parts = first_message.sender_name.split() %}
+                        {{ name_parts[0][0] | upper }}{{ name_parts[-1][0] | upper }}
                     </div>
-                </div>
-                <div class="chat-actions">
-                    <button class="chat-action-btn" title="Ligar">📞</button>
-                    <button class="chat-action-btn" title="Vídeo">📹</button>
-                    <button class="chat-action-btn" title="Mais opções">⋮</button>
-                </div>
-            </div>
 
-            <!-- Messages Area -->
-            <div class="messages-area">
-                <!-- Date Divider -->
-                <div class="message-date-divider">
-                    <span class="date-label">Hoje</span>
-                </div>
-
-                <!-- Received Message -->
-                <div class="message received">
-                    <div class="message-bubble">
-                        <div class="message-text">Bom dia, doutor! Tudo bem?</div>
-                        <div class="message-time">09:15</div>
-                    </div>
-                </div>
-
-                <!-- Sent Message -->
-                <div class="message sent">
-                    <div class="message-bubble">
-                        <div class="message-text">Bom dia, Maria! Tudo ótimo. Como você está se sentindo hoje?</div>
-                        <div class="message-time">09:20 ✓✓</div>
-                    </div>
-                </div>
-
-                <!-- Received Message -->
-                <div class="message received">
-                    <div class="message-bubble">
-                        <div class="message-text">Estou bem melhor! A pressão está mais controlada e as dores de cabeça diminuíram bastante.</div>
-                        <div class="message-time">09:25</div>
-                    </div>
-                </div>
-
-                <!-- Sent Message -->
-                <div class="message sent">
-                    <div class="message-bubble">
-                        <div class="message-text">Excelente notícia! Continue com a medicação e a dieta que orientei. Vou enviar o resultado dos seus exames.</div>
-                        <div class="message-time">09:30 ✓✓</div>
-                    </div>
-                </div>
-
-                <!-- File Message (PDF) -->
-                <div class="message sent">
-                    <div class="message-bubble">
-                        <div class="file-message">
-                            <div class="file-icon pdf">📄</div>
-                            <div class="file-info">
-                                <div class="file-name">Resultado_Exames_Maria.pdf</div>
-                                <div class="file-size">245 KB</div>
-                            </div>
+                    <div class="chat-info">
+                        <div class="chat-name" id="chatName">{{ first_message.sender_name }}</div>
+                        <div class="chat-status">
+                            <span class="status-dot"></span>
+                            Profissional de saúde
                         </div>
-                        <div class="message-time">09:32 ✓✓</div>
+                    </div>
+
+                    <div class="chat-actions">
+                        <button class="chat-action-btn" type="button" title="Mais opções">
+                            <span class="material-symbols-rounded">more_vert</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Received Message -->
-                <div class="message received">
-                    <div class="message-bubble">
-                        <div class="message-text">Perfeito! Vou dar uma olhada. Os resultados estão dentro do esperado?</div>
-                        <div class="message-time">09:35</div>
+                <div class="messages-area" id="messagesArea"></div>
+
+                <div class="chat-input-area">
+                    <div class="input-actions">
+                        <button class="input-action-btn" type="button" title="Anexar arquivo" disabled>
+                            <span class="material-symbols-rounded">attach_file</span>
+                        </button>
                     </div>
+
+                    <div class="message-input-wrapper">
+                        <input type="text" class="message-input" id="messageInput" placeholder="Digite uma mensagem..." autocomplete="off">
+                    </div>
+
+                    <button class="send-button" id="sendButton" type="button" title="Enviar">
+                        <span class="material-symbols-rounded">send</span>
+                    </button>
                 </div>
 
-                <!-- Sent Message -->
-                <div class="message sent">
-                    <div class="message-bubble">
-                        <div class="message-text">Sim! A glicemia e o colesterol melhoraram bastante. Continue assim que está no caminho certo.</div>
-                        <div class="message-time">09:40 ✓✓</div>
-                    </div>
+            {% else %}
+                <div class="empty-chat">
+                    <span class="material-symbols-rounded">forum</span>
+                    <h3>Nenhuma conversa selecionada</h3>
+                    <p>Quando você receber uma mensagem de um profissional, ela aparecerá aqui.</p>
                 </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
-                <!-- Image Message -->
-                <div class="message sent">
-                    <div class="message-bubble">
-                        <div class="image-message">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='180'%3E%3Crect fill='%23e8f1fb' width='280' height='180'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='16' fill='%231e6fd9' text-anchor='middle' dy='.3em'%3EGráfico de Evolução%3C/text%3E%3C/svg%3E" alt="Gráfico">
-                        </div>
-                        <div class="message-time">09:42 ✓✓</div>
-                    </div>
-                </div>
-
-                <!-- Sent Message -->
-                <div class="message sent">
-                    <div class="message-bubble">
-                        <div class="message-text">Aqui está o gráfico mostrando sua evolução nos últimos 3 meses. Veja como melhorou!</div>
-                        <div class="message-time">09:43 ✓✓</div>
-                    </div>
-                </div>
-
-                <!-- Received Message -->
-                <div class="message received">
-                    <div class="message-bubble">
-                        <div class="message-text">Nossa, que incrível! Muito obrigada por todo o acompanhamento, doutor. Estou me sentindo muito melhor!</div>
-                        <div class="message-time">10:40</div>
-                    </div>
-                </div>
-
-                <!-- Received Message -->
-                <div class="message received">
-                    <div class="message-bubble">
-                        <div class="message-text">Obrigada, doutor! Vou seguir as orientações.</div>
-                        <div class="message-time">10:45</div>
-                    </div>
-                </div>
+<!-- ============================================ -->
+<!-- MODAL DE BUSCA DE PACIENTES                  -->
+<!-- ============================================ -->
+<div class="modal fade search-patient-modal" id="searchPatientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span class="material-symbols-rounded">person_search</span>
+                    Buscar Paciente
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
-
-            <!-- Chat Input -->
-            <div class="chat-input-area">
-                <div class="input-actions">
-                    <button class="input-action-btn" title="Anexar arquivo">📎</button>
-                    <button class="input-action-btn" title="Enviar imagem">🖼️</button>
-                    <button class="input-action-btn" title="Emoji">😊</button>
+            <div class="modal-body">
+                <div class="search-patient-box">
+                    <span class="material-symbols-rounded">search</span>
+                    <input
+                        type="text"
+                        class="search-patient-input"
+                        id="patientSearchInput"
+                        placeholder="Digite o nome ou CPF do paciente..."
+                        autocomplete="off"
+                    >
                 </div>
-                <input type="text" class="message-input" placeholder="Digite uma mensagem...">
-                <button class="send-button" title="Enviar">➤</button>
+
+                <div class="patients-list" id="patientsList">
+                    <!-- Lista de pacientes preenchida via JS -->
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Toast de feedback -->
+<div class="phc-toast" id="feedbackToast">
+    <span class="material-symbols-rounded">check_circle</span>
+    <span id="toastMessage">Conversa iniciada com sucesso!</span>
+</div>
+
 <script>
-    // Select conversation
-    function selectConversation(element) {
-        // Remove active class from all conversations
-        document.querySelectorAll('.conversation-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        
-        // Add active class to selected conversation
-        element.classList.add('active');
-        
-        // Remove unread badge
-        const badge = element.querySelector('.unread-badge');
-        if (badge) {
-            badge.remove();
+    /* CONFIGURAÇÃO */
+    let selectedUserId = null;
+
+    const conversationsList = document.getElementById("conversationsList");
+    const messagesArea = document.getElementById("messagesArea");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+    const chatName = document.getElementById("chatName");
+    const chatAvatar = document.getElementById("chatAvatar");
+
+    const conversations = {};
+    {% if messages %}
+        {% set conversations_temp = {} %}
+        {% for message in messages %}
+            {% if message.sender_id not in conversations_temp %}
+                {% set _ = conversations_temp.update({ message.sender_id: message }) %}
+            {% endif %}
+        {% endfor %}
+        {% for professional_id, message in conversations_temp.items() %}
+            conversations[{{ professional_id }}] = {
+                id: {{ professional_id }},
+                name: {{ message.sender_name | tojson }}
+            };
+        {% endfor %}
+    {% endif %}
+
+    /* ============================================ */
+    /* DADOS FICTÍCIOS DE PACIENTES PARA BUSCA      */
+    /* ============================================ */
+    const mockPatients = [
+        { id: 1001, name: 'Mariana Souza Silva', cpf: '123.456.789-00', age: 34, specialty: 'Cardiologia' },
+        { id: 1002, name: 'Carlos Eduardo Oliveira', cpf: '234.567.890-11', age: 52, specialty: 'Clínica Geral' },
+        { id: 1003, name: 'Ana Carolina Martins', cpf: '345.678.901-22', age: 28, specialty: 'Ginecologia' },
+        { id: 1004, name: 'Roberto Almeida Lima', cpf: '456.789.012-33', age: 67, specialty: 'Endocrinologia' },
+        { id: 1005, name: 'Juliana Costa Ferreira', cpf: '567.890.123-44', age: 41, specialty: 'Dermatologia' },
+        { id: 1006, name: 'Paulo Henrique Ribeiro', cpf: '678.901.234-55', age: 58, specialty: 'Ortopedia' },
+        { id: 1007, name: 'Beatriz Almeida Santos', cpf: '789.012.345-66', age: 23, specialty: 'Alergia' },
+        { id: 1008, name: 'Fernando Augusto Alves', cpf: '890.123.456-77', age: 45, specialty: 'Cardiologia' },
+        { id: 1009, name: 'Luciana Pereira Costa', cpf: '901.234.567-88', age: 36, specialty: 'Obstetrícia' },
+        { id: 1010, name: 'Gustavo Henrique Mendes', cpf: '012.345.678-99', age: 71, specialty: 'Cardiologia' },
+        { id: 1011, name: 'Camila Torres Barbosa', cpf: '111.222.333-44', age: 29, specialty: 'Ginecologia' },
+        { id: 1012, name: 'Eduardo Santos Nunes', cpf: '222.333.444-55', age: 51, specialty: 'Endocrinologia' }
+    ];
+
+    /* ============================================ */
+    /* FUNÇÕES DO MODAL DE BUSCA                    */
+    /* ============================================ */
+    function getInitials(name) {
+        const parts = name.trim().split(/\s+/);
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         }
-        
-        // On mobile, show chat panel
-        if (window.innerWidth <= 768) {
-            document.querySelector('.conversations-panel').classList.remove('mobile-active');
-            document.querySelector('.chat-panel').classList.add('mobile-active');
-        }
+        return parts[0].substring(0, 2).toUpperCase();
     }
 
-    // Send message (interface only)
-    document.querySelector('.send-button').addEventListener('click', sendMessage);
-    document.querySelector('.message-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
+    function renderPatientsList(patients) {
+        const list = document.getElementById('patientsList');
 
-    function sendMessage() {
-        const input = document.querySelector('.message-input');
-        const messageText = input.value.trim();
-        
-        if (!messageText) return;
-        
-        const messagesArea = document.querySelector('.messages-area');
+        if (!patients.length) {
+            list.innerHTML = `
+                <div class="no-results">
+                    <span class="material-symbols-rounded">search_off</span>
+                    <p>Nenhum paciente encontrado.</p>
+                </div>
+            `;
+            return;
+        }
+
+        list.innerHTML = patients.map(p => `
+            <div class="patient-search-item" onclick="startConversationWithPatient(${p.id}, '${p.name.replace(/'/g, "\\'")}')">
+                <div class="patient-search-avatar">${getInitials(p.name)}</div>
+                <div class="patient-search-info">
+                    <div class="patient-search-name">${p.name}</div>
+                    <div class="patient-search-details">
+                        <span class="material-symbols-rounded">badge</span>
+                        <span>CPF: ${p.cpf}</span>
+                        <span>•</span>
+                        <span>${p.age} anos</span>
+                        <span>•</span>
+                        <span>${p.specialty}</span>
+                    </div>
+                </div>
+                <div class="patient-search-action">
+                    Iniciar
+                    <span class="material-symbols-rounded" style="font-size: 1rem;">chat</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterPatients() {
+        const searchTerm = document.getElementById('patientSearchInput').value.toLowerCase().trim();
+
+        if (!searchTerm) {
+            renderPatientsList(mockPatients);
+            return;
+        }
+
+        const filtered = mockPatients.filter(p =>
+            p.name.toLowerCase().includes(searchTerm) ||
+            p.cpf.includes(searchTerm)
+        );
+
+        renderPatientsList(filtered);
+    }
+
+    function startConversationWithPatient(patientId, patientName) {
+        // Fecha o modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('searchPatientModal'));
+        modal.hide();
+
+        // Mostra feedback
+        showToast(`Conversa iniciada com ${patientName.split(' ')[0]}`);
+
+        // Aqui você pode adicionar a lógica real para iniciar a conversa
+        // Por exemplo: criar uma nova entrada na lista de conversas
+        console.log(`Iniciando conversa com paciente ID: ${patientId} - ${patientName}`);
+
+        // Simula a adição de uma nova conversa na lista (opcional)
+        addConversationToList(patientId, patientName);
+    }
+
+    function addConversationToList(patientId, patientName) {
+        // Verifica se já existe
+        const existing = document.querySelector(`.conversation-item[data-user-id="${patientId}"]`);
+        if (existing) {
+            selectConversation(existing);
+            return;
+        }
+
+        // Cria novo item na lista
+        const newItem = document.createElement('div');
+        newItem.className = 'conversation-item';
+        newItem.dataset.userId = patientId;
+        newItem.dataset.name = patientName;
+        newItem.onclick = function() { selectConversation(this); };
+
         const now = new Date();
-        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-        
-        const messageHTML = `
-            <div class="message sent">
-                <div class="message-bubble">
-                    <div class="message-text">${messageText}</div>
-                    <div class="message-time">${timeStr} ✓✓</div>
+        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+        newItem.innerHTML = `
+            <div class="conversation-avatar">
+                ${getInitials(patientName)}
+            </div>
+            <div class="conversation-content">
+                <div class="conversation-header">
+                    <span class="conversation-name">${patientName}</span>
+                    <span class="conversation-time">${timeStr}</span>
+                </div>
+                <div class="conversation-preview">
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; font-style: italic;">
+                        Inicie a conversa enviando uma mensagem...
+                    </span>
                 </div>
             </div>
         `;
-        
-        messagesArea.insertAdjacentHTML('beforeend', messageHTML);
-        input.value = '';
-        
-        // Scroll to bottom
-        messagesArea.scrollTop = messagesArea.scrollHeight;
+
+        // Adiciona no topo da lista
+        conversationsList.insertBefore(newItem, conversationsList.firstChild);
+
+        // Seleciona automaticamente
+        selectConversation(newItem);
     }
 
-    // Search conversations
-    document.querySelector('.search-input').addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const conversations = document.querySelectorAll('.conversation-item');
-        
-        conversations.forEach(conv => {
-            const name = conv.querySelector('.conversation-name').textContent.toLowerCase();
-            const preview = conv.querySelector('.conversation-preview').textContent.toLowerCase();
-            
-            if (name.includes(searchTerm) || preview.includes(searchTerm)) {
-                conv.style.display = 'flex';
-            } else {
-                conv.style.display = 'none';
+    function showToast(message) {
+        const toast = document.getElementById('feedbackToast');
+        document.getElementById('toastMessage').textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Event listeners do modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchPatientModal = document.getElementById('searchPatientModal');
+        if (searchPatientModal) {
+            searchPatientModal.addEventListener('shown.bs.modal', function() {
+                const input = document.getElementById('patientSearchInput');
+                input.value = '';
+                renderPatientsList(mockPatients);
+                setTimeout(() => input.focus(), 100);
+            });
+        }
+
+        const patientSearchInput = document.getElementById('patientSearchInput');
+        if (patientSearchInput) {
+            patientSearchInput.addEventListener('input', filterPatients);
+        }
+    });
+
+    /* ============================================ */
+    /* FUNÇÕES EXISTENTES DO CHAT                   */
+    /* ============================================ */
+    function showConversationsList() {
+        document.querySelector(".conversations-panel").classList.add("mobile-active");
+        document.querySelector(".chat-panel").classList.remove("mobile-active");
+    }
+
+    function selectConversation(element) {
+        document.querySelectorAll(".conversation-item").forEach(item => {
+            item.classList.remove("active");
+        });
+        element.classList.add("active");
+
+        const userId = parseInt(element.dataset.userId);
+        selectedUserId = userId;
+        const name = element.dataset.name;
+
+        updateChatHeader(name);
+        loadConversation(userId);
+
+        if (window.innerWidth <= 768) {
+            document.querySelector(".conversations-panel").classList.remove("mobile-active");
+            document.querySelector(".chat-panel").classList.add("mobile-active");
+        }
+    }
+
+    function updateChatHeader(name) {
+        if (chatName) chatName.textContent = name;
+        if (chatAvatar) {
+            chatAvatar.textContent = getInitials(name);
+        }
+    }
+
+    async function loadConversation(userId) {
+        if (!messagesArea) return;
+        messagesArea.innerHTML = `<div class="empty-chat"><span class="material-symbols-rounded" style="animation: spin 1s linear infinite;">progress_activity</span><p>Carregando mensagens...</p></div>`;
+
+        try {
+            const response = await fetch(`/patient/messages/conversation/${userId}`);
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                messagesArea.innerHTML = `<div class="empty-chat"><span class="material-symbols-rounded">chat_bubble_outline</span><p>Nenhuma mensagem nesta conversa ainda.<br>Envie a primeira mensagem!</p></div>`;
+                return;
+            }
+            renderMessages(result.conversation || []);
+        } catch (error) {
+            console.error("Erro ao carregar conversa:", error);
+            messagesArea.innerHTML = `<div class="empty-chat"><span class="material-symbols-rounded">chat_bubble_outline</span><p>Nenhuma mensagem nesta conversa ainda.<br>Envie a primeira mensagem!</p></div>`;
+        }
+    }
+
+    function renderMessages(messages) {
+        messagesArea.innerHTML = "";
+        if (!messages.length) {
+            messagesArea.innerHTML = `<div class="empty-chat"><span class="material-symbols-rounded">chat_bubble_outline</span><p>Nenhuma mensagem nesta conversa ainda.</p></div>`;
+            return;
+        }
+
+        let lastDate = null;
+
+        messages.forEach(message => {
+            const msgDate = message.sent_at ? message.sent_at.split(' ')[0] : null;
+            if (msgDate && msgDate !== lastDate) {
+                lastDate = msgDate;
+                const divider = document.createElement("div");
+                divider.className = "message-date-divider";
+                divider.innerHTML = `<span class="date-label">${formatDateBR(msgDate)}</span>`;
+                messagesArea.appendChild(divider);
+            }
+
+            const currentUserId = {{ session.get("user_id", 0) | int }};
+            const isSent = parseInt(message.sender_id) === currentUserId;
+
+            const messageElement = document.createElement("div");
+            messageElement.className = isSent ? "message sent" : "message received";
+
+            const bubble = document.createElement("div");
+            bubble.className = "message-bubble";
+
+            const text = document.createElement("div");
+            text.className = "message-text";
+            text.textContent = message.message || "";
+
+            const time = document.createElement("div");
+            time.className = "message-time";
+            time.innerHTML = `${formatMessageTime(message.sent_at)} ${isSent ? '<span class="material-symbols-rounded">done_all</span>' : ''}`;
+
+            bubble.appendChild(text);
+            bubble.appendChild(time);
+            messageElement.appendChild(bubble);
+            messagesArea.appendChild(messageElement);
+
+            if (!isSent && parseInt(message.is_read) === 0) {
+                markMessageAsRead(message.id);
             }
         });
-    });
 
+        scrollMessagesToBottom();
+    }
 
-    // Scroll to bottom on load
-    window.addEventListener('load', function() {
-        const messagesArea = document.querySelector('.messages-area');
-        messagesArea.scrollTop = messagesArea.scrollHeight;
+    function formatDateBR(dateString) {
+        if (!dateString) return "";
+        const [year, month, day] = dateString.split('-');
+        return `${day}/${month}/${year}`;
+    }
+
+    function formatMessageTime(dateString) {
+        if (!dateString) return "";
+        const date = new Date(dateString.replace(" ", "T"));
+        if (isNaN(date.getTime())) return dateString.substring(11, 16);
+        return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    if (sendButton) sendButton.addEventListener("click", sendMessage);
+    if (messageInput) {
+        messageInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+
+    async function sendMessage() {
+        if (!selectedUserId) {
+            alert("Selecione uma conversa.");
+            return;
+        }
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        sendButton.disabled = true;
+        sendButton.innerHTML = '<span class="material-symbols-rounded" style="animation: spin 1s linear infinite;">progress_activity</span>';
+
+        try {
+            const response = await fetch("/patient/messages/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ receiver_id: selectedUserId, message: message })
+            });
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                alert(result.message || "Não foi possível enviar a mensagem.");
+                return;
+            }
+
+            messageInput.value = "";
+            await loadConversation(selectedUserId);
+        } catch (error) {
+            console.error("Erro ao enviar mensagem:", error);
+            alert("Não foi possível conectar ao servidor.");
+        } finally {
+            sendButton.disabled = false;
+            sendButton.innerHTML = '<span class="material-symbols-rounded">send</span>';
+            messageInput.focus();
+        }
+    }
+
+    async function markMessageAsRead(messageId) {
+        try {
+            await fetch(`/patient/messages/${messageId}/read`, { method: "PUT" });
+        } catch (error) {
+            console.error("Erro ao marcar mensagem como lida:", error);
+        }
+    }
+
+    const searchInput = document.getElementById("conversationSearch");
+    if (searchInput) {
+        searchInput.addEventListener("input", function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            document.querySelectorAll(".conversation-item").forEach(item => {
+                const name = item.dataset.name.toLowerCase();
+                item.style.display = name.includes(searchTerm) ? "flex" : "none";
+            });
+        });
+    }
+
+    function scrollMessagesToBottom() {
+        if (messagesArea) messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const firstConversation = document.querySelector(".conversation-item");
+        if (firstConversation) {
+            selectConversation(firstConversation);
+        }
     });
 </script>
+
+<style>
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+
 {% endblock %}

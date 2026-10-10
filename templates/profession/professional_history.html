@@ -1,36 +1,57 @@
 {% extends "base.html" %}
 
 {% block title %}
-Precision Health Connect
+Histórico de Consultas | Precision Health Connect
 {% endblock %}
 
 {% block content %}
+
+<!-- Importação do Material Symbols Rounded -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
 <style>
     :root {
         --phc-primary: #8B5CF6;
         --phc-secondary: #A78BFA;
-        --phc-light: #EDE9FE;
+        --phc-light: #F5F3FF;
         --phc-white: #FFFFFF;
-        --phc-text: #1F2937;
+        --phc-text: #111827;
         --phc-muted: #6B7280;
         --phc-border: #E5E7EB;
-        --phc-bg: #FAFAFC;
+        --phc-bg: #F9FAFB;
+
+        /* Status Colors */
+        --phc-success-bg: #DCFCE7;
+        --phc-success-text: #166534;
+        --phc-warning-bg: #FEF3C7;
+        --phc-warning-text: #92400E;
+
+        /* Shadows */
+        --phc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --phc-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --phc-shadow-hover: 0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -2px rgba(139, 92, 246, 0.05);
+    }
+
+    body {
+        background-color: var(--phc-bg);
+        color: var(--phc-text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
     .phc-history-page {
-        padding: 2rem 1.5rem;
-        background: var(--phc-bg);
-        min-height: 100vh;
+        padding: 2rem 2.5rem;
+        max-width: 1600px;
+        margin: 0 auto;
     }
 
+    /* Cabeçalho */
     .phc-page-header {
-        margin-bottom: 1.75rem;
+        margin-bottom: 2rem;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: 1.5rem;
     }
 
     .phc-page-title {
@@ -41,16 +62,17 @@ Precision Health Connect
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        letter-spacing: -0.025em;
     }
 
     .phc-page-title .material-symbols-rounded {
         color: var(--phc-primary);
-        font-size: 2rem;
+        font-size: 2.25rem;
     }
 
     .phc-page-subtitle {
         color: var(--phc-muted);
-        font-size: 0.95rem;
+        font-size: 1rem;
         margin: 0.25rem 0 0 0;
     }
 
@@ -59,26 +81,27 @@ Precision Health Connect
         background: var(--phc-primary);
         color: white;
         border: none;
-        padding: 0.6rem 1.1rem;
+        padding: 0.65rem 1.25rem;
         border-radius: 8px;
         font-size: 0.88rem;
-        font-weight: 500;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: all 0.2s ease;
         text-decoration: none;
     }
 
     .phc-btn:hover {
-        background: var(--phc-secondary);
-        color: white;
+        background: #7C3AED;
+        transform: translateY(-1px);
+        box-shadow: var(--phc-shadow-md);
     }
 
     .phc-btn-outline {
         background: var(--phc-white);
-        color: var(--phc-primary);
+        color: var(--phc-text);
         border: 1px solid var(--phc-border);
     }
 
@@ -92,10 +115,20 @@ Precision Health Connect
         font-size: 1.1rem;
     }
 
-    /* Cards de estatísticas */
+    /* Cards Base */
+    .phc-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: var(--phc-shadow-sm);
+        overflow: hidden;
+        transition: box-shadow 0.2s ease;
+    }
+
+    /* Estatísticas */
     .phc-stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 1.25rem;
         margin-bottom: 1.5rem;
     }
@@ -103,16 +136,11 @@ Precision Health Connect
     .phc-stat-card {
         background: var(--phc-white);
         border: 1px solid var(--phc-border);
-        border-radius: 14px;
-        padding: 1.35rem;
+        border-radius: 16px;
+        padding: 1.5rem;
         position: relative;
         overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .phc-stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .phc-stat-card::before {
@@ -125,59 +153,69 @@ Precision Health Connect
         background: linear-gradient(180deg, var(--phc-primary), var(--phc-secondary));
     }
 
+    .phc-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--phc-shadow-hover);
+        border-color: var(--phc-secondary);
+    }
+
     .phc-stat-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
         background: var(--phc-light);
         color: var(--phc-primary);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .phc-stat-icon .material-symbols-rounded {
+        font-size: 1.75rem;
     }
 
     .phc-stat-label {
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         color: var(--phc-muted);
-        font-weight: 500;
-        margin-bottom: 0.25rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
     }
 
     .phc-stat-value {
-        font-size: 1.75rem;
+        font-size: 2rem;
         font-weight: 700;
         color: var(--phc-text);
-        line-height: 1.1;
+        line-height: 1;
+        margin-bottom: 0.75rem;
     }
 
     .phc-stat-trend {
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         color: var(--phc-primary);
-        margin-top: 0.35rem;
+        font-weight: 600;
         display: flex;
         align-items: center;
-        gap: 0.25rem;
-    }
-
-    .phc-stat-trend .material-symbols-rounded {
-        font-size: 1rem;
+        gap: 0.35rem;
+        background: var(--phc-light);
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        width: fit-content;
     }
 
     /* Filtros */
-    .phc-filters-card {
-        background: var(--phc-white);
-        border: 1px solid var(--phc-border);
-        border-radius: 14px;
-        padding: 1.25rem 1.5rem;
+    .filters-card {
+        padding: 1.5rem;
         margin-bottom: 1.5rem;
     }
 
     .phc-filters-title {
-        font-size: 0.95rem;
-        font-weight: 600;
+        font-size: 1rem;
+        font-weight: 700;
         color: var(--phc-text);
-        margin-bottom: 1rem;
+        margin-bottom: 1.25rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -189,64 +227,73 @@ Precision Health Connect
     }
 
     .phc-filter-label {
-        font-size: 0.78rem;
-        font-weight: 500;
+        font-size: 0.8rem;
+        font-weight: 600;
         color: var(--phc-muted);
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.4rem;
         display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
     .phc-filter-input,
     .phc-filter-select {
         width: 100%;
-        padding: 0.55rem 0.85rem;
+        padding: 0.65rem 0.9rem;
         border: 1px solid var(--phc-border);
         border-radius: 8px;
-        font-size: 0.86rem;
+        font-size: 0.88rem;
         background: var(--phc-white);
         color: var(--phc-text);
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
     }
 
     .phc-filter-input:focus,
     .phc-filter-select:focus {
         outline: none;
         border-color: var(--phc-primary);
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
     }
 
     .phc-btn-filter {
         background: var(--phc-primary);
         color: white;
         border: none;
-        padding: 0.55rem 1rem;
+        padding: 0.65rem 1rem;
         border-radius: 8px;
-        font-size: 0.86rem;
-        font-weight: 500;
+        font-size: 0.88rem;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.4rem;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: all 0.2s ease;
         width: 100%;
+        height: 42px;
     }
 
     .phc-btn-filter:hover {
-        background: var(--phc-secondary);
+        background: #7C3AED;
+        transform: translateY(-1px);
     }
 
     .phc-btn-clear {
         background: transparent;
         color: var(--phc-muted);
         border: 1px solid var(--phc-border);
-        padding: 0.55rem 1rem;
+        padding: 0.65rem 1rem;
         border-radius: 8px;
-        font-size: 0.86rem;
-        font-weight: 500;
+        font-size: 0.88rem;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
         width: 100%;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .phc-btn-clear:hover {
@@ -256,26 +303,20 @@ Precision Health Connect
     }
 
     /* Tabela */
-    .phc-table-card {
-        background: var(--phc-white);
-        border: 1px solid var(--phc-border);
-        border-radius: 14px;
-        overflow: hidden;
-    }
-
-    .phc-table-header {
+    .table-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid var(--phc-border);
         flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: 1rem;
+        background: var(--phc-white);
     }
 
     .phc-table-title {
-        font-size: 1.05rem;
-        font-weight: 600;
+        font-size: 1.1rem;
+        font-weight: 700;
         color: var(--phc-text);
         margin: 0;
         display: flex;
@@ -285,55 +326,64 @@ Precision Health Connect
 
     .phc-table-title .material-symbols-rounded {
         color: var(--phc-primary);
+        font-size: 1.3rem;
     }
 
     .phc-results-count {
         color: var(--phc-muted);
         font-size: 0.85rem;
+        font-weight: 500;
+        background: var(--phc-light);
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
     }
 
     .phc-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
     }
 
     .phc-table thead th {
-        background: var(--phc-light);
-        color: var(--phc-primary);
-        font-size: 0.74rem;
-        font-weight: 600;
+        background: var(--phc-bg);
+        color: var(--phc-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 0.9rem 1.1rem;
-        border: none;
+        letter-spacing: 0.05em;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
         text-align: left;
+        white-space: nowrap;
     }
 
     .phc-table tbody td {
-        padding: 1rem 1.1rem;
+        padding: 1.1rem 1.5rem;
         border-bottom: 1px solid var(--phc-border);
         font-size: 0.9rem;
         color: var(--phc-text);
         vertical-align: middle;
+        background: var(--phc-white);
+        transition: background-color 0.2s ease;
     }
 
-    .phc-table tbody tr {
-        transition: background 0.15s ease;
-    }
-
-    .phc-table tbody tr:hover {
-        background: #FAFAFE;
+    .phc-table tbody tr:hover td {
+        background-color: var(--phc-light);
     }
 
     .phc-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    /* Célula paciente */
+    /* Células da Tabela */
     .phc-patient-cell {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.85rem;
     }
 
     .phc-patient-avatar {
@@ -345,72 +395,74 @@ Precision Health Connect
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.85rem;
         flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.25);
     }
 
     .phc-patient-name {
-        font-weight: 500;
+        font-weight: 600;
         color: var(--phc-text);
+        font-size: 0.95rem;
     }
 
     .phc-patient-id {
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         color: var(--phc-muted);
+        margin-top: 0.15rem;
     }
 
-    /* Data */
     .phc-date-cell {
-        display: flex;
-        flex-direction: column;
-        gap: 0.1rem;
-    }
-
-    .phc-date-main {
-        font-weight: 500;
-        color: var(--phc-text);
-    }
-
-    .phc-date-sub {
-        font-size: 0.78rem;
-        color: var(--phc-muted);
-    }
-
-    /* Diagnóstico */
-    .phc-diagnosis-cell {
         display: flex;
         flex-direction: column;
         gap: 0.15rem;
     }
 
-    .phc-diagnosis-main {
-        font-weight: 500;
+    .phc-date-main {
+        font-weight: 600;
         color: var(--phc-text);
+    }
+
+    .phc-date-sub {
+        font-size: 0.8rem;
+        color: var(--phc-muted);
+    }
+
+    .phc-diagnosis-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .phc-diagnosis-main {
+        font-weight: 600;
+        color: var(--phc-text);
+        font-size: 0.95rem;
     }
 
     .phc-diagnosis-cid {
         font-size: 0.75rem;
         color: var(--phc-primary);
-        font-weight: 500;
+        font-weight: 600;
         background: var(--phc-light);
-        padding: 0.15rem 0.5rem;
-        border-radius: 4px;
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
         display: inline-block;
-        margin-top: 0.15rem;
+        width: fit-content;
     }
 
-    /* Contadores de receitas/exames */
     .phc-counter-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.35rem 0.7rem;
-        border-radius: 8px;
-        font-size: 0.82rem;
-        font-weight: 500;
+        padding: 0.35rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 600;
         background: var(--phc-light);
         color: var(--phc-primary);
+        white-space: nowrap;
     }
 
     .phc-counter-badge .material-symbols-rounded {
@@ -422,29 +474,31 @@ Precision Health Connect
         color: var(--phc-muted);
     }
 
-    /* Botão detalhes */
     .phc-btn-details {
-        background: var(--phc-primary);
-        color: white;
-        border: none;
-        padding: 0.45rem 0.9rem;
+        background: transparent;
+        color: var(--phc-primary);
+        border: 1px solid var(--phc-border);
+        padding: 0.5rem 0.85rem;
         border-radius: 8px;
         font-size: 0.82rem;
-        font-weight: 500;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
+        gap: 0.35rem;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: all 0.2s ease;
         white-space: nowrap;
     }
 
     .phc-btn-details:hover {
-        background: var(--phc-secondary);
+        background: var(--phc-primary);
+        color: white;
+        border-color: var(--phc-primary);
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
     }
 
     .phc-btn-details .material-symbols-rounded {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
 
     /* Paginação */
@@ -454,6 +508,7 @@ Precision Health Connect
         align-items: center;
         padding: 1rem 1.5rem;
         border-top: 1px solid var(--phc-border);
+        background: var(--phc-white);
         flex-wrap: wrap;
         gap: 0.75rem;
     }
@@ -469,13 +524,14 @@ Precision Health Connect
     }
 
     .phc-page-btn {
-        min-width: 34px;
-        height: 34px;
+        min-width: 36px;
+        height: 36px;
         border: 1px solid var(--phc-border);
         background: var(--phc-white);
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
         font-size: 0.85rem;
+        font-weight: 500;
         color: var(--phc-text);
         display: flex;
         align-items: center;
@@ -493,30 +549,30 @@ Precision Health Connect
         background: var(--phc-primary);
         color: white;
         border-color: var(--phc-primary);
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
     }
 
     .phc-page-btn:disabled {
         opacity: 0.4;
         cursor: not-allowed;
+        background: var(--phc-bg);
     }
 
     /* Modal */
     .phc-modal .modal-content {
-        border: none;
+        border: 2px solid var(--phc-primary);
         border-radius: 16px;
         overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.15);
     }
 
     .phc-modal-header {
-        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
-        color: white;
-        padding: 1.5rem;
-        border: none;
-    }
-
-    .phc-modal-header .btn-close {
-        filter: brightness(0) invert(1);
-        opacity: 0.9;
+        background: var(--phc-white);
+        border-bottom: 1px solid var(--phc-border);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .phc-modal-header-content {
@@ -526,92 +582,104 @@ Precision Health Connect
     }
 
     .phc-modal-avatar {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: var(--phc-light);
+        color: var(--phc-primary);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 1.4rem;
+        font-size: 1.25rem;
         flex-shrink: 0;
-        border: 2px solid rgba(255, 255, 255, 0.3);
     }
 
     .phc-modal-title {
-        font-size: 1.35rem;
-        font-weight: 600;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--phc-text);
         margin: 0;
     }
 
     .phc-modal-subtitle {
-        font-size: 0.88rem;
-        opacity: 0.9;
+        font-size: 0.82rem;
+        color: var(--phc-muted);
         margin: 0.15rem 0 0 0;
+    }
+
+    .phc-modal-header .btn-close {
+        background: var(--phc-bg);
+        border-radius: 50%;
+        padding: 0.5rem;
+        opacity: 1;
     }
 
     .phc-modal-body {
         padding: 1.5rem;
+        background: var(--phc-white);
     }
 
     .phc-view-section {
         margin-bottom: 1.5rem;
     }
 
+    .phc-view-section:last-child {
+        margin-bottom: 0;
+    }
+
     .phc-view-section-title {
-        font-size: 0.82rem;
-        font-weight: 600;
+        font-size: 0.8rem;
+        font-weight: 700;
         color: var(--phc-primary);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.85rem;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.5rem;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid var(--phc-border);
     }
 
     .phc-view-section-title .material-symbols-rounded {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
     }
 
     .phc-view-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1rem;
+        gap: 1.25rem;
     }
 
     .phc-view-item-label {
         font-size: 0.75rem;
         color: var(--phc-muted);
-        font-weight: 500;
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.3px;
-        margin-bottom: 0.2rem;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
     }
 
     .phc-view-item-value {
         font-size: 0.95rem;
         color: var(--phc-text);
-        font-weight: 500;
+        font-weight: 600;
     }
 
     .phc-diagnosis-highlight {
         background: var(--phc-light);
-        border: 1px solid var(--phc-secondary);
-        border-radius: 10px;
-        padding: 1rem 1.25rem;
+        border-left: 4px solid var(--phc-primary);
+        border-radius: 0 10px 10px 0;
+        padding: 1.25rem;
         display: flex;
-        gap: 0.85rem;
+        gap: 1rem;
         align-items: flex-start;
     }
 
     .phc-diagnosis-highlight-icon {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         border-radius: 10px;
         background: var(--phc-primary);
         color: white;
@@ -619,27 +687,32 @@ Precision Health Connect
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
     }
 
     .phc-diagnosis-highlight-title {
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: 1.05rem;
+        font-weight: 700;
         color: var(--phc-text);
-        margin: 0 0 0.15rem 0;
+        margin: 0 0 0.25rem 0;
     }
 
     .phc-diagnosis-highlight-cid {
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         color: var(--phc-primary);
         font-weight: 600;
+        background: var(--phc-white);
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        display: inline-block;
     }
 
     .phc-clinical-evolution {
-        background: #FAFAFC;
-        border-left: 3px solid var(--phc-primary);
-        border-radius: 0 8px 8px 0;
-        padding: 1rem 1.25rem;
-        font-size: 0.9rem;
+        background: var(--phc-bg);
+        border-left: 4px solid var(--phc-secondary);
+        border-radius: 0 10px 10px 0;
+        padding: 1.25rem;
+        font-size: 0.92rem;
         color: var(--phc-text);
         line-height: 1.65;
     }
@@ -648,12 +721,18 @@ Precision Health Connect
     .phc-prescription-item {
         display: flex;
         gap: 0.85rem;
-        padding: 0.85rem;
+        padding: 1rem;
         background: var(--phc-white);
         border: 1px solid var(--phc-border);
         border-radius: 10px;
-        margin-bottom: 0.65rem;
+        margin-bottom: 0.75rem;
         align-items: flex-start;
+        transition: all 0.2s ease;
+    }
+
+    .phc-prescription-item:hover {
+        border-color: var(--phc-secondary);
+        background: var(--phc-light);
     }
 
     .phc-prescription-item:last-child {
@@ -661,8 +740,8 @@ Precision Health Connect
     }
 
     .phc-prescription-icon {
-        width: 38px;
-        height: 38px;
+        width: 40px;
+        height: 40px;
         border-radius: 10px;
         background: var(--phc-light);
         color: var(--phc-primary);
@@ -679,9 +758,9 @@ Precision Health Connect
     }
 
     .phc-prescription-details {
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         color: var(--phc-muted);
-        margin-top: 0.15rem;
+        margin-top: 0.2rem;
     }
 
     /* Lista de exames no modal */
@@ -689,12 +768,18 @@ Precision Health Connect
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 0.9rem;
+        padding: 0.85rem 1rem;
         background: var(--phc-white);
         border: 1px solid var(--phc-border);
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
         gap: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .phc-exam-item:hover {
+        border-color: var(--phc-secondary);
+        background: var(--phc-light);
     }
 
     .phc-exam-item:last-child {
@@ -704,12 +789,12 @@ Precision Health Connect
     .phc-exam-info {
         display: flex;
         align-items: center;
-        gap: 0.65rem;
+        gap: 0.75rem;
     }
 
     .phc-exam-icon {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 8px;
         background: var(--phc-light);
         color: var(--phc-primary);
@@ -724,46 +809,48 @@ Precision Health Connect
     }
 
     .phc-exam-name {
-        font-weight: 500;
+        font-weight: 600;
         color: var(--phc-text);
-        font-size: 0.88rem;
+        font-size: 0.9rem;
     }
 
     .phc-exam-status {
-        font-size: 0.72rem;
-        padding: 0.2rem 0.6rem;
-        border-radius: 20px;
-        font-weight: 500;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        font-weight: 600;
         white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
     }
 
     .phc-exam-status.completed {
-        background: #DCFCE7;
-        color: #166534;
+        background: var(--phc-success-bg);
+        color: var(--phc-success-text);
     }
 
     .phc-exam-status.pending {
-        background: #FEF3C7;
-        color: #92400E;
+        background: var(--phc-warning-bg);
+        color: var(--phc-warning-text);
     }
 
     .phc-modal-footer {
-        padding: 1rem 1.5rem;
+        padding: 1.25rem 1.5rem;
         border-top: 1px solid var(--phc-border);
         display: flex;
         justify-content: flex-end;
-        gap: 0.5rem;
-        background: #FAFAFC;
+        gap: 0.75rem;
+        background: var(--phc-bg);
     }
 
     .phc-modal-btn {
-        padding: 0.55rem 1.1rem;
+        padding: 0.65rem 1.25rem;
         border-radius: 8px;
         font-size: 0.88rem;
-        font-weight: 500;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.4rem;
         cursor: pointer;
         transition: all 0.2s ease;
         border: none;
@@ -772,14 +859,16 @@ Precision Health Connect
     .phc-modal-btn-primary {
         background: var(--phc-primary);
         color: white;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
     }
 
     .phc-modal-btn-primary:hover {
-        background: var(--phc-secondary);
+        background: #7C3AED;
+        transform: translateY(-1px);
     }
 
     .phc-modal-btn-secondary {
-        background: transparent;
+        background: var(--phc-white);
         color: var(--phc-muted);
         border: 1px solid var(--phc-border);
     }
@@ -790,15 +879,20 @@ Precision Health Connect
         border-color: var(--phc-secondary);
     }
 
+    /* Responsividade */
     @media (max-width: 992px) {
-        .phc-table-card { overflow-x: auto; }
-        .phc-table { min-width: 920px; }
+        .phc-history-page { padding: 1.5rem; }
     }
 
     @media (max-width: 768px) {
         .phc-history-page { padding: 1.25rem 1rem; }
         .phc-page-title { font-size: 1.5rem; }
         .phc-modal-body { padding: 1.25rem; }
+        .phc-table { font-size: 0.85rem; }
+        .phc-table thead th, .phc-table tbody td { padding: 0.85rem 0.75rem; }
+        .phc-patient-avatar { width: 34px; height: 34px; font-size: 0.75rem; }
+        .phc-btn-details span:not(.material-symbols-rounded) { display: none; }
+        .phc-btn-details { padding: 0.5rem; }
     }
 </style>
 
@@ -810,7 +904,7 @@ Precision Health Connect
                 <span class="material-symbols-rounded">history</span>
                 Histórico de Consultas
             </h1>
-            <p class="phc-page-subtitle">Consulte atendimentos realizados anteriormente.</p>
+            <p class="phc-page-subtitle">Consulte atendimentos realizados anteriormente e seus detalhes clínicos.</p>
         </div>
         <button class="phc-btn phc-btn-outline">
             <span class="material-symbols-rounded">download</span>
@@ -867,7 +961,7 @@ Precision Health Connect
     </div>
 
     <!-- Filtros -->
-    <div class="phc-filters-card">
+    <div class="phc-card filters-card">
         <div class="phc-filters-title">
             <span class="material-symbols-rounded">tune</span>
             Filtros de busca
@@ -896,8 +990,8 @@ Precision Health Connect
     </div>
 
     <!-- Tabela -->
-    <div class="phc-table-card">
-        <div class="phc-table-header">
+    <div class="phc-card">
+        <div class="table-header">
             <h2 class="phc-table-title">
                 <span class="material-symbols-rounded">list_alt</span>
                 Consultas Realizadas
@@ -928,13 +1022,19 @@ Precision Health Connect
                 Mostrando <strong>1-10</strong> de <strong>1.284</strong> consultas
             </div>
             <div class="phc-pagination-controls">
-                <button class="phc-page-btn" disabled>‹</button>
+                <button class="phc-page-btn" disabled>
+                    <span class="material-symbols-rounded" style="font-size: 1.2rem;">chevron_left</span>
+                </button>
                 <button class="phc-page-btn active">1</button>
                 <button class="phc-page-btn">2</button>
                 <button class="phc-page-btn">3</button>
-                <button class="phc-page-btn">...</button>
+                <button class="phc-page-btn" disabled>
+                    <span class="material-symbols-rounded" style="font-size: 1.2rem;">more_horiz</span>
+                </button>
                 <button class="phc-page-btn">129</button>
-                <button class="phc-page-btn">›</button>
+                <button class="phc-page-btn">
+                    <span class="material-symbols-rounded" style="font-size: 1.2rem;">chevron_right</span>
+                </button>
             </div>
         </div>
     </div>
@@ -959,7 +1059,7 @@ Precision Health Connect
                 <div class="phc-view-section">
                     <div class="phc-view-section-title">
                         <span class="material-symbols-rounded">badge</span>
-                        Dados da consulta
+                        Dados da Consulta
                     </div>
                     <div class="phc-view-grid">
                         <div>
@@ -1002,7 +1102,7 @@ Precision Health Connect
                 <div class="phc-view-section">
                     <div class="phc-view-section-title">
                         <span class="material-symbols-rounded">notes</span>
-                        Evolução clínica
+                        Evolução Clínica
                     </div>
                     <div class="phc-clinical-evolution" id="modalEvolution">
                         —
@@ -1013,7 +1113,7 @@ Precision Health Connect
                 <div class="phc-view-section">
                     <div class="phc-view-section-title">
                         <span class="material-symbols-rounded">prescriptions</span>
-                        Receitas emitidas
+                        Receitas Emitidas
                     </div>
                     <div id="modalPrescriptions">
                         <!-- Items gerados via JS -->
@@ -1024,7 +1124,7 @@ Precision Health Connect
                 <div class="phc-view-section">
                     <div class="phc-view-section-title">
                         <span class="material-symbols-rounded">biotech</span>
-                        Exames solicitados
+                        Exames Solicitados
                     </div>
                     <div id="modalExams">
                         <!-- Items gerados via JS -->
@@ -1033,7 +1133,6 @@ Precision Health Connect
             </div>
             <div class="phc-modal-footer">
                 <button type="button" class="phc-modal-btn phc-modal-btn-secondary" data-bs-dismiss="modal">
-                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">close</span>
                     Fechar
                 </button>
                 <button type="button" class="phc-modal-btn phc-modal-btn-primary">
@@ -1241,7 +1340,7 @@ Precision Health Connect
                 <td class="text-end">
                     <button class="phc-btn-details" onclick="openConsultationModal(${idx})">
                         <span class="material-symbols-rounded">visibility</span>
-                        Detalhes
+                        <span>Detalhes</span>
                     </button>
                 </td>
             </tr>
@@ -1264,7 +1363,7 @@ Precision Health Connect
         // Receitas
         const prescriptionsEl = document.getElementById('modalPrescriptions');
         if (c.prescriptions.length === 0) {
-            prescriptionsEl.innerHTML = '<div style="color: var(--phc-muted); font-size: 0.88rem;">Nenhuma receita emitida nesta consulta.</div>';
+            prescriptionsEl.innerHTML = '<div style="color: var(--phc-muted); font-size: 0.88rem; padding: 0.5rem 0;">Nenhuma receita emitida nesta consulta.</div>';
         } else {
             prescriptionsEl.innerHTML = c.prescriptions.map(p => `
                 <div class="phc-prescription-item">
@@ -1282,7 +1381,7 @@ Precision Health Connect
         // Exames
         const examsEl = document.getElementById('modalExams');
         if (c.exams.length === 0) {
-            examsEl.innerHTML = '<div style="color: var(--phc-muted); font-size: 0.88rem;">Nenhum exame solicitado nesta consulta.</div>';
+            examsEl.innerHTML = '<div style="color: var(--phc-muted); font-size: 0.88rem; padding: 0.5rem 0;">Nenhum exame solicitado nesta consulta.</div>';
         } else {
             examsEl.innerHTML = c.exams.map(e => `
                 <div class="phc-exam-item">
@@ -1293,7 +1392,7 @@ Precision Health Connect
                         <div class="phc-exam-name">${e.name}</div>
                     </div>
                     <span class="phc-exam-status ${e.status}">
-                        ${e.status === 'completed' ? '✓ Concluído' : '⏳ Pendente'}
+                        ${e.status === 'completed' ? 'Concluído' : 'Pendente'}
                     </span>
                 </div>
             `).join('');
@@ -1303,18 +1402,15 @@ Precision Health Connect
         modal.show();
     }
 
-
     // Inicializar
     renderTable();
 
-    // Paginação
+    // Paginação (Mockup de interação)
     document.querySelectorAll('.phc-page-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            if (!this.disabled && !this.textContent.includes('...')) {
+            if (!this.disabled && !this.querySelector('.material-symbols-rounded')) {
                 document.querySelectorAll('.phc-page-btn').forEach(b => b.classList.remove('active'));
-                if (!isNaN(this.textContent)) {
-                    this.classList.add('active');
-                }
+                this.classList.add('active');
             }
         });
     });

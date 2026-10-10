@@ -1,36 +1,57 @@
 {% extends "base.html" %}
 
 {% block title %}
-Precision Health Connect
+Agenda | Precision Health Connect
 {% endblock %}
 
 {% block content %}
+
+<!-- Importação do Material Symbols Rounded -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
 <style>
     :root {
         --phc-primary: #8B5CF6;
         --phc-secondary: #A78BFA;
-        --phc-light: #EDE9FE;
+        --phc-light: #F5F3FF;
         --phc-white: #FFFFFF;
-        --phc-text: #1F2937;
+        --phc-text: #111827;
         --phc-muted: #6B7280;
         --phc-border: #E5E7EB;
-        --phc-bg: #FAFAFC;
+        --phc-bg: #F9FAFB;
+
+        --phc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --phc-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --phc-shadow-hover: 0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -2px rgba(139, 92, 246, 0.05);
+
+        --phc-success-bg: #DCFCE7;
+        --phc-success-text: #166534;
+        --phc-warning-bg: #FEF3C7;
+        --phc-warning-text: #92400E;
+        --phc-danger-bg: #FEE2E2;
+        --phc-danger-text: #991B1B;
+    }
+
+    body {
+        background-color: var(--phc-bg);
+        color: var(--phc-text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
     .phc-calendar-page {
-        padding: 2rem 1.5rem;
-        background: var(--phc-bg);
-        min-height: 100vh;
+        padding: 2rem 2.5rem;
+        max-width: 1600px;
+        margin: 0 auto;
     }
 
+    /* Cabeçalho */
     .phc-page-header {
-        margin-bottom: 1.75rem;
+        margin-bottom: 2rem;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: 1.5rem;
     }
 
     .phc-page-title {
@@ -41,49 +62,58 @@ Precision Health Connect
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        letter-spacing: -0.025em;
     }
 
     .phc-page-title .material-symbols-rounded {
         color: var(--phc-primary);
-        font-size: 2rem;
+        font-size: 2.25rem;
     }
 
     .phc-page-subtitle {
         color: var(--phc-muted);
-        font-size: 0.95rem;
+        font-size: 1rem;
         margin: 0.25rem 0 0 0;
     }
 
     .phc-header-actions {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.75rem;
         flex-wrap: wrap;
     }
 
+    /* Botões */
     .phc-btn {
         background: var(--phc-primary);
         color: white;
         border: none;
-        padding: 0.6rem 1.1rem;
+        padding: 0.65rem 1.25rem;
         border-radius: 8px;
         font-size: 0.88rem;
-        font-weight: 500;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
         cursor: pointer;
-        transition: background 0.2s ease, transform 0.15s ease;
+        transition: all 0.2s ease;
         text-decoration: none;
     }
 
     .phc-btn:hover {
-        background: var(--phc-secondary);
-        color: white;
+        background: #7C3AED;
+        transform: translateY(-1px);
+        box-shadow: var(--phc-shadow-md);
+    }
+
+    .phc-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
     }
 
     .phc-btn-outline {
         background: var(--phc-white);
-        color: var(--phc-primary);
+        color: var(--phc-text);
         border: 1px solid var(--phc-border);
     }
 
@@ -91,18 +121,21 @@ Precision Health Connect
         background: var(--phc-light);
         color: var(--phc-primary);
         border-color: var(--phc-secondary);
+        transform: translateY(-1px);
     }
 
     .phc-btn .material-symbols-rounded {
         font-size: 1.1rem;
     }
 
-    /* Card base */
+    /* Cards Base */
     .phc-card {
         background: var(--phc-white);
         border: 1px solid var(--phc-border);
-        border-radius: 14px;
+        border-radius: 16px;
         overflow: hidden;
+        box-shadow: var(--phc-shadow-sm);
+        transition: box-shadow 0.2s ease;
     }
 
     .phc-card-header {
@@ -112,12 +145,13 @@ Precision Health Connect
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: 1rem;
+        background: var(--phc-white);
     }
 
     .phc-card-title {
         font-size: 1.05rem;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--phc-text);
         margin: 0;
         display: flex;
@@ -127,13 +161,42 @@ Precision Health Connect
 
     .phc-card-title .material-symbols-rounded {
         color: var(--phc-primary);
+        font-size: 1.3rem;
     }
 
     .phc-card-body {
         padding: 1.5rem;
     }
 
-    /* Navegação do calendário */
+    /* Filtros da Tabela */
+    .phc-table-filters {
+        display: flex;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: var(--phc-bg);
+        border-bottom: 1px solid var(--phc-border);
+        flex-wrap: wrap;
+    }
+
+    .phc-filter-input,
+    .phc-filter-select {
+        padding: 0.5rem 0.85rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: all 0.2s ease;
+    }
+
+    .phc-filter-input:focus,
+    .phc-filter-select:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    /* Navegação do Calendário */
     .phc-calendar-nav {
         display: flex;
         align-items: center;
@@ -141,12 +204,12 @@ Precision Health Connect
     }
 
     .phc-nav-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
         border: 1px solid var(--phc-border);
         background: var(--phc-white);
-        color: var(--phc-primary);
+        color: var(--phc-text);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -157,85 +220,246 @@ Precision Health Connect
     .phc-nav-btn:hover {
         background: var(--phc-light);
         border-color: var(--phc-secondary);
+        color: var(--phc-primary);
     }
 
     .phc-month-label {
-        font-size: 1.05rem;
-        font-weight: 600;
+        font-size: 1.1rem;
+        font-weight: 700;
         color: var(--phc-text);
-        min-width: 160px;
+        min-width: 180px;
         text-align: center;
         text-transform: capitalize;
     }
 
     .phc-view-toggle {
         display: inline-flex;
-        background: var(--phc-light);
-        border-radius: 8px;
-        padding: 0.2rem;
+        background: var(--phc-bg);
+        border-radius: 10px;
+        padding: 0.25rem;
+        border: 1px solid var(--phc-border);
     }
 
     .phc-view-btn {
-        padding: 0.4rem 0.85rem;
+        padding: 0.45rem 0.85rem;
         border: none;
         background: transparent;
         color: var(--phc-muted);
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 0.82rem;
-        font-weight: 500;
+        font-weight: 600;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
+        gap: 0.35rem;
         transition: all 0.2s ease;
     }
 
     .phc-view-btn.active {
         background: var(--phc-white);
         color: var(--phc-primary);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        box-shadow: var(--phc-shadow-sm);
     }
 
     .phc-view-btn .material-symbols-rounded {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
 
-    /* Calendário */
+    /* Grid do Calendário */
     .phc-calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 0.35rem;
+        gap: 0.5rem;
+    }
+
+    .phc-calendar-grid.week-view {
+        grid-template-columns: 60px repeat(7, 1fr);
+        gap: 0;
+        border: 1px solid var(--phc-border);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--phc-white);
+    }
+
+    .phc-calendar-grid.day-view {
+        grid-template-columns: 60px 1fr;
+        gap: 0;
+        border: 1px solid var(--phc-border);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--phc-white);
+        max-height: 600px;
+        overflow-y: auto;
     }
 
     .phc-weekday {
         text-align: center;
-        font-size: 0.72rem;
-        font-weight: 600;
+        font-size: 0.75rem;
+        font-weight: 700;
         color: var(--phc-muted);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 0.6rem 0;
+        letter-spacing: 0.05em;
+        padding: 0.75rem 0;
     }
 
+    /* Semana - Cabeçalho de dia */
+    .phc-weekday-header {
+        padding: 0.75rem 0.5rem;
+        text-align: center;
+        background: var(--phc-bg);
+        border-bottom: 1px solid var(--phc-border);
+        border-left: 1px solid var(--phc-border);
+    }
+
+    .phc-weekday-header .day-name {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--phc-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .phc-weekday-header .day-number {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin-top: 0.25rem;
+    }
+
+    .phc-weekday-header.today .day-number {
+        background: var(--phc-primary);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .phc-weekday-header.selected {
+        background: var(--phc-light);
+    }
+
+    .phc-time-header-spacer {
+        background: var(--phc-bg);
+        border-bottom: 1px solid var(--phc-border);
+    }
+
+    /* Células de horário (semana/dia) */
+    .phc-time-cell {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+        text-align: right;
+        border-top: 1px solid var(--phc-border);
+        background: var(--phc-bg);
+        height: 60px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding-top: 0.5rem;
+        font-weight: 600;
+    }
+
+    .phc-day-column-cell {
+        border-top: 1px solid var(--phc-border);
+        border-left: 1px solid var(--phc-border);
+        height: 60px;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+
+    .phc-day-column-cell:hover {
+        background: var(--phc-light);
+    }
+
+    .phc-day-view-cell {
+        border-top: 1px solid var(--phc-border);
+        border-left: 1px solid var(--phc-border);
+        min-height: 80px;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        padding: 0.5rem;
+    }
+
+    .phc-day-view-cell:hover {
+        background: var(--phc-light);
+    }
+
+    /* Eventos em Semana/Dia */
+    .phc-time-event {
+        position: absolute;
+        left: 4px;
+        right: 4px;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        padding: 0.35rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+        cursor: pointer;
+        overflow: hidden;
+        z-index: 2;
+        transition: transform 0.15s ease;
+    }
+
+    .phc-time-event:hover {
+        transform: scale(1.02);
+    }
+
+    .phc-time-event.status-scheduled {
+        background: linear-gradient(135deg, #10B981, #059669);
+    }
+
+    .phc-time-event.status-pending {
+        background: linear-gradient(135deg, #F59E0B, #D97706);
+    }
+
+    .phc-time-event.status-cancelled {
+        background: linear-gradient(135deg, #9CA3AF, #6B7280);
+        opacity: 0.6;
+        text-decoration: line-through;
+    }
+
+    .phc-time-event .event-time {
+        font-weight: 700;
+        display: block;
+        font-size: 0.7rem;
+        opacity: 0.95;
+    }
+
+    .phc-time-event .event-name {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Mês - Dias */
     .phc-day {
         aspect-ratio: 1 / 1;
-        border-radius: 10px;
+        border-radius: 12px;
         border: 1px solid transparent;
         background: var(--phc-white);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        padding: 0.5rem 0.25rem;
+        padding: 0.6rem 0.25rem;
         cursor: pointer;
         position: relative;
-        transition: all 0.2s ease;
-        min-height: 72px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 80px;
     }
 
     .phc-day:hover:not(.empty) {
         background: var(--phc-light);
         border-color: var(--phc-secondary);
+        transform: translateY(-2px);
     }
 
     .phc-day.empty {
@@ -244,21 +468,23 @@ Precision Health Connect
     }
 
     .phc-day-number {
-        font-size: 0.92rem;
+        font-size: 0.95rem;
         font-weight: 600;
         color: var(--phc-text);
         line-height: 1;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
     }
 
     .phc-day.today .phc-day-number {
         background: var(--phc-primary);
         color: white;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
     }
 
     .phc-day.selected {
@@ -267,43 +493,60 @@ Precision Health Connect
         box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
     }
 
-    .phc-day.has-events::after {
-        content: '';
-        position: absolute;
-        bottom: 8px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--phc-primary);
+    .phc-day.selected .phc-day-number {
+        color: var(--phc-primary);
+        font-weight: 700;
     }
 
-    .phc-day.has-events.many::after {
-        width: 22px;
-        border-radius: 3px;
-        background: linear-gradient(90deg, var(--phc-primary), var(--phc-secondary));
+    .phc-day.today.selected .phc-day-number {
+        color: white;
     }
 
     .phc-day.weekend .phc-day-number {
         color: var(--phc-muted);
     }
 
+    .phc-day-events {
+        display: flex;
+        gap: 3px;
+        margin-top: auto;
+        padding-bottom: 4px;
+    }
+
+    .phc-event-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--phc-primary);
+    }
+
+    .phc-event-dot.secondary {
+        background: var(--phc-secondary);
+    }
+
+    .phc-day.has-events.many .phc-event-dot {
+        width: 16px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--phc-primary), var(--phc-secondary));
+    }
+
     /* Legenda */
     .phc-legend {
         display: flex;
-        gap: 1.25rem;
+        gap: 1.5rem;
         padding: 1rem 1.5rem;
         border-top: 1px solid var(--phc-border);
         flex-wrap: wrap;
+        background: var(--phc-bg);
     }
 
     .phc-legend-item {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.5rem;
         font-size: 0.8rem;
         color: var(--phc-muted);
+        font-weight: 500;
     }
 
     .phc-legend-dot {
@@ -312,35 +555,37 @@ Precision Health Connect
         border-radius: 50%;
     }
 
-    .phc-legend-dot.today { background: var(--phc-primary); }
-    .phc-legend-dot.event { background: var(--phc-primary); width: 6px; height: 6px; }
+    .phc-legend-dot.today { background: var(--phc-primary); box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2); }
     .phc-legend-dot.selected { background: var(--phc-light); border: 1.5px solid var(--phc-primary); }
+    .phc-legend-dot.event { background: var(--phc-primary); width: 6px; height: 6px; }
 
-    /* Resumo do dia */
+    /* Resumo do Dia (Sidebar) */
     .phc-day-summary {
-        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        background: linear-gradient(135deg, var(--phc-primary) 0%, var(--phc-secondary) 100%);
         color: white;
-        padding: 1.25rem 1.5rem;
-        border-radius: 12px;
-        margin-bottom: 1.25rem;
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
         gap: 1rem;
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
     }
 
     .phc-day-summary-date {
-        font-size: 0.82rem;
+        font-size: 0.8rem;
+        font-weight: 600;
         opacity: 0.9;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.05em;
     }
 
     .phc-day-summary-title {
-        font-size: 1.35rem;
+        font-size: 1.5rem;
         font-weight: 700;
-        margin: 0.15rem 0 0 0;
+        margin: 0.25rem 0 0 0;
     }
 
     .phc-day-summary-stats {
@@ -350,6 +595,11 @@ Precision Health Connect
 
     .phc-stat-item {
         text-align: center;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 0.6rem 1rem;
+        border-radius: 12px;
+        backdrop-filter: blur(4px);
+        min-width: 70px;
     }
 
     .phc-stat-value {
@@ -359,103 +609,192 @@ Precision Health Connect
     }
 
     .phc-stat-label {
-        font-size: 0.72rem;
+        font-size: 0.7rem;
+        font-weight: 600;
         opacity: 0.9;
         margin-top: 0.25rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.05em;
     }
 
-    /* Tabela de consultas */
+    /* Próximos Compromissos */
+    .phc-upcoming-list {
+        padding: 0.5rem 0;
+    }
+
+    .phc-upcoming-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        position: relative;
+        transition: background 0.2s ease;
+        cursor: pointer;
+    }
+
+    .phc-upcoming-item:hover {
+        background: var(--phc-bg);
+    }
+
+    .phc-upcoming-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 2.75rem;
+        top: 3rem;
+        bottom: -1rem;
+        width: 2px;
+        background: var(--phc-border);
+    }
+
+    .phc-upcoming-time {
+        min-width: 50px;
+        text-align: center;
+        padding: 0.5rem 0.25rem;
+        background: var(--phc-light);
+        border-radius: 10px;
+        color: var(--phc-primary);
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        z-index: 1;
+    }
+
+    .phc-upcoming-time small {
+        display: block;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--phc-muted);
+        margin-top: 0.15rem;
+        text-transform: uppercase;
+    }
+
+    .phc-upcoming-info {
+        flex: 1;
+        padding-top: 0.1rem;
+    }
+
+    .phc-upcoming-name {
+        font-weight: 600;
+        color: var(--phc-text);
+        font-size: 0.95rem;
+    }
+
+    .phc-upcoming-reason {
+        font-size: 0.82rem;
+        color: var(--phc-muted);
+        margin-top: 0.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* Tabela de Consultas */
+    .table-responsive {
+        border-radius: 0 0 16px 16px;
+        overflow: hidden;
+    }
+
     .phc-appointments-table {
         width: 100%;
         border-collapse: collapse;
     }
 
     .phc-appointments-table thead th {
-        background: var(--phc-light);
-        color: var(--phc-primary);
-        font-size: 0.74rem;
-        font-weight: 600;
+        background: var(--phc-bg);
+        color: var(--phc-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 0.85rem 1rem;
-        border: none;
+        letter-spacing: 0.05em;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--phc-border);
         text-align: left;
+        white-space: nowrap;
     }
 
     .phc-appointments-table tbody td {
-        padding: 1rem;
+        padding: 1.1rem 1.25rem;
         border-bottom: 1px solid var(--phc-border);
         font-size: 0.9rem;
         color: var(--phc-text);
         vertical-align: middle;
+        background: var(--phc-white);
+        transition: background-color 0.2s ease;
     }
 
     .phc-appointments-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    .phc-appointments-table tbody tr {
-        transition: background 0.15s ease;
+    .phc-appointments-table tbody tr:hover td {
+        background-color: var(--phc-light);
     }
 
-    .phc-appointments-table tbody tr:hover {
-        background: #FAFAFE;
-    }
-
-    .phc-time-cell {
+    .phc-table-time-cell {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        font-weight: 600;
-        color: var(--phc-primary);
+        gap: 0.5rem;
+        font-weight: 700;
+        color: var(--phc-text);
         font-size: 0.95rem;
     }
 
-    .phc-time-cell .material-symbols-rounded {
-        font-size: 1.1rem;
+    .phc-table-time-cell .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 1.2rem;
     }
 
     .phc-patient-cell {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.85rem;
     }
 
     .phc-patient-avatar {
-        width: 38px;
-        height: 38px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 600;
-        font-size: 0.82rem;
+        font-weight: 700;
+        font-size: 0.85rem;
         flex-shrink: 0;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.25);
+        overflow: hidden;
+    }
+
+    .phc-patient-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .phc-patient-name {
-        font-weight: 500;
+        font-weight: 600;
         color: var(--phc-text);
+        font-size: 0.95rem;
     }
 
     .phc-patient-id {
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         color: var(--phc-muted);
+        margin-top: 0.15rem;
     }
 
     .phc-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
-        padding: 0.3rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.76rem;
-        font-weight: 500;
-        white-space: nowrap;
+        gap: 0.4rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
     }
 
     .phc-badge-dot {
@@ -465,34 +804,22 @@ Precision Health Connect
         background: currentColor;
     }
 
-    .phc-badge-confirmed {
-        background: #DCFCE7;
-        color: #166534;
-    }
+    .phc-badge-confirmed { background: #DCFCE7; color: #166534; }
+    .phc-badge-pending { background: #FEF3C7; color: #92400E; }
+    .phc-badge-cancelled { background: #FEE2E2; color: #991B1B; }
 
-    .phc-badge-pending {
-        background: #FEF3C7;
-        color: #92400E;
-    }
-
-    .phc-badge-cancelled {
-        background: #FEE2E2;
-        color: #991B1B;
-    }
-
-    /* Botões de ação */
     .phc-actions-cell {
         display: flex;
-        gap: 0.35rem;
-        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: flex-end;
     }
 
     .phc-action-btn {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 8px;
-        border: 1px solid var(--phc-border);
-        background: var(--phc-white);
+        border: 1px solid transparent;
+        background: transparent;
         color: var(--phc-muted);
         display: inline-flex;
         align-items: center;
@@ -503,11 +830,11 @@ Precision Health Connect
     }
 
     .phc-action-btn .material-symbols-rounded {
-        font-size: 1.05rem;
+        font-size: 1.1rem;
     }
 
     .phc-action-btn:hover {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
     }
 
     .phc-action-btn.confirm:hover {
@@ -528,224 +855,519 @@ Precision Health Connect
         border-color: var(--phc-secondary);
     }
 
+    .phc-action-btn.details:hover {
+        background: var(--phc-light);
+        color: var(--phc-primary);
+        border-color: var(--phc-secondary);
+    }
+
     .phc-action-btn.start {
         background: var(--phc-primary);
         color: white;
         border-color: var(--phc-primary);
         width: auto;
-        padding: 0 0.75rem;
-        gap: 0.3rem;
-        font-size: 0.78rem;
-        font-weight: 500;
+        padding: 0 0.85rem;
+        gap: 0.35rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
     }
 
     .phc-action-btn.start:hover {
-        background: var(--phc-secondary);
-        border-color: var(--phc-secondary);
+        background: #7C3AED;
+        border-color: #7C3AED;
         color: white;
     }
 
-    /* Tooltip */
+    /* Tooltip CSS puro */
     .phc-action-btn[data-tooltip]::before {
         content: attr(data-tooltip);
         position: absolute;
-        bottom: calc(100% + 6px);
+        bottom: calc(100% + 8px);
         left: 50%;
         transform: translateX(-50%);
         background: var(--phc-text);
         color: white;
-        padding: 0.3rem 0.6rem;
+        padding: 0.35rem 0.65rem;
         border-radius: 6px;
         font-size: 0.72rem;
+        font-weight: 500;
         white-space: nowrap;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.2s ease;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 10;
     }
 
     .phc-action-btn[data-tooltip]:hover::before {
         opacity: 1;
+        transform: translateX(-50%) translateY(-2px);
     }
 
-    /* Próximos compromissos (sidebar) */
-    .phc-upcoming-item {
+    /* Modais customizados */
+    .phc-modal .modal-content {
+        background-color: var(--phc-white);
+        border: 2px solid var(--phc-primary);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.15);
+    }
+
+    .phc-modal-header {
+        background: var(--phc-white);
+        border-bottom: 1px solid var(--phc-border);
+        padding: 1.5rem;
         display: flex;
-        gap: 0.85rem;
-        padding: 0.85rem 0;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .phc-modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--phc-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .phc-modal-title .material-symbols-rounded {
+        color: var(--phc-primary);
+        font-size: 1.5rem;
+    }
+
+    .phc-modal-subtitle {
+        color: var(--phc-muted);
+        font-size: 0.88rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    .phc-modal-header .btn-close {
+        background: var(--phc-bg);
+        border-radius: 50%;
+        padding: 0.5rem;
+        opacity: 1;
+        transition: background 0.2s;
+    }
+
+    .phc-modal-header .btn-close:hover {
+        background: var(--phc-light);
+    }
+
+    .phc-modal-body {
+        padding: 1.5rem;
+        background: var(--phc-white);
+    }
+
+    .phc-modal-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        background: var(--phc-white);
+    }
+
+    .phc-form-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--phc-muted);
+        margin-bottom: 0.4rem;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .phc-form-control,
+    .phc-form-select {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        background: var(--phc-white);
+        color: var(--phc-text);
+        transition: all 0.2s ease;
+    }
+
+    .phc-form-control:focus,
+    .phc-form-select:focus {
+        outline: none;
+        border-color: var(--phc-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    /* Dropdown de busca de pacientes */
+    .phc-patient-search-wrapper {
+        position: relative;
+    }
+
+    .phc-patient-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 8px;
+        box-shadow: var(--phc-shadow-md);
+        max-height: 240px;
+        overflow-y: auto;
+        z-index: 1000;
+        margin-top: 4px;
+        display: none;
+    }
+
+    .phc-patient-dropdown.show {
+        display: block;
+    }
+
+    .phc-patient-option {
+        padding: 0.65rem 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: background 0.15s ease;
         border-bottom: 1px solid var(--phc-border);
     }
 
-    .phc-upcoming-item:last-child {
+    .phc-patient-option:last-child {
         border-bottom: none;
     }
 
-    .phc-upcoming-time {
-        min-width: 60px;
-        text-align: center;
-        padding: 0.5rem;
+    .phc-patient-option:hover {
         background: var(--phc-light);
-        border-radius: 8px;
-        color: var(--phc-primary);
+    }
+
+    .phc-patient-option.selected {
+        background: var(--phc-light);
+        border-left: 3px solid var(--phc-primary);
+    }
+
+    .phc-patient-option-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    .phc-patient-option-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .phc-patient-option-name {
         font-weight: 600;
+        color: var(--phc-text);
+        font-size: 0.88rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .phc-patient-option-meta {
+        font-size: 0.75rem;
+        color: var(--phc-muted);
+    }
+
+    .phc-patient-dropdown-empty {
+        padding: 1rem;
+        text-align: center;
+        color: var(--phc-muted);
         font-size: 0.85rem;
     }
 
-    .phc-upcoming-time small {
-        display: block;
-        font-size: 0.68rem;
-        font-weight: 500;
-        opacity: 0.8;
-        margin-top: 0.15rem;
+    /* Detalhes da consulta */
+    .phc-details-row {
+        display: flex;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--phc-border);
     }
 
-    .phc-upcoming-info {
-        flex: 1;
+    .phc-details-row:last-child {
+        border-bottom: none;
     }
 
-    .phc-upcoming-name {
-        font-weight: 500;
-        color: var(--phc-text);
-        font-size: 0.92rem;
-    }
-
-    .phc-upcoming-reason {
+    .phc-details-label {
+        width: 140px;
         font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--phc-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+    }
+
+    .phc-details-value {
+        flex: 1;
+        font-size: 0.95rem;
+        color: var(--phc-text);
+        font-weight: 500;
+    }
+
+    .phc-modal-patient-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--phc-bg);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+
+    .phc-modal-patient-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        overflow: hidden;
+    }
+
+    .phc-modal-patient-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .phc-modal-patient-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--phc-text);
+    }
+
+    .phc-modal-patient-meta {
+        font-size: 0.85rem;
         color: var(--phc-muted);
         margin-top: 0.15rem;
     }
 
+    /* Toasts */
+    .toast-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1100;
+    }
+
+    .phc-toast {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-left: 4px solid var(--phc-primary);
+        border-radius: 8px;
+        padding: 0.85rem 1rem;
+        min-width: 300px;
+        max-width: 400px;
+        box-shadow: var(--phc-shadow-md);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .phc-toast.success { border-left-color: var(--phc-success-text); }
+    .phc-toast.warning { border-left-color: var(--phc-warning-text); }
+    .phc-toast.error { border-left-color: var(--phc-danger-text); }
+
+    .phc-toast .toast-icon {
+        font-size: 1.3rem;
+    }
+
+    .phc-toast.success .toast-icon { color: var(--phc-success-text); }
+    .phc-toast.warning .toast-icon { color: var(--phc-warning-text); }
+    .phc-toast.error .toast-icon { color: var(--phc-danger-text); }
+
+    .phc-toast .toast-content {
+        flex: 1;
+    }
+
+    .phc-toast .toast-title {
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 0.15rem;
+    }
+
+    .phc-toast .toast-message {
+        font-size: 0.82rem;
+        color: var(--phc-muted);
+    }
+
+    /* Responsividade */
+    @media (max-width: 1200px) {
+        .phc-calendar-page { padding: 1.5rem; }
+    }
+
     @media (max-width: 992px) {
-        .phc-day { min-height: 60px; padding: 0.35rem 0.15rem; }
-        .phc-day-number { font-size: 0.82rem; }
+        .phc-day { min-height: 65px; padding: 0.4rem 0.15rem; }
+        .phc-day-number { font-size: 0.85rem; width: 28px; height: 28px; }
+        .phc-day-summary { flex-direction: column; align-items: flex-start; }
+        .phc-day-summary-stats { width: 100%; justify-content: space-between; }
+        .phc-details-row { flex-direction: column; gap: 0.25rem; }
+        .phc-details-label { width: auto; }
     }
 
     @media (max-width: 768px) {
         .phc-calendar-page { padding: 1.25rem 1rem; }
         .phc-page-title { font-size: 1.5rem; }
         .phc-card-body { padding: 1rem; }
-        .phc-day { min-height: 48px; }
-        .phc-day.has-events::after { bottom: 5px; width: 4px; height: 4px; }
-        .phc-day.has-events.many::after { width: 14px; }
+        .phc-day { min-height: 50px; }
+        .phc-calendar-grid { gap: 0.25rem; }
         .phc-appointments-table { font-size: 0.82rem; }
         .phc-appointments-table thead th,
-        .phc-appointments-table tbody td { padding: 0.75rem 0.5rem; }
-        .phc-patient-avatar { width: 32px; height: 32px; font-size: 0.72rem; }
-        .phc-action-btn.start { padding: 0 0.5rem; font-size: 0.72rem; }
+        .phc-appointments-table tbody td { padding: 0.85rem 0.6rem; }
+        .phc-patient-avatar { width: 34px; height: 34px; font-size: 0.75rem; }
+
+        .phc-action-btn.start span:not(.material-symbols-rounded) { display: none; }
+        .phc-action-btn.start { padding: 0; width: 36px; }
+
+        .phc-calendar-grid.week-view,
+        .phc-calendar-grid.day-view {
+            overflow-x: auto;
+        }
     }
 </style>
 
 <div class="phc-calendar-page">
-    <!-- Cabeçalho -->
+
+    <!-- =====================================================
+         DADOS RECEBIDOS DA API
+    ===================================================== -->
+
+    <script>
+        // Dados iniciais vindos da rota Flask
+        let appointmentsData = Array.isArray({{ appointments | tojson }}) ? {{ appointments | tojson }} : [];
+
+        // ID do profissional logado (disponibilizado pela rota Flask)
+        const currentProfessionalId = {{ professional_id | default('null') }};
+    </script>
+
+    <input type="hidden" id="csrfToken" value="{{ csrf_token() }}">
+
+
+    <!-- =====================================================
+         CABEÇALHO
+    ===================================================== -->
+
     <div class="phc-page-header">
+
         <div>
             <h1 class="phc-page-title">
                 <span class="material-symbols-rounded">calendar_month</span>
                 Agenda Médica
             </h1>
-            <p class="phc-page-subtitle">Organize seus atendimentos e acompanhe sua rotina de consultas.</p>
+            <p class="phc-page-subtitle">
+                Organize seus atendimentos e acompanhe sua rotina de consultas.
+            </p>
         </div>
+
         <div class="phc-header-actions">
-            <button class="phc-btn phc-btn-outline">
+            <button type="button" class="phc-btn phc-btn-outline" id="btnNovaConsulta">
                 <span class="material-symbols-rounded">add</span>
                 Nova Consulta
             </button>
-            <button class="phc-btn">
+
+            <button type="button" class="phc-btn" id="btnAgendar">
                 <span class="material-symbols-rounded">event_available</span>
                 Agendar Atendimento
             </button>
         </div>
+
     </div>
 
-    <div class="row g-3">
-        <!-- Calendário -->
+
+    <!-- =====================================================
+         MENSAGEM DE ERRO DA API
+    ===================================================== -->
+
+    {% if api_error %}
+        <div class="alert alert-danger mb-4">
+            {{ api_error }}
+        </div>
+    {% endif %}
+
+
+    <!-- =====================================================
+         CONTEÚDO PRINCIPAL
+    ===================================================== -->
+
+    <div class="row g-4">
+
+
+        <!-- =================================================
+             CALENDÁRIO
+        ================================================== -->
+
         <div class="col-12 col-lg-7 col-xl-8">
+
             <div class="phc-card">
+
+                <!-- HEADER DO CALENDÁRIO -->
                 <div class="phc-card-header">
+
                     <div class="phc-calendar-nav">
-                        <button class="phc-nav-btn" title="Mês anterior">
+
+                        <button type="button" class="phc-nav-btn" id="prevBtn" title="Anterior">
                             <span class="material-symbols-rounded">chevron_left</span>
                         </button>
-                        <div class="phc-month-label">Julho 2026</div>
-                        <button class="phc-nav-btn" title="Próximo mês">
+
+                        <div class="phc-month-label" id="periodLabel"></div>
+
+                        <button type="button" class="phc-nav-btn" id="nextBtn" title="Próximo">
                             <span class="material-symbols-rounded">chevron_right</span>
                         </button>
-                        <button class="phc-nav-btn" title="Hoje" style="margin-left: 0.25rem; width: auto; padding: 0 0.75rem; font-size: 0.82rem; font-weight: 500;">
+
+                        <button type="button" class="phc-nav-btn" id="todayBtn" title="Hoje"
+                                style="margin-left: 0.5rem; width: auto; padding: 0 0.85rem; font-size: 0.82rem; font-weight: 600;">
                             Hoje
                         </button>
+
                     </div>
+
                     <div class="phc-view-toggle">
-                        <button class="phc-view-btn active">
+
+                        <button type="button" class="phc-view-btn active" data-view="month">
                             <span class="material-symbols-rounded">calendar_view_month</span>
                             Mês
                         </button>
-                        <button class="phc-view-btn">
+
+                        <button type="button" class="phc-view-btn" data-view="week">
                             <span class="material-symbols-rounded">view_week</span>
                             Semana
                         </button>
-                        <button class="phc-view-btn">
+
+                        <button type="button" class="phc-view-btn" data-view="day">
                             <span class="material-symbols-rounded">view_day</span>
                             Dia
                         </button>
+
                     </div>
+
                 </div>
+
+
+                <!-- CORPO DO CALENDÁRIO -->
                 <div class="phc-card-body">
-                    <div class="phc-calendar-grid">
-                        <!-- Cabeçalho dos dias da semana -->
-                        <div class="phc-weekday">Dom</div>
-                        <div class="phc-weekday">Seg</div>
-                        <div class="phc-weekday">Ter</div>
-                        <div class="phc-weekday">Qua</div>
-                        <div class="phc-weekday">Qui</div>
-                        <div class="phc-weekday">Sex</div>
-                        <div class="phc-weekday">Sáb</div>
-
-                        <!-- Julho 2026 começa na quarta-feira -->
-                        <!-- Semana 1 -->
-                        <div class="phc-day empty"></div>
-                        <div class="phc-day empty"></div>
-                        <div class="phc-day has-events"><span class="phc-day-number">1</span></div>
-                        <div class="phc-day"><span class="phc-day-number">2</span></div>
-                        <div class="phc-day has-events many"><span class="phc-day-number">3</span></div>
-                        <div class="phc-day"><span class="phc-day-number">4</span></div>
-                        <div class="phc-day weekend"><span class="phc-day-number">5</span></div>
-
-                        <!-- Semana 2 -->
-                        <div class="phc-day weekend"><span class="phc-day-number">6</span></div>
-                        <div class="phc-day has-events"><span class="phc-day-number">7</span></div>
-                        <div class="phc-day"><span class="phc-day-number">8</span></div>
-                        <div class="phc-day has-events"><span class="phc-day-number">9</span></div>
-                        <div class="phc-day has-events many"><span class="phc-day-number">10</span></div>
-                        <div class="phc-day"><span class="phc-day-number">11</span></div>
-                        <div class="phc-day weekend"><span class="phc-day-number">12</span></div>
-
-                        <!-- Semana 3 -->
-                        <div class="phc-day weekend"><span class="phc-day-number">13</span></div>
-                        <div class="phc-day has-events many"><span class="phc-day-number">14</span></div>
-                        <div class="phc-day"><span class="phc-day-number">15</span></div>
-                        <div class="phc-day has-events"><span class="phc-day-number">16</span></div>
-                        <div class="phc-day has-events many"><span class="phc-day-number">17</span></div>
-                        <div class="phc-day"><span class="phc-day-number">18</span></div>
-                        <div class="phc-day weekend"><span class="phc-day-number">19</span></div>
-
-                        <!-- Semana 4 -->
-                        <div class="phc-day weekend"><span class="phc-day-number">20</span></div>
-                        <div class="phc-day has-events many"><span class="phc-day-number">21</span></div>
-                        <div class="phc-day"><span class="phc-day-number">22</span></div>
-                        <div class="phc-day has-events"><span class="phc-day-number">23</span></div>
-                        <div class="phc-day has-events many"><span class="phc-day-number">24</span></div>
-                        <div class="phc-day"><span class="phc-day-number">25</span></div>
-                        <div class="phc-day weekend"><span class="phc-day-number">26</span></div>
-
-                        <!-- Semana 5 -->
-                        <div class="phc-day weekend"><span class="phc-day-number">27</span></div>
-                        <div class="phc-day has-events many"><span class="phc-day-number">28</span></div>
-                        <div class="phc-day has-events"><span class="phc-day-number">29</span></div>
-                        <div class="phc-day has-events many"><span class="phc-day-number">30</span></div>
-                        <div class="phc-day today selected has-events many"><span class="phc-day-number">31</span></div>
-                        <div class="phc-day empty"></div>
-                        <div class="phc-day empty"></div>
-                    </div>
+                    <div class="phc-calendar-grid" id="calendarGrid"></div>
                 </div>
+
+
+                <!-- LEGENDA -->
                 <div class="phc-legend">
                     <div class="phc-legend-item">
                         <span class="phc-legend-dot today"></span>
@@ -760,102 +1382,105 @@ Precision Health Connect
                         Com consultas
                     </div>
                     <div class="phc-legend-item">
-                        <span class="material-symbols-rounded" style="font-size: 1rem; color: var(--phc-primary);">radio_button_checked</span>
-                        Dia cheio
+                        <span class="material-symbols-rounded" style="font-size: 1.1rem; color: var(--phc-primary);">
+                            event_busy
+                        </span>
+                        Agenda lotada
                     </div>
                 </div>
+
             </div>
+
         </div>
 
-        <!-- Agenda do dia -->
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
         <div class="col-12 col-lg-5 col-xl-4">
-            <!-- Resumo do dia -->
+
             <div class="phc-day-summary">
                 <div>
-                    <div class="phc-day-summary-date">Sexta-feira</div>
-                    <h2 class="phc-day-summary-title">31 de Julho</h2>
+                    <div class="phc-day-summary-date" id="selectedWeekday"></div>
+                    <h2 class="phc-day-summary-title" id="selectedDate"></h2>
                 </div>
                 <div class="phc-day-summary-stats">
                     <div class="phc-stat-item">
-                        <div class="phc-stat-value">12</div>
-                        <div class="phc-stat-label">Consultas</div>
+                        <div class="phc-stat-value" id="totalAppointments">0</div>
+                        <div class="phc-stat-label">Total</div>
                     </div>
                     <div class="phc-stat-item">
-                        <div class="phc-stat-value">9</div>
+                        <div class="phc-stat-value" id="confirmedAppointments">0</div>
                         <div class="phc-stat-label">Confirmadas</div>
                     </div>
                     <div class="phc-stat-item">
-                        <div class="phc-stat-value">3</div>
+                        <div class="phc-stat-value" id="pendingAppointments">0</div>
                         <div class="phc-stat-label">Pendentes</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Próximos compromissos -->
             <div class="phc-card">
                 <div class="phc-card-header">
                     <h3 class="phc-card-title">
                         <span class="material-symbols-rounded">event_note</span>
                         Próximos compromissos
                     </h3>
-                    <a href="#" class="phc-btn phc-btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                    <a href="{{ url_for('web.professional_appointments') }}" class="phc-btn phc-btn-outline"
+                       style="padding: 0.4rem 0.85rem; font-size: 0.78rem;">
                         Ver todos
                     </a>
                 </div>
-                <div class="phc-card-body" style="padding: 0.75rem 1.5rem;">
-                    <div class="phc-upcoming-item">
-                        <div class="phc-upcoming-time">
-                            14:00
-                            <small>45 min</small>
-                        </div>
-                        <div class="phc-upcoming-info">
-                            <div class="phc-upcoming-name">Renata Almeida</div>
-                            <div class="phc-upcoming-reason">Acompanhamento cardiológico</div>
-                        </div>
-                    </div>
-                    <div class="phc-upcoming-item">
-                        <div class="phc-upcoming-time">
-                            15:30
-                            <small>30 min</small>
-                        </div>
-                        <div class="phc-upcoming-info">
-                            <div class="phc-upcoming-name">Eduardo Nunes</div>
-                            <div class="phc-upcoming-reason">Retorno pós-cirúrgico</div>
-                        </div>
-                    </div>
-                    <div class="phc-upcoming-item">
-                        <div class="phc-upcoming-time">
-                            17:00
-                            <small>40 min</small>
-                        </div>
-                        <div class="phc-upcoming-info">
-                            <div class="phc-upcoming-name">Camila Torres</div>
-                            <div class="phc-upcoming-reason">Primeira consulta</div>
-                        </div>
-                    </div>
-                </div>
+                <div class="phc-upcoming-list" id="upcomingList"></div>
             </div>
+
         </div>
+
     </div>
 
-    <!-- Tabela de consultas do dia -->
-    <div class="phc-card mt-3">
+
+    <!-- =====================================================
+         CONSULTAS DO DIA
+    ===================================================== -->
+
+    <div class="phc-card mt-4">
+
         <div class="phc-card-header">
             <h3 class="phc-card-title">
                 <span class="material-symbols-rounded">assignment_ind</span>
-                Consultas do dia — 31 de Julho
+                Consultas do dia — <span id="tableDate"></span>
             </h3>
             <div class="d-flex gap-2">
-                <button class="phc-btn phc-btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">
+                <button type="button" class="phc-btn phc-btn-outline" id="exportBtn"
+                        style="padding: 0.5rem 0.85rem; font-size: 0.82rem;">
                     <span class="material-symbols-rounded" style="font-size: 1rem;">download</span>
                     Exportar
                 </button>
-                <button class="phc-btn" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">
+                <button type="button" class="phc-btn" id="addAppointmentBtn"
+                        style="padding: 0.5rem 0.85rem; font-size: 0.82rem;">
                     <span class="material-symbols-rounded" style="font-size: 1rem;">add</span>
                     Adicionar
                 </button>
             </div>
         </div>
+
+        <!-- FILTROS -->
+        <div class="phc-table-filters">
+            <input type="text" class="phc-filter-input" id="filterPatient" placeholder="Buscar por paciente..." style="min-width: 200px;">
+            <select class="phc-filter-select" id="filterStatus">
+                <option value="">Todos os status</option>
+                <option value="pending">Aguardando</option>
+                <option value="scheduled">Confirmada</option>
+                <option value="completed">Concluída</option>
+                <option value="cancelled">Cancelada</option>
+            </select>
+            <button type="button" class="phc-btn phc-btn-outline" id="clearFiltersBtn"
+                    style="padding: 0.5rem 0.85rem; font-size: 0.82rem; height: auto;">
+                Limpar
+            </button>
+        </div>
+
         <div class="table-responsive">
             <table class="phc-appointments-table">
                 <thead>
@@ -867,296 +1492,1844 @@ Precision Health Connect
                         <th class="text-end">Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="phc-time-cell">
-                                <span class="material-symbols-rounded">schedule</span>
-                                08:00
-                            </div>
-                        </td>
-                        <td>
-                            <div class="phc-patient-cell">
-                                <div class="phc-patient-avatar">JS</div>
-                                <div>
-                                    <div class="phc-patient-name">João Silva</div>
-                                    <div class="phc-patient-id">ID #10248</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>Consulta de rotina</td>
-                        <td>
-                            <span class="phc-badge phc-badge-confirmed">
-                                <span class="phc-badge-dot"></span>
-                                Confirmada
-                            </span>
-                        </td>
-                        <td>
-                            <div class="phc-actions-cell justify-content-end">
-                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
-                                    <span class="material-symbols-rounded">check</span>
-                                </button>
-                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
-                                    <span class="material-symbols-rounded">event_repeat</span>
-                                </button>
-                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
-                                    <span class="material-symbols-rounded">close</span>
-                                </button>
-                                <button class="phc-action-btn start">
-                                    <span class="material-symbols-rounded">play_arrow</span>
-                                    Iniciar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="phc-time-cell">
-                                <span class="material-symbols-rounded">schedule</span>
-                                09:30
-                            </div>
-                        </td>
-                        <td>
-                            <div class="phc-patient-cell">
-                                <div class="phc-patient-avatar">MS</div>
-                                <div>
-                                    <div class="phc-patient-name">Maria Souza</div>
-                                    <div class="phc-patient-id">ID #10312</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>Retorno</td>
-                        <td>
-                            <span class="phc-badge phc-badge-pending">
-                                <span class="phc-badge-dot"></span>
-                                Aguardando
-                            </span>
-                        </td>
-                        <td>
-                            <div class="phc-actions-cell justify-content-end">
-                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
-                                    <span class="material-symbols-rounded">check</span>
-                                </button>
-                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
-                                    <span class="material-symbols-rounded">event_repeat</span>
-                                </button>
-                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
-                                    <span class="material-symbols-rounded">close</span>
-                                </button>
-                                <button class="phc-action-btn start">
-                                    <span class="material-symbols-rounded">play_arrow</span>
-                                    Iniciar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="phc-time-cell">
-                                <span class="material-symbols-rounded">schedule</span>
-                                10:30
-                            </div>
-                        </td>
-                        <td>
-                            <div class="phc-patient-cell">
-                                <div class="phc-patient-avatar">CO</div>
-                                <div>
-                                    <div class="phc-patient-name">Carlos Oliveira</div>
-                                    <div class="phc-patient-id">ID #10187</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>Avaliação</td>
-                        <td>
-                            <span class="phc-badge phc-badge-confirmed">
-                                <span class="phc-badge-dot"></span>
-                                Confirmada
-                            </span>
-                        </td>
-                        <td>
-                            <div class="phc-actions-cell justify-content-end">
-                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
-                                    <span class="material-symbols-rounded">check</span>
-                                </button>
-                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
-                                    <span class="material-symbols-rounded">event_repeat</span>
-                                </button>
-                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
-                                    <span class="material-symbols-rounded">close</span>
-                                </button>
-                                <button class="phc-action-btn start">
-                                    <span class="material-symbols-rounded">play_arrow</span>
-                                    Iniciar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="phc-time-cell">
-                                <span class="material-symbols-rounded">schedule</span>
-                                11:45
-                            </div>
-                        </td>
-                        <td>
-                            <div class="phc-patient-cell">
-                                <div class="phc-patient-avatar">PF</div>
-                                <div>
-                                    <div class="phc-patient-name">Patrícia Ferreira</div>
-                                    <div class="phc-patient-id">ID #10421</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>Exames laboratoriais</td>
-                        <td>
-                            <span class="phc-badge phc-badge-confirmed">
-                                <span class="phc-badge-dot"></span>
-                                Confirmada
-                            </span>
-                        </td>
-                        <td>
-                            <div class="phc-actions-cell justify-content-end">
-                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
-                                    <span class="material-symbols-rounded">check</span>
-                                </button>
-                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
-                                    <span class="material-symbols-rounded">event_repeat</span>
-                                </button>
-                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
-                                    <span class="material-symbols-rounded">close</span>
-                                </button>
-                                <button class="phc-action-btn start">
-                                    <span class="material-symbols-rounded">play_arrow</span>
-                                    Iniciar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="phc-time-cell">
-                                <span class="material-symbols-rounded">schedule</span>
-                                14:00
-                            </div>
-                        </td>
-                        <td>
-                            <div class="phc-patient-cell">
-                                <div class="phc-patient-avatar">RA</div>
-                                <div>
-                                    <div class="phc-patient-name">Renata Almeida</div>
-                                    <div class="phc-patient-id">ID #10509</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>Acompanhamento cardiológico</td>
-                        <td>
-                            <span class="phc-badge phc-badge-pending">
-                                <span class="phc-badge-dot"></span>
-                                Aguardando
-                            </span>
-                        </td>
-                        <td>
-                            <div class="phc-actions-cell justify-content-end">
-                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
-                                    <span class="material-symbols-rounded">check</span>
-                                </button>
-                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
-                                    <span class="material-symbols-rounded">event_repeat</span>
-                                </button>
-                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
-                                    <span class="material-symbols-rounded">close</span>
-                                </button>
-                                <button class="phc-action-btn start">
-                                    <span class="material-symbols-rounded">play_arrow</span>
-                                    Iniciar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="phc-time-cell">
-                                <span class="material-symbols-rounded">schedule</span>
-                                15:30
-                            </div>
-                        </td>
-                        <td>
-                            <div class="phc-patient-cell">
-                                <div class="phc-patient-avatar">EN</div>
-                                <div>
-                                    <div class="phc-patient-name">Eduardo Nunes</div>
-                                    <div class="phc-patient-id">ID #10287</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>Retorno pós-cirúrgico</td>
-                        <td>
-                            <span class="phc-badge phc-badge-confirmed">
-                                <span class="phc-badge-dot"></span>
-                                Confirmada
-                            </span>
-                        </td>
-                        <td>
-                            <div class="phc-actions-cell justify-content-end">
-                                <button class="phc-action-btn confirm" data-tooltip="Confirmar">
-                                    <span class="material-symbols-rounded">check</span>
-                                </button>
-                                <button class="phc-action-btn reschedule" data-tooltip="Reagendar">
-                                    <span class="material-symbols-rounded">event_repeat</span>
-                                </button>
-                                <button class="phc-action-btn cancel" data-tooltip="Cancelar">
-                                    <span class="material-symbols-rounded">close</span>
-                                </button>
-                                <button class="phc-action-btn start">
-                                    <span class="material-symbols-rounded">play_arrow</span>
-                                    Iniciar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="appointmentsTableBody"></tbody>
             </table>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     MODAL NOVA CONSULTA / AGENDAR
+========================================================= -->
+<div class="modal fade phc-modal" id="newAppointmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div>
+                    <h3 class="phc-modal-title" id="newAppointmentModalTitle">
+                        <span class="material-symbols-rounded">event_available</span>
+                        Nova Consulta
+                    </h3>
+                    <p class="phc-modal-subtitle">Agende um novo atendimento para seu paciente.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="phc-modal-body">
+                <form id="newAppointmentForm">
+                    <div class="row g-3">
+
+                        <!-- PACIENTE -->
+                        <div class="col-12">
+                            <label class="phc-form-label" for="appointmentPatientSearch">Paciente *</label>
+                            <div class="phc-patient-search-wrapper">
+                                <input type="text" class="phc-form-control" id="appointmentPatientSearch"
+                                       placeholder="Digite o nome ou CPF do paciente..." autocomplete="off" required>
+                                <input type="hidden" id="appointmentPatientId">
+                                <div class="phc-patient-dropdown" id="patientDropdown"></div>
+                            </div>
+                            <div id="selectedPatientCard" style="margin-top: 0.5rem;"></div>
+                        </div>
+
+                        <!-- DATA -->
+                        <div class="col-md-6">
+                            <label class="phc-form-label" for="appointmentDate">Data *</label>
+                            <input type="date" class="phc-form-control" id="appointmentDate" required>
+                        </div>
+
+                        <!-- HORÁRIO -->
+                        <div class="col-md-6">
+                            <label class="phc-form-label" for="appointmentTime">Horário *</label>
+                            <input type="time" class="phc-form-control" id="appointmentTime" required>
+                        </div>
+
+                        <!-- MOTIVO -->
+                        <div class="col-12">
+                            <label class="phc-form-label" for="appointmentReason">Motivo da consulta *</label>
+                            <input type="text" class="phc-form-control" id="appointmentReason"
+                                   placeholder="Ex: Consulta de rotina, Retorno, Acompanhamento..." required>
+                        </div>
+
+                        <!-- OBSERVAÇÕES -->
+                        <div class="col-12">
+                            <label class="phc-form-label" for="appointmentNotes">Observações</label>
+                            <textarea class="phc-form-control" id="appointmentNotes" rows="3"
+                                      placeholder="Informações adicionais sobre a consulta..."></textarea>
+                        </div>
+
+                        <!-- LINK DA REUNIÃO -->
+                        <div class="col-12">
+                            <label class="phc-form-label" for="appointmentMeetingLink">Link da reunião (opcional)</label>
+                            <input type="url" class="phc-form-control" id="appointmentMeetingLink"
+                                   placeholder="https://meet.google.com/..." >
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+            <div class="phc-modal-footer">
+                <button type="button" class="phc-btn phc-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="phc-btn" id="saveAppointmentBtn">
+                    <span class="material-symbols-rounded">save</span>
+                    Agendar Consulta
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- =========================================================
+     MODAL DETALHES DA CONSULTA
+========================================================= -->
+<div class="modal fade phc-modal" id="appointmentDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div>
+                    <h3 class="phc-modal-title">
+                        <span class="material-symbols-rounded">event_note</span>
+                        Detalhes da Consulta
+                    </h3>
+                    <p class="phc-modal-subtitle" id="detailsSubtitle">Informações completas do atendimento</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="phc-modal-body" id="detailsBody">
+                <!-- Preenchido via JavaScript -->
+            </div>
+
+            <div class="phc-modal-footer" id="detailsFooter">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL REAGENDAR
+========================================================= -->
+<div class="modal fade phc-modal" id="rescheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div>
+                    <h3 class="phc-modal-title">
+                        <span class="material-symbols-rounded">event_repeat</span>
+                        Reagendar Consulta
+                    </h3>
+                    <p class="phc-modal-subtitle">Escolha uma nova data e horário.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="phc-modal-body">
+                <div id="rescheduleCurrentInfo" style="padding: 1rem; background: var(--phc-bg); border-radius: 8px; margin-bottom: 1rem;"></div>
+
+                <form id="rescheduleForm">
+                    <input type="hidden" id="rescheduleAppointmentId">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="phc-form-label" for="rescheduleDate">Nova data *</label>
+                            <input type="date" class="phc-form-control" id="rescheduleDate" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="phc-form-label" for="rescheduleTime">Novo horário *</label>
+                            <input type="time" class="phc-form-control" id="rescheduleTime" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="phc-form-label" for="rescheduleReason">Motivo do reagendamento</label>
+                            <textarea class="phc-form-control" id="rescheduleReason" rows="2"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="phc-modal-footer">
+                <button type="button" class="phc-btn phc-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="phc-btn" id="confirmRescheduleBtn">
+                    <span class="material-symbols-rounded">check</span>
+                    Confirmar Reagendamento
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL CONFIRMAÇÃO DE CANCELAMENTO
+========================================================= -->
+<div class="modal fade" id="confirmCancelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: 2px solid var(--phc-danger-text);">
+            <div class="modal-body text-center py-4 px-4">
+                <span class="material-symbols-rounded" style="font-size: 3rem; color: var(--phc-danger-text);">warning</span>
+                <h5 class="fw-bold mt-2">Cancelar consulta?</h5>
+                <p class="text-muted mb-0">Tem certeza que deseja cancelar esta consulta? Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-footer justify-content-center border-0">
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Voltar</button>
+                <button type="button" class="btn btn-danger px-4" id="confirmCancelBtn">
+                    Sim, Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL EXPORTAR
+========================================================= -->
+<div class="modal fade phc-modal" id="exportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="phc-modal-header">
+                <div>
+                    <h3 class="phc-modal-title">
+                        <span class="material-symbols-rounded">download</span>
+                        Exportar Consultas
+                    </h3>
+                    <p class="phc-modal-subtitle">Escolha o período e formato de exportação.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="phc-modal-body">
+                <label class="phc-form-label">Período</label>
+                <div class="d-flex flex-column gap-2 mb-3">
+                    <label class="form-check d-flex align-items-center gap-2 p-2 border rounded">
+                        <input type="radio" name="exportPeriod" value="day" class="form-check-input" checked>
+                        <span>Consultas do dia selecionado</span>
+                    </label>
+                    <label class="form-check d-flex align-items-center gap-2 p-2 border rounded">
+                        <input type="radio" name="exportPeriod" value="week" class="form-check-input">
+                        <span>Semana atual</span>
+                    </label>
+                    <label class="form-check d-flex align-items-center gap-2 p-2 border rounded">
+                        <input type="radio" name="exportPeriod" value="month" class="form-check-input">
+                        <span>Mês atual</span>
+                    </label>
+                    <label class="form-check d-flex align-items-center gap-2 p-2 border rounded">
+                        <input type="radio" name="exportPeriod" value="all" class="form-check-input">
+                        <span>Todas as consultas</span>
+                    </label>
+                </div>
+
+                <label class="phc-form-label">Formato</label>
+                <div class="d-flex gap-2">
+                    <button type="button" class="phc-btn flex-fill" onclick="exportAppointments('csv')">
+                        <span class="material-symbols-rounded">table_view</span>
+                        CSV
+                    </button>
+                    <button type="button" class="phc-btn phc-btn-outline flex-fill" onclick="exportAppointments('json')">
+                        <span class="material-symbols-rounded">code</span>
+                        JSON
+                    </button>
+                    <button type="button" class="phc-btn phc-btn-outline flex-fill" onclick="exportAppointments('pdf')">
+                        <span class="material-symbols-rounded">print</span>
+                        Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Container de Toasts -->
+<div id="toastContainer" class="toast-container"></div>
+
 <script>
-    // Navegação do calendário (visual)
-    document.querySelectorAll('.phc-nav-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.style.transform = 'scale(0.92)';
-            setTimeout(() => this.style.transform = '', 150);
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const csrfToken = document.getElementById("csrfToken").value;
+
+    // =====================================================
+    // CONFIGURAÇÃO DAS URLs (rotas Web Flask)
+    // =====================================================
+    // IMPORTANTE:
+    // Estas URLs apontam para rotas Flask Web que internamente
+    // consomem a API. Não chamamos a API diretamente do JS.
+    // =====================================================
+
+    // URL para criar nova consulta (rota Web que consome POST /api/appointments)
+    // Rota esperada: POST /profession/appointments
+    const CREATE_APPOINTMENT_URL = "{{ url_for('web.create_appointment') }}";
+
+    // URL para aceitar consulta (rota Web que consome PUT /api/appointments/{id}/accept)
+    // Rota esperada: PUT /profession/appointments/<id>/accept
+    const ACCEPT_APPOINTMENT_URL = "/profession/appointments/{id}/accept";
+
+    // URL para cancelar consulta (rota Web que consome PUT /api/appointments/{id}/cancel)
+    // Rota esperada: PUT /profession/appointments/<id>/cancel
+    const CANCEL_APPOINTMENT_URL = "/profession/appointments/{id}/cancel";
+
+    // URL para reagendar consulta (rota Web que consome PUT /api/appointments/{id}/reschedule)
+    // Rota esperada: PUT /profession/appointments/<id>/reschedule
+    const RESCHEDULE_APPOINTMENT_URL = "/profession/appointments/{id}/reschedule";
+
+    // URL para buscar pacientes (rota Web que consome GET /api/patient-professional/patients/search)
+    // Rota esperada: GET /profession/patients/search?search=...
+    const SEARCH_PATIENTS_URL = "{{ url_for('web.search_patients') if url_for('web.search_patients') else '/profession/patients/search' }}";
+
+    // URL para buscar appointments novamente (rota Web que consome GET /api/appointments/my)
+    // Rota esperada: GET /profession/appointments/data
+    const FETCH_APPOINTMENTS_URL = "{{ url_for('web.professional_appointments') if url_for('web.professional_appointments') else '/profession/appointments/data' }}";
+
+
+    // =====================================================
+    // ESTADO DA APLICAÇÃO
+    // =====================================================
+
+    let appointments = [...appointmentsData];
+    let currentView = "month"; // "month", "week", "day"
+    let currentDate = new Date();
+    let selectedDateValue = new Date();
+    let searchTimeout = null;
+    let selectedPatient = null;
+    let appointmentToCancel = null;
+    let appointmentToReschedule = null;
+
+
+    // =====================================================
+    // CONSTANTES
+    // =====================================================
+
+    const monthNames = [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    const weekdayNames = [
+        "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira",
+        "Quinta-feira", "Sexta-feira", "Sábado"
+    ];
+
+    const weekdayShort = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+
+    // =====================================================
+    // ELEMENTOS DOM
+    // =====================================================
+
+    const calendarGrid = document.getElementById("calendarGrid");
+    const periodLabel = document.getElementById("periodLabel");
+    const selectedWeekday = document.getElementById("selectedWeekday");
+    const selectedDateEl = document.getElementById("selectedDate");
+    const tableDate = document.getElementById("tableDate");
+    const totalAppointments = document.getElementById("totalAppointments");
+    const confirmedAppointments = document.getElementById("confirmedAppointments");
+    const pendingAppointments = document.getElementById("pendingAppointments");
+    const appointmentsTableBody = document.getElementById("appointmentsTableBody");
+    const upcomingList = document.getElementById("upcomingList");
+
+
+    // =====================================================
+    // UTILITÁRIOS DE DATA (TIMEZONE LOCAL)
+    // =====================================================
+
+    /**
+     * Converte "YYYY-MM-DD HH:mm" em Date local (sem conversão UTC).
+     * Isso preserva o horário recebido da API exatamente como está.
+     */
+    function parseAppointmentDate(value) {
+        if (!value) return null;
+
+        const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+        if (!match) return null;
+
+        return new Date(
+            parseInt(match[1], 10),          // year
+            parseInt(match[2], 10) - 1,      // month (0-indexed)
+            parseInt(match[3], 10),          // day
+            parseInt(match[4] || "0", 10),   // hour
+            parseInt(match[5] || "0", 10)    // minute
+        );
+    }
+
+    function dateKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    }
+
+    function timeKey(date) {
+        const h = String(date.getHours()).padStart(2, "0");
+        const m = String(date.getMinutes()).padStart(2, "0");
+        return `${h}:${m}`;
+    }
+
+    function formatDateBR(date) {
+        const d = String(date.getDate()).padStart(2, "0");
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const y = date.getFullYear();
+        return `${d}/${m}/${y}`;
+    }
+
+    function sameDay(a, b) {
+        return dateKey(a) === dateKey(b);
+    }
+
+
+    // =====================================================
+    // FUNÇÕES DE APOIO
+    // =====================================================
+
+    function getInitials(name) {
+        if (!name) return "--";
+        const parts = String(name).trim().split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return "--";
+        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) return "";
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function getStatusInfo(status) {
+        switch (status) {
+            case "pending":
+                return { label: "Aguardando", className: "phc-badge-pending" };
+            case "scheduled":
+                return { label: "Confirmada", className: "phc-badge-confirmed" };
+            case "completed":
+                return { label: "Concluída", className: "phc-badge-confirmed" };
+            case "cancelled":
+                return { label: "Cancelada", className: "phc-badge-cancelled" };
+            default:
+                return { label: status || "Desconhecido", className: "phc-badge-pending" };
+        }
+    }
+
+    function appointmentsForDate(date) {
+        const key = dateKey(date);
+        return appointments.filter(function (a) {
+            const d = parseAppointmentDate(a.appointment_date);
+            return d && dateKey(d) === key;
+        });
+    }
+
+    function getAppointmentsInRange(startDate, endDate) {
+        return appointments.filter(function (a) {
+            const d = parseAppointmentDate(a.appointment_date);
+            if (!d) return false;
+            return d >= startDate && d <= endDate;
+        });
+    }
+
+
+    // =====================================================
+    // TOAST
+    // =====================================================
+
+    function showToast(title, message, type = "success") {
+        const container = document.getElementById("toastContainer");
+        const id = "toast-" + Date.now();
+
+        let icon = "check_circle";
+        if (type === "warning") icon = "warning";
+        if (type === "error") icon = "error";
+
+        const toast = document.createElement("div");
+        toast.className = `phc-toast ${type}`;
+        toast.id = id;
+        toast.innerHTML = `
+            <span class="material-symbols-rounded toast-icon">${icon}</span>
+            <div class="toast-content">
+                <div class="toast-title">${escapeHtml(title)}</div>
+                <div class="toast-message">${escapeHtml(message)}</div>
+            </div>
+        `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.transition = "opacity 0.3s, transform 0.3s";
+            toast.style.opacity = "0";
+            toast.style.transform = "translateX(20px)";
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+
+
+    // =====================================================
+    // RENDER - CALENDÁRIO MENSAL
+    // =====================================================
+
+    function renderMonthView() {
+        calendarGrid.className = "phc-calendar-grid";
+        calendarGrid.innerHTML = "";
+
+        // Cabeçalho dos dias da semana
+        weekdayShort.forEach(function (day) {
+            const el = document.createElement("div");
+            el.className = "phc-weekday";
+            el.textContent = day;
+            calendarGrid.appendChild(el);
+        });
+
+        // Label do mês
+        periodLabel.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Espaços antes do dia 1
+        for (let i = 0; i < firstDay; i++) {
+            const empty = document.createElement("div");
+            empty.className = "phc-day empty";
+            calendarGrid.appendChild(empty);
+        }
+
+        const todayKey = dateKey(new Date());
+        const selectedKey = dateKey(selectedDateValue);
+
+        // Dias
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const dayAppointments = appointmentsForDate(date);
+            const key = dateKey(date);
+
+            const el = document.createElement("div");
+            el.className = "phc-day";
+
+            if (date.getDay() === 0 || date.getDay() === 6) el.classList.add("weekend");
+            if (key === todayKey) el.classList.add("today");
+            if (key === selectedKey) el.classList.add("selected");
+            if (dayAppointments.length > 0) el.classList.add("has-events");
+            if (dayAppointments.length >= 2) el.classList.add("many");
+
+            const number = document.createElement("span");
+            number.className = "phc-day-number";
+            number.textContent = day;
+            el.appendChild(number);
+
+            // Dots de eventos
+            if (dayAppointments.length > 0) {
+                const events = document.createElement("div");
+                events.className = "phc-day-events";
+                const maxDots = Math.min(dayAppointments.length, 3);
+                for (let i = 0; i < maxDots; i++) {
+                    const dot = document.createElement("div");
+                    dot.className = "phc-event-dot";
+                    if (i > 0) dot.classList.add("secondary");
+                    events.appendChild(dot);
+                }
+                el.appendChild(events);
+            }
+
+            el.addEventListener("click", function () {
+                selectedDateValue = new Date(date);
+                renderAll();
+            });
+
+            calendarGrid.appendChild(el);
+        }
+
+        // Completar grid
+        const totalCells = firstDay + daysInMonth;
+        const remaining = (7 - (totalCells % 7)) % 7;
+        for (let i = 0; i < remaining; i++) {
+            const empty = document.createElement("div");
+            empty.className = "phc-day empty";
+            calendarGrid.appendChild(empty);
+        }
+    }
+
+
+    // =====================================================
+    // RENDER - VISUALIZAÇÃO SEMANAL
+    // =====================================================
+
+    function renderWeekView() {
+        calendarGrid.className = "phc-calendar-grid week-view";
+        calendarGrid.innerHTML = "";
+
+        // Calcular início da semana (Segunda-feira)
+        const selected = new Date(selectedDateValue);
+        const dayOfWeek = selected.getDay(); // 0=Dom, 1=Seg...
+        const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Ajuste para segunda
+        const startOfWeek = new Date(selected);
+        startOfWeek.setDate(selected.getDate() + diff);
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        periodLabel.textContent = `${startOfWeek.getDate()} ${monthNames[startOfWeek.getMonth()].substring(0, 3)} - ${endOfWeek.getDate()} ${monthNames[endOfWeek.getMonth()].substring(0, 3)} ${endOfWeek.getFullYear()}`;
+
+        const todayKey = dateKey(new Date());
+        const selectedKey = dateKey(selectedDateValue);
+
+        // Spacer do cabeçalho
+        const headerSpacer = document.createElement("div");
+        headerSpacer.className = "phc-time-header-spacer";
+        calendarGrid.appendChild(headerSpacer);
+
+        // Cabeçalho dos 7 dias
+        const weekDays = [];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(startOfWeek);
+            d.setDate(startOfWeek.getDate() + i);
+            weekDays.push(d);
+
+            const header = document.createElement("div");
+            header.className = "phc-weekday-header";
+            const key = dateKey(d);
+            if (key === todayKey) header.classList.add("today");
+            if (key === selectedKey) header.classList.add("selected");
+
+            header.innerHTML = `
+                <div class="day-name">${weekdayShort[d.getDay()]}</div>
+                <div class="day-number">${d.getDate()}</div>
+            `;
+
+            header.addEventListener("click", function () {
+                selectedDateValue = new Date(d);
+                renderAll();
+            });
+
+            calendarGrid.appendChild(header);
+        }
+
+        // Linhas de horário (8h às 19h)
+        for (let hour = 8; hour <= 19; hour++) {
+            // Coluna de hora
+            const timeCell = document.createElement("div");
+            timeCell.className = "phc-time-cell";
+            timeCell.textContent = `${String(hour).padStart(2, "0")}:00`;
+            calendarGrid.appendChild(timeCell);
+
+            // Colunas dos 7 dias
+            weekDays.forEach(function (day, dayIndex) {
+                const cell = document.createElement("div");
+                cell.className = "phc-day-column-cell";
+                cell.dataset.date = dateKey(day);
+                cell.dataset.hour = hour;
+
+                cell.addEventListener("click", function () {
+                    selectedDateValue = new Date(day);
+                    openNewAppointmentModal(dateKey(day), `${String(hour).padStart(2, "0")}:00`);
+                });
+
+                // Consultas nesta hora
+                const dayAppointments = appointmentsForDate(day).filter(function (a) {
+                    const d = parseAppointmentDate(a.appointment_date);
+                    return d && d.getHours() === hour;
+                });
+
+                dayAppointments.forEach(function (apt, idx) {
+                    const aptDate = parseAppointmentDate(apt.appointment_date);
+                    const minutes = aptDate.getMinutes();
+                    const topOffset = (minutes / 60) * 60; // 60px = altura da célula
+                    const duration = 60; // 1h padrão
+
+                    const event = document.createElement("div");
+                    event.className = `phc-time-event status-${apt.status}`;
+                    event.style.top = `${topOffset + 2}px`;
+                    event.style.height = `${duration - 4}px`;
+
+                    event.innerHTML = `
+                        <span class="event-time">${timeKey(aptDate)}</span>
+                        <span class="event-name">${escapeHtml(apt.patient_name || "Paciente")}</span>
+                    `;
+
+                    event.addEventListener("click", function (e) {
+                        e.stopPropagation();
+                        openAppointmentDetails(apt.id);
+                    });
+
+                    cell.appendChild(event);
+                });
+
+                calendarGrid.appendChild(cell);
+            });
+        }
+    }
+
+
+    // =====================================================
+    // RENDER - VISUALIZAÇÃO DIÁRIA
+    // =====================================================
+
+    function renderDayView() {
+        calendarGrid.className = "phc-calendar-grid day-view";
+        calendarGrid.innerHTML = "";
+
+        const date = new Date(selectedDateValue);
+        periodLabel.textContent = `${date.getDate()} de ${monthNames[date.getMonth()]} de ${date.getFullYear()} (${weekdayNames[date.getDay()]})`;
+
+        const dayAppointments = appointmentsForDate(date);
+
+        // Linhas de horário (7h às 20h)
+        for (let hour = 7; hour <= 20; hour++) {
+            const timeCell = document.createElement("div");
+            timeCell.className = "phc-time-cell";
+            timeCell.textContent = `${String(hour).padStart(2, "0")}:00`;
+            calendarGrid.appendChild(timeCell);
+
+            const cell = document.createElement("div");
+            cell.className = "phc-day-view-cell";
+            cell.dataset.hour = hour;
+
+            cell.addEventListener("click", function () {
+                openNewAppointmentModal(dateKey(date), `${String(hour).padStart(2, "0")}:00`);
+            });
+
+            const hourAppointments = dayAppointments.filter(function (a) {
+                const d = parseAppointmentDate(a.appointment_date);
+                return d && d.getHours() === hour;
+            });
+
+            hourAppointments.forEach(function (apt) {
+                const aptDate = parseAppointmentDate(apt.appointment_date);
+                const minutes = aptDate.getMinutes();
+                const topOffset = (minutes / 60) * 80; // 80px = min-height da célula
+                const duration = 80;
+
+                const event = document.createElement("div");
+                event.className = `phc-time-event status-${apt.status}`;
+                event.style.top = `${topOffset + 2}px`;
+                event.style.height = `${duration - 4}px`;
+                event.style.maxWidth = "calc(100% - 8px)";
+
+                event.innerHTML = `
+                    <span class="event-time">${timeKey(aptDate)}</span>
+                    <span class="event-name">${escapeHtml(apt.patient_name || "Paciente")}</span>
+                    <span class="event-name" style="opacity: 0.85; font-size: 0.68rem;">${escapeHtml(apt.appointment_reason || "")}</span>
+                `;
+
+                event.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    openAppointmentDetails(apt.id);
+                });
+
+                cell.appendChild(event);
+            });
+
+            calendarGrid.appendChild(cell);
+        }
+    }
+
+
+    // =====================================================
+    // RENDER - DIA SELECIONADO (RESUMO)
+    // =====================================================
+
+    function renderSelectedDay() {
+        const dayAppointments = appointmentsForDate(selectedDateValue);
+
+        selectedWeekday.textContent = weekdayNames[selectedDateValue.getDay()];
+        selectedDateEl.textContent = `${selectedDateValue.getDate()} de ${monthNames[selectedDateValue.getMonth()]}`;
+        tableDate.textContent = `${selectedDateValue.getDate()} de ${monthNames[selectedDateValue.getMonth()]}`;
+
+        totalAppointments.textContent = dayAppointments.length;
+
+        confirmedAppointments.textContent = dayAppointments.filter(function (a) {
+            return a.status === "scheduled" || a.status === "completed";
+        }).length;
+
+        pendingAppointments.textContent = dayAppointments.filter(function (a) {
+            return a.status === "pending";
+        }).length;
+    }
+
+
+    // =====================================================
+    // RENDER - TABELA
+    // =====================================================
+
+    function renderTable() {
+        const filterPatient = document.getElementById("filterPatient").value.trim().toLowerCase();
+        const filterStatus = document.getElementById("filterStatus").value;
+
+        let dayAppointments = appointmentsForDate(selectedDateValue);
+
+        // Aplicar filtros
+        if (filterPatient) {
+            dayAppointments = dayAppointments.filter(function (a) {
+                const name = (a.patient_name || "").toLowerCase();
+                return name.includes(filterPatient);
+            });
+        }
+
+        if (filterStatus) {
+            dayAppointments = dayAppointments.filter(function (a) {
+                return a.status === filterStatus;
+            });
+        }
+
+        appointmentsTableBody.innerHTML = "";
+
+        if (dayAppointments.length === 0) {
+            appointmentsTableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-4" style="color: var(--phc-muted);">
+                        <span class="material-symbols-rounded" style="font-size: 2.5rem; opacity: .4;">event_busy</span>
+                        <div class="mt-2">Nenhuma consulta neste dia.</div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        dayAppointments.sort(function (a, b) {
+            const dA = parseAppointmentDate(a.appointment_date);
+            const dB = parseAppointmentDate(b.appointment_date);
+            return dA - dB;
+        });
+
+        dayAppointments.forEach(function (apt) {
+            const date = parseAppointmentDate(apt.appointment_date);
+            const time = date ? date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "--:--";
+            const patientName = apt.patient_name || "Paciente";
+            const initials = getInitials(patientName);
+            const statusInfo = getStatusInfo(apt.status);
+
+            const avatarHtml = apt.patient_photo
+                ? `<img src="${escapeHtml(apt.patient_photo)}" alt="">`
+                : escapeHtml(initials);
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>
+                    <div class="phc-table-time-cell">
+                        <span class="material-symbols-rounded">schedule</span>
+                        ${time}
+                    </div>
+                </td>
+                <td>
+                    <div class="phc-patient-cell">
+                        <div class="phc-patient-avatar">${avatarHtml}</div>
+                        <div>
+                            <div class="phc-patient-name">${escapeHtml(patientName)}</div>
+                            <div class="phc-patient-id">ID #${escapeHtml(apt.patient_id)}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${escapeHtml(apt.appointment_reason || "Não informado")}</td>
+                <td>
+                    <span class="phc-badge ${statusInfo.className}">
+                        <span class="phc-badge-dot"></span>
+                        ${statusInfo.label}
+                    </span>
+                </td>
+                <td>
+                    <div class="phc-actions-cell">
+                        <button class="phc-action-btn details" data-action="details" data-id="${apt.id}" data-tooltip="Detalhes">
+                            <span class="material-symbols-rounded">visibility</span>
+                        </button>
+                        ${apt.status === "pending" ? `
+                            <button class="phc-action-btn confirm" data-action="accept" data-id="${apt.id}" data-tooltip="Confirmar">
+                                <span class="material-symbols-rounded">check</span>
+                            </button>
+                        ` : ""}
+                        ${apt.status !== "cancelled" && apt.status !== "completed" ? `
+                            <button class="phc-action-btn reschedule" data-action="reschedule" data-id="${apt.id}" data-tooltip="Reagendar">
+                                <span class="material-symbols-rounded">event_repeat</span>
+                            </button>
+                            <button class="phc-action-btn cancel" data-action="cancel" data-id="${apt.id}" data-tooltip="Cancelar">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        ` : ""}
+                        ${apt.status === "scheduled" ? `
+                            <button class="phc-action-btn start" data-action="start" data-id="${apt.id}">
+                                <span class="material-symbols-rounded">play_arrow</span>
+                                <span>Iniciar</span>
+                            </button>
+                        ` : ""}
+                    </div>
+                </td>
+            `;
+
+            appointmentsTableBody.appendChild(row);
+        });
+    }
+
+
+    // =====================================================
+    // RENDER - PRÓXIMOS COMPROMISSOS
+    // =====================================================
+
+    function renderUpcoming() {
+        upcomingList.innerHTML = "";
+        const now = new Date();
+
+        const upcoming = appointments
+            .map(function (a) {
+                return { ...a, parsedDate: parseAppointmentDate(a.appointment_date) };
+            })
+            .filter(function (a) {
+                return a.parsedDate && a.parsedDate >= now && a.status !== "cancelled";
+            })
+            .sort(function (a, b) { return a.parsedDate - b.parsedDate; })
+            .slice(0, 3);
+
+        if (upcoming.length === 0) {
+            upcomingList.innerHTML = `
+                <div class="text-center py-4" style="color: var(--phc-muted); opacity: .7;">
+                    Nenhum próximo compromisso.
+                </div>
+            `;
+            return;
+        }
+
+        upcoming.forEach(function (apt) {
+            const time = apt.parsedDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+            const patientName = apt.patient_name || "Paciente";
+
+            const item = document.createElement("div");
+            item.className = "phc-upcoming-item";
+            item.innerHTML = `
+                <div class="phc-upcoming-time">
+                    ${time}
+                    <small>${apt.parsedDate.toLocaleDateString("pt-BR")}</small>
+                </div>
+                <div class="phc-upcoming-info">
+                    <div class="phc-upcoming-name">${escapeHtml(patientName)}</div>
+                    <div class="phc-upcoming-reason">
+                        <span class="material-symbols-rounded" style="font-size: .9rem;">circle</span>
+                        ${escapeHtml(apt.appointment_reason || "Consulta")}
+                    </div>
+                </div>
+            `;
+
+            item.addEventListener("click", function () {
+                openAppointmentDetails(apt.id);
+            });
+
+            upcomingList.appendChild(item);
+        });
+    }
+
+
+    // =====================================================
+    // RENDER ALL (orquestra todos os renders)
+    // =====================================================
+
+    function renderAll() {
+        if (currentView === "month") renderMonthView();
+        else if (currentView === "week") renderWeekView();
+        else if (currentView === "day") renderDayView();
+
+        renderSelectedDay();
+        renderTable();
+        renderUpcoming();
+    }
+
+
+    // =====================================================
+    // NAVEGAÇÃO
+    // =====================================================
+
+    function navigatePrevious() {
+        if (currentView === "month") {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+        } else if (currentView === "week") {
+            selectedDateValue.setDate(selectedDateValue.getDate() - 7);
+            currentDate = new Date(selectedDateValue);
+        } else if (currentView === "day") {
+            selectedDateValue.setDate(selectedDateValue.getDate() - 1);
+            currentDate = new Date(selectedDateValue);
+        }
+        renderAll();
+    }
+
+    function navigateNext() {
+        if (currentView === "month") {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+        } else if (currentView === "week") {
+            selectedDateValue.setDate(selectedDateValue.getDate() + 7);
+            currentDate = new Date(selectedDateValue);
+        } else if (currentView === "day") {
+            selectedDateValue.setDate(selectedDateValue.getDate() + 1);
+            currentDate = new Date(selectedDateValue);
+        }
+        renderAll();
+    }
+
+    function navigateToday() {
+        currentDate = new Date();
+        selectedDateValue = new Date();
+        renderAll();
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", navigatePrevious);
+    document.getElementById("nextBtn").addEventListener("click", navigateNext);
+    document.getElementById("todayBtn").addEventListener("click", navigateToday);
+
+
+    // =====================================================
+    // TOGGLE DE VISUALIZAÇÃO
+    // =====================================================
+
+    document.querySelectorAll(".phc-view-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            document.querySelectorAll(".phc-view-btn").forEach(function (b) {
+                b.classList.remove("active");
+            });
+            this.classList.add("active");
+            currentView = this.dataset.view;
+            renderAll();
         });
     });
 
-    // Toggle de visualização
-    document.querySelectorAll('.phc-view-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.phc-view-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
 
-    // Seleção de dia no calendário
-    document.querySelectorAll('.phc-day:not(.empty)').forEach(day => {
-        day.addEventListener('click', function() {
-            document.querySelectorAll('.phc-day').forEach(d => d.classList.remove('selected'));
-            this.classList.add('selected');
-        });
+    // =====================================================
+    // FILTROS DA TABELA
+    // =====================================================
+
+    document.getElementById("filterPatient").addEventListener("input", renderTable);
+    document.getElementById("filterStatus").addEventListener("change", renderTable);
+    document.getElementById("clearFiltersBtn").addEventListener("click", function () {
+        document.getElementById("filterPatient").value = "";
+        document.getElementById("filterStatus").value = "";
+        renderTable();
     });
 
 
-    // Ações dos botões (feedback visual)
-    document.querySelectorAll('.phc-action-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const originalBg = this.style.background;
-            this.style.transform = 'scale(0.9)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
-        });
+    // =====================================================
+    // AÇÕES NA TABELA (delegação de eventos)
+    // =====================================================
+
+    appointmentsTableBody.addEventListener("click", function (event) {
+        const button = event.target.closest("[data-action]");
+        if (!button) return;
+
+        const action = button.dataset.action;
+        const id = button.dataset.id;
+
+        if (action === "details") openAppointmentDetails(id);
+        else if (action === "accept") acceptAppointment(id);
+        else if (action === "cancel") confirmCancelAppointment(id);
+        else if (action === "reschedule") openRescheduleModal(id);
+        else if (action === "start") startAppointment(id);
     });
+
+
+    // =====================================================
+    // BUSCA DE PACIENTES (para modal de nova consulta)
+    // =====================================================
+
+    async function searchPatients(term) {
+        const dropdown = document.getElementById("patientDropdown");
+        if (term.length < 2) {
+            dropdown.classList.remove("show");
+            return;
+        }
+
+        try {
+            const url = new URL(SEARCH_PATIENTS_URL, window.location.origin);
+            url.searchParams.append("search", term);
+
+            const response = await fetch(url.toString(), {
+                method: "GET",
+                headers: { "Accept": "application/json" },
+                credentials: "include"
+            });
+
+            if (response.status === 401) {
+                window.location.reload();
+                return;
+            }
+
+            if (!response.ok) throw new Error("Erro na busca");
+
+            const data = await response.json();
+            const patients = data.success && Array.isArray(data.patients) ? data.patients : [];
+
+            if (patients.length === 0) {
+                dropdown.innerHTML = `<div class="phc-patient-dropdown-empty">Nenhum paciente encontrado.</div>`;
+                dropdown.classList.add("show");
+                return;
+            }
+
+            dropdown.innerHTML = patients.map(function (p) {
+                const initials = getInitials(p.full_name);
+                const name = escapeHtml(p.full_name || "Sem nome");
+                const email = escapeHtml(p.email || "");
+                const cpf = escapeHtml(p.cpf || "");
+
+                return `
+                    <div class="phc-patient-option"
+                         data-id="${p.patient_id}"
+                         data-name="${name}"
+                         data-email="${email}"
+                         data-cpf="${cpf}"
+                         data-photo="${escapeHtml(p.profile_photo || "")}">
+                        <div class="phc-patient-option-avatar">${escapeHtml(initials)}</div>
+                        <div class="phc-patient-option-info">
+                            <div class="phc-patient-option-name">${name}</div>
+                            <div class="phc-patient-option-meta">${cpf || email}</div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            dropdown.querySelectorAll(".phc-patient-option").forEach(function (opt) {
+                opt.addEventListener("click", function () {
+                    selectPatient({
+                        patient_id: this.dataset.id,
+                        full_name: this.dataset.name,
+                        email: this.dataset.email,
+                        cpf: this.dataset.cpf,
+                        profile_photo: this.dataset.photo
+                    });
+                });
+            });
+
+            dropdown.classList.add("show");
+
+        } catch (error) {
+            console.error("Erro ao buscar pacientes:", error);
+            dropdown.innerHTML = `<div class="phc-patient-dropdown-empty">Erro ao buscar pacientes.</div>`;
+            dropdown.classList.add("show");
+        }
+    }
+
+    function selectPatient(patient) {
+        selectedPatient = patient;
+        document.getElementById("appointmentPatientId").value = patient.patient_id;
+        document.getElementById("appointmentPatientSearch").value = patient.full_name;
+        document.getElementById("patientDropdown").classList.remove("show");
+
+        const card = document.getElementById("selectedPatientCard");
+        const initials = getInitials(patient.full_name);
+        const avatarHtml = patient.profile_photo
+            ? `<img src="${escapeHtml(patient.profile_photo)}" alt="">`
+            : escapeHtml(initials);
+
+        card.innerHTML = `
+            <div class="phc-modal-patient-card">
+                <div class="phc-modal-patient-avatar">${avatarHtml}</div>
+                <div>
+                    <div class="phc-modal-patient-name">${escapeHtml(patient.full_name)}</div>
+                    <div class="phc-modal-patient-meta">
+                        ID #${escapeHtml(patient.patient_id)} • ${escapeHtml(patient.email || "Sem email")}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    const patientSearchInput = document.getElementById("appointmentPatientSearch");
+    patientSearchInput.addEventListener("input", function (e) {
+        const term = e.target.value.trim();
+        if (selectedPatient && selectedPatient.full_name !== term) {
+            selectedPatient = null;
+            document.getElementById("appointmentPatientId").value = "";
+            document.getElementById("selectedPatientCard").innerHTML = "";
+        }
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => searchPatients(term), 300);
+    });
+
+    patientSearchInput.addEventListener("focus", function (e) {
+        if (e.target.value.trim().length >= 2) {
+            searchPatients(e.target.value.trim());
+        }
+    });
+
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest(".phc-patient-search-wrapper")) {
+            document.getElementById("patientDropdown").classList.remove("show");
+        }
+    });
+
+
+    // =====================================================
+    // MODAL NOVA CONSULTA
+    // =====================================================
+
+    function openNewAppointmentModal(presetDate, presetTime) {
+        // Reset do formulário
+        document.getElementById("newAppointmentForm").reset();
+        document.getElementById("appointmentPatientId").value = "";
+        document.getElementById("selectedPatientCard").innerHTML = "";
+        document.getElementById("patientDropdown").classList.remove("show");
+        selectedPatient = null;
+
+        document.getElementById("newAppointmentModalTitle").innerHTML = `
+            <span class="material-symbols-rounded">event_available</span>
+            Nova Consulta
+        `;
+
+        // Preencher data/hora se fornecido
+        if (presetDate) document.getElementById("appointmentDate").value = presetDate;
+        else document.getElementById("appointmentDate").value = dateKey(selectedDateValue);
+
+        if (presetTime) document.getElementById("appointmentTime").value = presetTime;
+
+        const modal = new bootstrap.Modal(document.getElementById("newAppointmentModal"));
+        modal.show();
+    }
+
+    document.getElementById("btnNovaConsulta").addEventListener("click", function () {
+        openNewAppointmentModal();
+    });
+
+    document.getElementById("btnAgendar").addEventListener("click", function () {
+        openNewAppointmentModal();
+    });
+
+    document.getElementById("addAppointmentBtn").addEventListener("click", function () {
+        openNewAppointmentModal(dateKey(selectedDateValue));
+    });
+
+
+    // =====================================================
+    // CRIAR CONSULTA (POST via rota Web)
+    // =====================================================
+
+    document.getElementById("saveAppointmentBtn").addEventListener("click", async function () {
+        const btn = this;
+
+        const patientId = document.getElementById("appointmentPatientId").value;
+        const date = document.getElementById("appointmentDate").value;
+        const time = document.getElementById("appointmentTime").value;
+        const reason = document.getElementById("appointmentReason").value.trim();
+        const notes = document.getElementById("appointmentNotes").value.trim();
+        const meetingLink = document.getElementById("appointmentMeetingLink").value.trim();
+
+        // Validações
+        if (!patientId) {
+            showToast("Atenção", "Selecione um paciente.", "warning");
+            return;
+        }
+        if (!date) {
+            showToast("Atenção", "Informe a data da consulta.", "warning");
+            return;
+        }
+        if (!time) {
+            showToast("Atenção", "Informe o horário da consulta.", "warning");
+            return;
+        }
+        if (!reason) {
+            showToast("Atenção", "Informe o motivo da consulta.", "warning");
+            return;
+        }
+
+        const payload = {
+            patient_id: parseInt(patientId, 10),
+            appointment_date: `${date} ${time}`,
+            appointment_reason: reason,
+            notes: notes || null
+        };
+
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Agendando...`;
+
+        try {
+            const response = await fetch(CREATE_APPOINTMENT_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                credentials: "include",
+                body: JSON.stringify(payload)
+            });
+            if (response.status === 401) {
+                window.location.reload();
+                return;
+            }
+
+            let data;
+            try { data = await response.json(); } catch { data = {}; }
+
+            if (response.ok && (data.success || response.status === 201)) {
+                showToast("Sucesso", "Consulta agendada com sucesso!", "success");
+                bootstrap.Modal.getInstance(document.getElementById("newAppointmentModal")).hide();
+                await refreshAppointments();
+                renderAll();
+            } else {
+                const msg = data.message || "Erro ao criar consulta.";
+                showToast("Erro", msg, "error");
+            }
+        } catch (error) {
+            console.error("Erro ao criar consulta:", error);
+            showToast("Erro", "Não foi possível agendar a consulta. Verifique sua conexão.", "error");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<span class="material-symbols-rounded">save</span> Agendar Consulta`;
+        }
+    });
+
+
+    // =====================================================
+    // ATUALIZAR APPOINTMENTS (refetch da rota Web)
+    // =====================================================
+
+    async function refreshAppointments() {
+        try {
+            const response = await fetch(FETCH_APPOINTMENTS_URL, {
+                method: "GET",
+                headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRFToken": csrfToken
+            },credentials: "include"
+            });
+
+            if (response.status === 401) {
+                window.location.reload();
+                return;
+            }
+
+            if (!response.ok) throw new Error("Erro ao carregar");
+
+            const data = await response.json();
+            if (data.success && Array.isArray(data.appointments)) {
+                appointments = data.appointments;
+                appointmentsData = [...appointments];
+            }
+        } catch (error) {
+            console.error("Erro ao recarregar consultas:", error);
+            // Mantém os dados atuais se falhar
+        }
+    }
+
+
+    // =====================================================
+    // ACEITAR CONSULTA
+    // =====================================================
+
+    async function acceptAppointment(appointmentId) {
+        try {
+            const url = ACCEPT_APPOINTMENT_URL.replace("{id}", appointmentId);
+            const response = await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                credentials: "include"
+            });
+
+            if (response.status === 401) {
+                window.location.reload();
+                return;
+            }
+
+            let data;
+            try { data = await response.json(); } catch { data = {}; }
+
+            if (response.ok && (data.success !== false)) {
+                // Atualiza localmente
+                const apt = appointments.find(a => String(a.id) === String(appointmentId));
+                if (apt) apt.status = "scheduled";
+
+                showToast("Sucesso", "Consulta confirmada.", "success");
+                renderAll();
+            } else {
+                showToast("Erro", data.message || "Não foi possível confirmar.", "error");
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("Erro", "Falha ao confirmar consulta.", "error");
+        }
+    }
+
+
+    // =====================================================
+    // CANCELAR CONSULTA (com confirmação)
+    // =====================================================
+
+    function confirmCancelAppointment(appointmentId) {
+        appointmentToCancel = appointmentId;
+        const modal = new bootstrap.Modal(document.getElementById("confirmCancelModal"));
+        modal.show();
+    }
+
+    document.getElementById("confirmCancelBtn").addEventListener("click", async function () {
+        if (!appointmentToCancel) return;
+
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Cancelando...`;
+
+        try {
+            const url = CANCEL_APPOINTMENT_URL.replace("{id}", appointmentToCancel);
+            const response = await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                credentials: "include"
+            });
+
+            if (response.status === 401) {
+                window.location.reload();
+                return;
+            }
+
+            let data;
+            try { data = await response.json(); } catch { data = {}; }
+
+            bootstrap.Modal.getInstance(document.getElementById("confirmCancelModal")).hide();
+
+            if (response.ok && (data.success !== false)) {
+                const apt = appointments.find(a => String(a.id) === String(appointmentToCancel));
+                if (apt) apt.status = "cancelled";
+
+                showToast("Sucesso", "Consulta cancelada.", "success");
+                renderAll();
+            } else {
+                showToast("Erro", data.message || "Não foi possível cancelar.", "error");
+            }
+        } catch (error) {
+            console.error(error);
+            bootstrap.Modal.getInstance(document.getElementById("confirmCancelModal")).hide();
+            showToast("Erro", "Falha ao cancelar consulta.", "error");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = "Sim, Cancelar";
+            appointmentToCancel = null;
+        }
+    });
+
+
+    // =====================================================
+    // REAGENDAR CONSULTA
+    // =====================================================
+
+    function openRescheduleModal(appointmentId) {
+        const apt = appointments.find(a => String(a.id) === String(appointmentId));
+        if (!apt) return;
+
+        appointmentToReschedule = apt;
+        const date = parseAppointmentDate(apt.appointment_date);
+        const timeStr = date ? timeKey(date) : "";
+
+        document.getElementById("rescheduleAppointmentId").value = apt.id;
+        document.getElementById("rescheduleDate").value = date ? dateKey(date) : "";
+        document.getElementById("rescheduleTime").value = timeStr;
+        document.getElementById("rescheduleReason").value = "";
+
+        document.getElementById("rescheduleCurrentInfo").innerHTML = `
+            <div style="font-size: 0.8rem; color: var(--phc-muted); margin-bottom: 0.35rem; font-weight: 600; text-transform: uppercase;">Atualmente agendada para</div>
+            <div style="font-weight: 600;">
+                ${date ? formatDateBR(date) : "--"} às ${timeStr}
+            </div>
+            <div style="font-size: 0.85rem; color: var(--phc-muted); margin-top: 0.35rem;">
+                ${escapeHtml(apt.patient_name || "Paciente")} • ${escapeHtml(apt.appointment_reason || "")}
+            </div>
+        `;
+
+        const modal = new bootstrap.Modal(document.getElementById("rescheduleModal"));
+        modal.show();
+    }
+
+    document.getElementById("confirmRescheduleBtn").addEventListener("click", async function () {
+        if (!appointmentToReschedule) return;
+
+        const btn = this;
+        const newDate = document.getElementById("rescheduleDate").value;
+        const newTime = document.getElementById("rescheduleTime").value;
+        const reason = document.getElementById("rescheduleReason").value.trim();
+
+        if (!newDate || !newTime) {
+            showToast("Atenção", "Informe a nova data e horário.", "warning");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Reagendando...`;
+
+        const payload = {
+            appointment_date: `${newDate} ${newTime}`,
+            reason: reason || null
+        };
+
+        const response = await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            credentials: "include",
+            body: JSON.stringify(payload)
+        });
+
+        try {
+            const url = RESCHEDULE_APPOINTMENT_URL.replace("{id}", appointmentToReschedule.id);
+            const response = await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                credentials: "include",
+                body: JSON.stringify(payload)
+            });
+
+            if (response.status === 401) {
+                window.location.reload();
+                return;
+            }
+
+            let data;
+            try { data = await response.json(); } catch { data = {}; }
+
+            bootstrap.Modal.getInstance(document.getElementById("rescheduleModal")).hide();
+
+            if (response.ok && (data.success !== false)) {
+                // Atualiza localmente
+                appointmentToReschedule.appointment_date = `${newDate} ${newTime}`;
+                showToast("Sucesso", "Consulta reagendada com sucesso.", "success");
+                renderAll();
+            } else if (response.status === 404) {
+                // Endpoint não existe - mostrar mensagem amigável
+                showToast("Atenção", "O reagendamento ainda não está disponível. Funcionalidade em desenvolvimento.", "warning");
+            } else {
+                showToast("Erro", data.message || "Não foi possível reagendar.", "error");
+            }
+        } catch (error) {
+            console.error(error);
+            bootstrap.Modal.getInstance(document.getElementById("rescheduleModal")).hide();
+            showToast("Erro", "Falha ao reagendar consulta.", "error");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<span class="material-symbols-rounded">check</span> Confirmar Reagendamento`;
+            appointmentToReschedule = null;
+        }
+    });
+
+
+    // =====================================================
+    // INICIAR CONSULTA
+    // =====================================================
+
+    function startAppointment(appointmentId) {
+        const apt = appointments.find(a => String(a.id) === String(appointmentId));
+        if (!apt) return;
+        openAppointmentDetails(appointmentId, true);
+    }
+
+
+    // =====================================================
+    // DETALHES DA CONSULTA
+    // =====================================================
+
+    function openAppointmentDetails(appointmentId, highlightStart = false) {
+        const apt = appointments.find(a => String(a.id) === String(appointmentId));
+        if (!apt) return;
+
+        const date = parseAppointmentDate(apt.appointment_date);
+        const statusInfo = getStatusInfo(apt.status);
+        const initials = getInitials(apt.patient_name);
+
+        const avatarHtml = apt.patient_photo
+            ? `<img src="${escapeHtml(apt.patient_photo)}" alt="">`
+            : escapeHtml(initials);
+
+        const body = document.getElementById("detailsBody");
+        body.innerHTML = `
+            <div class="phc-modal-patient-card">
+                <div class="phc-modal-patient-avatar">${avatarHtml}</div>
+                <div>
+                    <div class="phc-modal-patient-name">${escapeHtml(apt.patient_name || "Paciente")}</div>
+                    <div class="phc-modal-patient-meta">ID #${escapeHtml(apt.patient_id)}</div>
+                </div>
+            </div>
+
+            <div class="phc-details-row">
+                <div class="phc-details-label">Data</div>
+                <div class="phc-details-value">${date ? formatDateBR(date) : "—"}</div>
+            </div>
+            <div class="phc-details-row">
+                <div class="phc-details-label">Horário</div>
+                <div class="phc-details-value">${date ? timeKey(date) : "—"}</div>
+            </div>
+            <div class="phc-details-row">
+                <div class="phc-details-label">Motivo</div>
+                <div class="phc-details-value">${escapeHtml(apt.appointment_reason || "Não informado")}</div>
+            </div>
+            <div class="phc-details-row">
+                <div class="phc-details-label">Observações</div>
+                <div class="phc-details-value">${escapeHtml(apt.notes || "—")}</div>
+            </div>
+            <div class="phc-details-row">
+                <div class="phc-details-label">Status</div>
+                <div class="phc-details-value">
+                    <span class="phc-badge ${statusInfo.className}">
+                        <span class="phc-badge-dot"></span>
+                        ${statusInfo.label}
+                    </span>
+                </div>
+            </div>
+            <div class="phc-details-row">
+                <div class="phc-details-label">Link da reunião</div>
+                <div class="phc-details-value">
+                    ${apt.meeting_link
+                        ? `<a href="${escapeHtml(apt.meeting_link)}" target="_blank" rel="noopener">${escapeHtml(apt.meeting_link)}</a>`
+                        : "—"}
+                </div>
+            </div>
+            <div class="phc-details-row">
+                <div class="phc-details-label">Criada em</div>
+                <div class="phc-details-value">${escapeHtml(apt.created_at || "—")}</div>
+            </div>
+        `;
+
+        const footer = document.getElementById("detailsFooter");
+        footer.innerHTML = "";
+
+        const closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className = "phc-btn phc-btn-outline";
+        closeBtn.setAttribute("data-bs-dismiss", "modal");
+        closeBtn.textContent = "Fechar";
+        footer.appendChild(closeBtn);
+
+        if (apt.status === "pending") {
+            const confirmBtn = document.createElement("button");
+            confirmBtn.type = "button";
+            confirmBtn.className = "phc-btn";
+            confirmBtn.innerHTML = `<span class="material-symbols-rounded">check</span> Confirmar`;
+            confirmBtn.addEventListener("click", async function () {
+                await acceptAppointment(apt.id);
+                bootstrap.Modal.getInstance(document.getElementById("appointmentDetailsModal")).hide();
+            });
+            footer.appendChild(confirmBtn);
+        }
+
+        if (apt.status !== "cancelled" && apt.status !== "completed") {
+            const rescheduleBtn = document.createElement("button");
+            rescheduleBtn.type = "button";
+            rescheduleBtn.className = "phc-btn phc-btn-outline";
+            rescheduleBtn.innerHTML = `<span class="material-symbols-rounded">event_repeat</span> Reagendar`;
+            rescheduleBtn.addEventListener("click", function () {
+                bootstrap.Modal.getInstance(document.getElementById("appointmentDetailsModal")).hide();
+                setTimeout(() => openRescheduleModal(apt.id), 300);
+            });
+            footer.appendChild(rescheduleBtn);
+
+            const cancelBtn = document.createElement("button");
+            cancelBtn.type = "button";
+            cancelBtn.className = "phc-btn phc-btn-outline";
+            cancelBtn.style.color = "var(--phc-danger-text)";
+            cancelBtn.style.borderColor = "var(--phc-danger-text)";
+            cancelBtn.innerHTML = `<span class="material-symbols-rounded">close</span> Cancelar`;
+            cancelBtn.addEventListener("click", function () {
+                bootstrap.Modal.getInstance(document.getElementById("appointmentDetailsModal")).hide();
+                setTimeout(() => confirmCancelAppointment(apt.id), 300);
+            });
+            footer.appendChild(cancelBtn);
+        }
+
+        if (apt.status === "scheduled") {
+            if (apt.meeting_link) {
+                const joinBtn = document.createElement("a");
+                joinBtn.href = apt.meeting_link;
+                joinBtn.target = "_blank";
+                joinBtn.rel = "noopener";
+                joinBtn.className = "phc-btn";
+                joinBtn.innerHTML = `<span class="material-symbols-rounded">videocam</span> Entrar na reunião`;
+                footer.appendChild(joinBtn);
+            }
+
+            const startBtn = document.createElement("button");
+            startBtn.type = "button";
+            startBtn.className = "phc-btn";
+            startBtn.innerHTML = `<span class="material-symbols-rounded">play_arrow</span> Iniciar Consulta`;
+            startBtn.addEventListener("click", function () {
+                if (apt.meeting_link) {
+                    window.open(apt.meeting_link, "_blank");
+                } else {
+                    showToast("Atenção", "Esta consulta não possui link de reunião configurado.", "warning");
+                }
+            });
+            footer.appendChild(startBtn);
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById("appointmentDetailsModal"));
+        modal.show();
+    }
+
+
+    // =====================================================
+    // EXPORTAR
+    // =====================================================
+
+    document.getElementById("exportBtn").addEventListener("click", function () {
+        const modal = new bootstrap.Modal(document.getElementById("exportModal"));
+        modal.show();
+    });
+
+    window.exportAppointments = function (format) {
+        const period = document.querySelector('input[name="exportPeriod"]:checked').value;
+        let data = [];
+
+        const today = new Date();
+
+        if (period === "day") {
+            data = appointmentsForDate(selectedDateValue);
+        } else if (period === "week") {
+            const start = new Date(selectedDateValue);
+            const diff = start.getDay() === 0 ? -6 : 1 - start.getDay();
+            start.setDate(start.getDate() + diff);
+            start.setHours(0, 0, 0, 0);
+            const end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            end.setHours(23, 59, 59, 999);
+            data = getAppointmentsInRange(start, end);
+        } else if (period === "month") {
+            const start = new Date(today.getFullYear(), today.getMonth(), 1);
+            const end = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59);
+            data = getAppointmentsInRange(start, end);
+        } else if (period === "all") {
+            data = [...appointments];
+        }
+
+        if (data.length === 0) {
+            showToast("Atenção", "Não há consultas no período selecionado.", "warning");
+            return;
+        }
+
+        if (format === "csv") {
+            exportCSV(data);
+        } else if (format === "json") {
+            exportJSON(data);
+        } else if (format === "pdf") {
+            exportPrint(data, period);
+        }
+
+        bootstrap.Modal.getInstance(document.getElementById("exportModal")).hide();
+    };
+
+    function exportCSV(data) {
+        const headers = ["ID", "Paciente", "Paciente ID", "Data", "Horário", "Motivo", "Status", "Observações"];
+        const rows = data.map(function (a) {
+            const d = parseAppointmentDate(a.appointment_date);
+            return [
+                a.id,
+                `"${(a.patient_name || "").replace(/"/g, '""')}"`,
+                a.patient_id,
+                d ? formatDateBR(d) : "",
+                d ? timeKey(d) : "",
+                `"${(a.appointment_reason || "").replace(/"/g, '""')}"`,
+                a.status,
+                `"${(a.notes || "").replace(/"/g, '""')}"`
+            ];
+        });
+
+        const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+        const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `consultas_${dateKey(new Date())}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showToast("Sucesso", `${data.length} consultas exportadas em CSV.`, "success");
+    }
+
+    function exportJSON(data) {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `consultas_${dateKey(new Date())}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showToast("Sucesso", `${data.length} consultas exportadas em JSON.`, "success");
+    }
+
+    function exportPrint(data, period) {
+        const printWindow = window.open("", "_blank");
+        const periodLabel = period === "day" ? formatDateBR(selectedDateValue)
+            : period === "week" ? "Semana atual"
+            : period === "month" ? `${monthNames[new Date().getMonth()]} ${new Date().getFullYear()}`
+            : "Todas";
+
+        const rows = data.map(function (a) {
+            const d = parseAppointmentDate(a.appointment_date);
+            return `
+                <tr>
+                    <td>${d ? formatDateBR(d) : "—"}</td>
+                    <td>${d ? timeKey(d) : "—"}</td>
+                    <td>${escapeHtml(a.patient_name || "—")}</td>
+                    <td>${escapeHtml(a.appointment_reason || "—")}</td>
+                    <td>${getStatusInfo(a.status).label}</td>
+                </tr>
+            `;
+        }).join("");
+
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Consultas - ${periodLabel}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; color: #111827; }
+                    h1 { color: #8B5CF6; font-size: 24px; margin-bottom: 5px; }
+                    .subtitle { color: #6B7280; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #E5E7EB; padding: 10px; text-align: left; font-size: 13px; }
+                    th { background: #F9FAFB; font-weight: 700; text-transform: uppercase; font-size: 11px; }
+                </style>
+            </head>
+            <body>
+                <h1>Precision Health Connect</h1>
+                <div class="subtitle">Relatório de consultas — ${periodLabel}</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Paciente</th>
+                            <th>Motivo</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <p style="margin-top: 20px; font-size: 11px; color: #6B7280;">
+                    Total: ${data.length} consultas • Gerado em ${new Date().toLocaleString("pt-BR")}
+                </p>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        setTimeout(() => printWindow.print(), 500);
+
+        showToast("Sucesso", "Janela de impressão aberta.", "success");
+    }
+
+
+    // =====================================================
+    // RENDER INICIAL
+    // =====================================================
+
+    renderAll();
+
+});
+
 </script>
 
 {% endblock %}

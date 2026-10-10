@@ -1,41 +1,68 @@
 {% extends "base.html" %}
 
 {% block title %}
-Precision Health Connect
+Pacientes | Precision Health Connect
 {% endblock %}
 
 {% block content %}
+
+<!-- Importação do Material Symbols Rounded -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
 <style>
     :root {
         --phc-primary: #8B5CF6;
         --phc-secondary: #A78BFA;
-        --phc-light: #EDE9FE;
+        --phc-light: #F5F3FF;
         --phc-white: #FFFFFF;
-        --phc-text: #1F2937;
-        --phc-muted: #6B7280;
+        --phc-text: #111827;
+        --phc-text-secondary: #6B7280;
         --phc-border: #E5E7EB;
-        --phc-bg: #FAFAFC;
+        --phc-bg: #F9FAFB;
+
+        /* Status Colors */
+        --phc-success-bg: #DCFCE7;
+        --phc-success-text: #166534;
+        --phc-warning-bg: #FEF3C7;
+        --phc-warning-text: #92400E;
+        --phc-danger-bg: #FEE2E2;
+        --phc-danger-text: #991B1B;
+
+        /* Shadows */
+        --phc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --phc-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --phc-shadow-lg: 0 20px 25px -5px rgba(139, 92, 246, 0.15), 0 10px 10px -5px rgba(139, 92, 246, 0.08);
+    }
+
+    body {
+        background-color: var(--phc-bg);
+        color: var(--phc-text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
     .phc-patients-page {
-        padding: 2rem 1.5rem;
-        background: var(--phc-bg);
-        min-height: 100vh;
+        padding: 2.5rem 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
+    /* Cabeçalho */
     .phc-page-header {
-        margin-bottom: 1.75rem;
+        margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
     .phc-page-title {
-        font-size: 1.875rem;
+        font-size: 1.75rem;
         font-weight: 700;
         color: var(--phc-text);
         margin: 0;
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        letter-spacing: -0.025em;
     }
 
     .phc-page-title .material-symbols-rounded {
@@ -44,25 +71,40 @@ Precision Health Connect
     }
 
     .phc-page-subtitle {
-        color: var(--phc-muted);
+        color: var(--phc-text-secondary);
         font-size: 0.95rem;
-        margin: 0.25rem 0 0 0;
+        margin: 0;
+    }
+
+    /* Cards Gerais */
+    .phc-card {
+        background: var(--phc-white);
+        border: 1px solid var(--phc-border);
+        border-radius: 16px;
+        box-shadow: var(--phc-shadow-sm);
+        transition: box-shadow 0.2s ease;
     }
 
     /* Filtros */
     .phc-filters-card {
-        background: var(--phc-white);
-        border: 1px solid var(--phc-border);
-        border-radius: 14px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
+    }
+
+    .phc-filters-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--phc-border);
     }
 
     .phc-filters-title {
         font-size: 0.95rem;
         font-weight: 600;
         color: var(--phc-text);
-        margin-bottom: 1rem;
+        margin: 0;
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -75,29 +117,31 @@ Precision Health Connect
 
     .phc-filter-label {
         font-size: 0.8rem;
-        font-weight: 500;
-        color: var(--phc-muted);
+        font-weight: 600;
+        color: var(--phc-text-secondary);
         margin-bottom: 0.4rem;
         display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
     .phc-filter-input,
     .phc-filter-select {
         width: 100%;
-        padding: 0.6rem 0.9rem;
+        padding: 0.65rem 0.9rem;
         border: 1px solid var(--phc-border);
         border-radius: 8px;
         font-size: 0.88rem;
         background: var(--phc-white);
         color: var(--phc-text);
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        transition: all 0.2s ease;
     }
 
     .phc-filter-input:focus,
     .phc-filter-select:focus {
         outline: none;
         border-color: var(--phc-primary);
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
     }
 
     .phc-filter-input::placeholder {
@@ -108,34 +152,40 @@ Precision Health Connect
         background: var(--phc-primary);
         color: white;
         border: none;
-        padding: 0.6rem 1.25rem;
+        padding: 0.65rem 1.25rem;
         border-radius: 8px;
         font-size: 0.88rem;
-        font-weight: 500;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.4rem;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: all 0.2s ease;
         width: 100%;
-        justify-content: center;
+        height: 42px;
     }
 
     .phc-btn-filter:hover {
-        background: var(--phc-secondary);
+        background: #7C3AED;
+        transform: translateY(-1px);
+        box-shadow: var(--phc-shadow-md);
     }
 
     .phc-btn-clear {
         background: transparent;
-        color: var(--phc-muted);
+        color: var(--phc-text-secondary);
         border: 1px solid var(--phc-border);
-        padding: 0.6rem 1.25rem;
+        padding: 0.65rem 1.25rem;
         border-radius: 8px;
         font-size: 0.88rem;
-        font-weight: 500;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        width: 100%;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .phc-btn-clear:hover {
@@ -146,9 +196,6 @@ Precision Health Connect
 
     /* Tabela */
     .phc-table-card {
-        background: var(--phc-white);
-        border: 1px solid var(--phc-border);
-        border-radius: 14px;
         overflow: hidden;
     }
 
@@ -158,8 +205,7 @@ Precision Health Connect
         align-items: center;
         padding: 1.25rem 1.5rem;
         border-bottom: 1px solid var(--phc-border);
-        flex-wrap: wrap;
-        gap: 0.75rem;
+        background: var(--phc-white);
     }
 
     .phc-table-title {
@@ -173,54 +219,62 @@ Precision Health Connect
 
     .phc-table-title .material-symbols-rounded {
         color: var(--phc-primary);
+        font-size: 1.25rem;
     }
 
     .phc-results-count {
-        color: var(--phc-muted);
+        color: var(--phc-text-secondary);
         font-size: 0.85rem;
+        font-weight: 500;
     }
 
     .phc-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
     }
 
     .phc-table thead th {
-        background: var(--phc-light);
-        color: var(--phc-primary);
-        font-size: 0.76rem;
+        background: var(--phc-bg);
+        color: var(--phc-text-secondary);
+        font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 0.9rem 1.1rem;
-        border: none;
+        letter-spacing: 0.05em;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--phc-border);
         text-align: left;
         white-space: nowrap;
     }
 
     .phc-table tbody td {
-        padding: 1rem 1.1rem;
+        padding: 1.1rem 1.5rem;
         border-bottom: 1px solid var(--phc-border);
         font-size: 0.9rem;
         color: var(--phc-text);
         vertical-align: middle;
-    }
-
-    .phc-table tbody tr {
+        background: var(--phc-white);
         transition: background 0.15s ease;
     }
 
-    .phc-table tbody tr:hover {
-        background: #FAFAFE;
+    .phc-table tbody tr:hover td {
+        background: var(--phc-light);
     }
 
     .phc-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    .phc-photo-cell {
-        width: 44px;
-        height: 44px;
+    /* Células Específicas */
+    .phc-patient-info {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+    }
+
+    .phc-avatar {
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
         color: white;
@@ -228,105 +282,88 @@ Precision Health Connect
         align-items: center;
         justify-content: center;
         font-weight: 600;
-        font-size: 0.88rem;
+        font-size: 0.85rem;
         flex-shrink: 0;
-        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
     }
 
-    .phc-photo-cell img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .phc-name-cell {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .phc-name-text {
-        font-weight: 500;
+    .phc-patient-name {
+        font-weight: 600;
         color: var(--phc-text);
+        font-size: 0.95rem;
     }
 
-    .phc-name-cpf {
-        font-size: 0.78rem;
-        color: var(--phc-muted);
-        margin-top: 0.1rem;
+    .phc-patient-cpf {
+        font-size: 0.8rem;
+        color: var(--phc-text-secondary);
+        margin-top: 0.15rem;
     }
 
     .phc-date-cell {
         display: flex;
         flex-direction: column;
-        gap: 0.1rem;
+        gap: 0.15rem;
     }
 
     .phc-date-main {
-        font-weight: 500;
+        font-weight: 600;
         color: var(--phc-text);
     }
 
     .phc-date-sub {
-        font-size: 0.78rem;
-        color: var(--phc-muted);
+        font-size: 0.8rem;
+        color: var(--phc-text-secondary);
     }
 
-    .phc-badge {
+    /* Badges de Status */
+    .phc-status-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
-        padding: 0.3rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.76rem;
-        font-weight: 500;
+        gap: 6px;
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
         white-space: nowrap;
     }
 
-    .phc-badge-dot {
+    .phc-status-dot {
         width: 6px;
         height: 6px;
         border-radius: 50%;
         background: currentColor;
     }
 
-    .phc-badge-stable {
-        background: #DCFCE7;
-        color: #166534;
-    }
+    .phc-status-stable { background: var(--phc-success-bg); color: var(--phc-success-text); }
+    .phc-status-monitoring { background: var(--phc-light); color: var(--phc-primary); }
+    .phc-status-critical { background: var(--phc-danger-bg); color: var(--phc-danger-text); }
 
-    .phc-badge-monitoring {
-        background: var(--phc-light);
-        color: var(--phc-primary);
-    }
-
-    .phc-badge-critical {
-        background: #FEE2E2;
-        color: #991B1B;
-    }
-
+    /* Botão de Ação na Tabela */
     .phc-btn-record {
-        background: var(--phc-primary);
-        color: white;
-        border: none;
-        padding: 0.45rem 0.9rem;
+        background: var(--phc-white);
+        color: var(--phc-primary);
+        border: 1px solid var(--phc-border);
+        padding: 0.5rem 0.9rem;
         border-radius: 8px;
         font-size: 0.82rem;
-        font-weight: 500;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
+        gap: 0.35rem;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: all 0.2s ease;
         white-space: nowrap;
     }
 
     .phc-btn-record:hover {
-        background: var(--phc-secondary);
+        background: var(--phc-primary);
+        color: white;
+        border-color: var(--phc-primary);
+        box-shadow: var(--phc-shadow-sm);
     }
 
     .phc-btn-record .material-symbols-rounded {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
 
     /* Paginação */
@@ -336,12 +373,11 @@ Precision Health Connect
         align-items: center;
         padding: 1rem 1.5rem;
         border-top: 1px solid var(--phc-border);
-        flex-wrap: wrap;
-        gap: 0.75rem;
+        background: var(--phc-white);
     }
 
     .phc-pagination-info {
-        color: var(--phc-muted);
+        color: var(--phc-text-secondary);
         font-size: 0.85rem;
     }
 
@@ -351,13 +387,14 @@ Precision Health Connect
     }
 
     .phc-page-btn {
-        min-width: 34px;
-        height: 34px;
+        min-width: 36px;
+        height: 36px;
         border: 1px solid var(--phc-border);
         background: var(--phc-white);
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
         font-size: 0.85rem;
+        font-weight: 500;
         color: var(--phc-text);
         display: flex;
         align-items: center;
@@ -375,30 +412,33 @@ Precision Health Connect
         background: var(--phc-primary);
         color: white;
         border-color: var(--phc-primary);
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
     }
 
     .phc-page-btn:disabled {
         opacity: 0.4;
         cursor: not-allowed;
+        background: var(--phc-bg);
     }
 
-    /* Modal */
+    /* ========================================== */
+    /* MODAL AJUSTADO: Fundo branco e borda lilás */
+    /* ========================================== */
     .phc-modal .modal-content {
-        border: none;
+        background-color: var(--phc-white);
+        border: 2px solid var(--phc-primary);
         border-radius: 16px;
         overflow: hidden;
+        box-shadow: var(--phc-shadow-lg);
     }
 
     .phc-modal-header {
-        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
-        color: white;
+        background: var(--phc-white);
+        border-bottom: 1px solid var(--phc-border);
         padding: 1.5rem;
-        border: none;
-    }
-
-    .phc-modal-header .btn-close {
-        filter: brightness(0) invert(1);
-        opacity: 0.9;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
     .phc-modal-patient-info {
@@ -411,7 +451,7 @@ Precision Health Connect
         width: 64px;
         height: 64px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, var(--phc-primary), var(--phc-secondary));
         color: white;
         display: flex;
         align-items: center;
@@ -419,62 +459,86 @@ Precision Health Connect
         font-weight: 700;
         font-size: 1.4rem;
         flex-shrink: 0;
-        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
     }
 
     .phc-modal-name {
         font-size: 1.35rem;
-        font-weight: 600;
+        font-weight: 700;
+        color: var(--phc-text);
         margin: 0;
     }
 
     .phc-modal-subtitle {
         font-size: 0.88rem;
-        opacity: 0.9;
-        margin: 0.15rem 0 0 0;
+        color: var(--phc-text-secondary);
+        margin: 0.25rem 0 0 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .phc-modal-header .btn-close {
+        background: var(--phc-bg);
+        border-radius: 50%;
+        padding: 0.5rem;
+        opacity: 1;
+        transition: background 0.2s;
+    }
+
+    .phc-modal-header .btn-close:hover {
+        background: var(--phc-light);
     }
 
     .phc-modal-body {
         padding: 1.5rem;
+        background: var(--phc-white);
+    }
+
+    .phc-modal-section {
+        margin-bottom: 1.75rem;
+    }
+
+    .phc-modal-section:last-child {
+        margin-bottom: 0;
     }
 
     .phc-modal-section-title {
-        font-size: 0.82rem;
-        font-weight: 600;
+        font-size: 0.8rem;
+        font-weight: 700;
         color: var(--phc-primary);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.05em;
         margin-bottom: 1rem;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.5rem;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid var(--phc-border);
     }
 
     .phc-modal-section-title .material-symbols-rounded {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
     }
 
     .phc-info-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        gap: 1.25rem;
     }
 
     .phc-info-item {
         display: flex;
         flex-direction: column;
-        gap: 0.2rem;
+        gap: 0.35rem;
     }
 
     .phc-info-label {
-        font-size: 0.78rem;
-        color: var(--phc-muted);
-        font-weight: 500;
+        font-size: 0.75rem;
+        color: var(--phc-text-secondary);
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.05em;
     }
 
     .phc-info-value {
@@ -483,7 +547,7 @@ Precision Health Connect
         font-weight: 500;
         display: flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.5rem;
     }
 
     .phc-info-value .material-symbols-rounded {
@@ -500,41 +564,49 @@ Precision Health Connect
     .phc-tag {
         background: var(--phc-light);
         color: var(--phc-primary);
-        padding: 0.35rem 0.75rem;
-        border-radius: 20px;
+        padding: 0.4rem 0.85rem;
+        border-radius: 9999px;
         font-size: 0.82rem;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-
-    .phc-tag.critical {
-        background: #FEE2E2;
-        color: #991B1B;
-    }
-
-    .phc-tag .material-symbols-rounded {
-        font-size: 0.95rem;
-    }
-
-    .phc-modal-footer {
-        padding: 1rem 1.5rem;
-        border-top: 1px solid var(--phc-border);
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-        background: #FAFAFC;
-    }
-
-    .phc-modal-btn {
-        padding: 0.55rem 1.1rem;
-        border-radius: 8px;
-        font-size: 0.88rem;
-        font-weight: 500;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
+        border: 1px solid transparent;
+    }
+
+    .phc-tag.critical {
+        background: var(--phc-danger-bg);
+        color: var(--phc-danger-text);
+        border-color: #FECACA;
+    }
+
+    .phc-tag.neutral {
+        background: var(--phc-bg);
+        color: var(--phc-text-secondary);
+        border-color: var(--phc-border);
+    }
+
+    .phc-tag .material-symbols-rounded {
+        font-size: 1rem;
+    }
+
+    .phc-modal-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid var(--phc-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        background: var(--phc-white);
+    }
+
+    .phc-modal-btn {
+        padding: 0.65rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
         cursor: pointer;
         transition: all 0.2s ease;
         border: none;
@@ -543,15 +615,17 @@ Precision Health Connect
     .phc-modal-btn-primary {
         background: var(--phc-primary);
         color: white;
+        box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
     }
 
     .phc-modal-btn-primary:hover {
-        background: var(--phc-secondary);
+        background: #7C3AED;
+        transform: translateY(-1px);
     }
 
     .phc-modal-btn-secondary {
-        background: transparent;
-        color: var(--phc-muted);
+        background: var(--phc-white);
+        color: var(--phc-text-secondary);
         border: 1px solid var(--phc-border);
     }
 
@@ -561,427 +635,2645 @@ Precision Health Connect
         border-color: var(--phc-secondary);
     }
 
+    /* Responsividade */
     @media (max-width: 992px) {
         .phc-table-card { overflow-x: auto; }
         .phc-table { min-width: 900px; }
     }
 
     @media (max-width: 768px) {
-        .phc-patients-page { padding: 1.25rem 1rem; }
+        .phc-patients-page { padding: 1.5rem 1rem; }
         .phc-page-title { font-size: 1.5rem; }
+        .phc-filters-card { padding: 1.25rem; }
+        .phc-modal-dialog { margin: 0.5rem; }
     }
 </style>
 
+
 <div class="phc-patients-page">
-    <!-- Cabeçalho -->
+
+    <!-- =====================================================
+         CABEÇALHO
+    ====================================================== -->
+
     <div class="phc-page-header">
+
         <h1 class="phc-page-title">
-            <span class="material-symbols-rounded">group</span>
+
+            <span class="material-symbols-rounded">
+                group
+            </span>
+
             Pacientes
+
         </h1>
-        <p class="phc-page-subtitle">Gerencie os pacientes vinculados ao seu atendimento.</p>
+
+        <p class="phc-page-subtitle">
+
+            Gerencie e acompanhe os pacientes que aprovaram
+            seu vínculo profissional.
+
+        </p>
+
     </div>
 
-    <!-- Filtros -->
-    <div class="phc-filters-card">
-        <div class="phc-filters-title">
-            <span class="material-symbols-rounded">tune</span>
-            Filtros de busca
+
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <div class="phc-card phc-filters-card">
+
+        <div class="phc-filters-header">
+
+            <span class="material-symbols-rounded">
+                tune
+            </span>
+
+            <h2 class="phc-filters-title">
+                Filtros de busca
+            </h2>
+
         </div>
+
+
         <div class="row g-3">
-            <div class="col-12 col-md-4">
-                <label class="phc-filter-label">Pesquisa</label>
-                <input type="text" class="phc-filter-input" placeholder="Pesquisar por nome ou CPF">
+
+            <!-- PESQUISA -->
+
+            <div class="col-12 col-md-5">
+
+                <label
+                    class="phc-filter-label"
+                    for="patientSearch"
+                >
+                    Pesquisa
+                </label>
+
+                <input
+                    type="text"
+                    id="patientSearch"
+                    class="phc-filter-input"
+                    placeholder="Buscar por nome ou CPF..."
+                    autocomplete="off"
+                >
+
             </div>
-            <div class="col-6 col-md-2">
-                <label class="phc-filter-label">Especialidade</label>
-                <select class="phc-filter-select">
-                    <option value="">Todas</option>
-                    <option>Clínica Geral</option>
-                    <option>Cardiologia</option>
-                    <option>Ortopedia</option>
-                    <option>Pediatria</option>
-                    <option>Dermatologia</option>
+
+
+            <!-- STATUS -->
+
+            <div class="col-6 col-md-3">
+
+                <label
+                    class="phc-filter-label"
+                    for="patientStatus"
+                >
+                    Status
+                </label>
+
+                <select
+                    id="patientStatus"
+                    class="phc-filter-select"
+                >
+
+                    <option value="">
+                        Todos
+                    </option>
+
+                    <option value="active">
+                        Ativos
+                    </option>
+
                 </select>
+
             </div>
-            <div class="col-6 col-md-2">
-                <label class="phc-filter-label">Última consulta</label>
-                <select class="phc-filter-select">
-                    <option value="">Qualquer</option>
-                    <option>Últimos 7 dias</option>
-                    <option>Últimos 30 dias</option>
-                    <option>Últimos 90 dias</option>
-                    <option>Mais de 90 dias</option>
-                </select>
-            </div>
-            <div class="col-6 col-md-2">
-                <label class="phc-filter-label">Status</label>
-                <select class="phc-filter-select">
-                    <option value="">Todos</option>
-                    <option>Estável</option>
-                    <option>Acompanhamento</option>
-                    <option>Crítico</option>
-                </select>
-            </div>
-            <div class="col-6 col-md-2 d-flex align-items-end gap-2">
-                <button class="phc-btn-filter">
-                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">search</span>
+
+
+            <!-- BOTÕES -->
+
+            <div class="col-6 col-md-4 d-flex align-items-end gap-2">
+
+                <button
+                    type="button"
+                    class="phc-btn-filter"
+                    id="searchButton"
+                >
+
+                    <span
+                        class="material-symbols-rounded"
+                        style="font-size: 1.1rem;"
+                    >
+                        search
+                    </span>
+
                     Buscar
+
                 </button>
-                <button class="phc-btn-clear d-none d-md-block">Limpar</button>
+
+
+                <button
+                    type="button"
+                    class="phc-btn-clear"
+                    id="clearButton"
+                    title="Limpar filtros"
+                >
+
+                    <span
+                        class="material-symbols-rounded"
+                        style="font-size: 1.1rem;"
+                    >
+                        close
+                    </span>
+
+                </button>
+
             </div>
+
         </div>
+
     </div>
 
-    <!-- Tabela -->
-    <div class="phc-table-card">
+
+    <!-- =====================================================
+         LISTA DE PACIENTES
+    ====================================================== -->
+
+    <div class="phc-card phc-table-card">
+
+        <!-- HEADER -->
+
         <div class="phc-table-header">
+
             <div class="phc-table-title">
-                <span class="material-symbols-rounded">list_alt</span>
+
+                <span class="material-symbols-rounded">
+                    list_alt
+                </span>
+
                 Lista de Pacientes
+
             </div>
-            <div class="phc-results-count">Exibindo 10 de 248 pacientes</div>
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div
+                    class="phc-results-count"
+                    id="resultsCount"
+                >
+                    Carregando pacientes...
+                </div>
+
+                <button
+                    type="button"
+                    class="phc-btn-filter"
+                    style="width: auto; height: 42px;"
+                    onclick="openAddPatientModal()"
+                >
+
+                    <span
+                        class="material-symbols-rounded"
+                        style="font-size: 1.1rem;"
+                    >
+                        person_add
+                    </span>
+
+                    Adicionar paciente
+
+                </button>
+
+            </div>
+
         </div>
+
+
+        <!-- =================================================
+             TABELA
+        ================================================== -->
 
         <div class="table-responsive">
+
             <table class="phc-table">
+
                 <thead>
+
                     <tr>
-                        <th style="width: 60px;">Foto</th>
-                        <th>Nome</th>
-                        <th>Idade</th>
-                        <th>Última Consulta</th>
-                        <th>Próxima Consulta</th>
-                        <th>Status</th>
-                        <th class="text-end">Ações</th>
+
+                        <th style="width: 60px;"></th>
+
+                        <th>
+                            Nome do Paciente
+                        </th>
+
+                        <th>
+                            CPF
+                        </th>
+
+                        <th>
+                            E-mail
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th class="text-end">
+                            Ações
+                        </th>
+
                     </tr>
+
                 </thead>
+
+
                 <tbody id="patientsTableBody">
-                    <!-- Linhas geradas via JS -->
+
                 </tbody>
+
             </table>
+
         </div>
+
+
+        <!-- =================================================
+             PAGINAÇÃO
+        ================================================== -->
 
         <div class="phc-pagination">
+
             <div class="phc-pagination-info">
-                Mostrando <strong>1-10</strong> de <strong>248</strong> pacientes
+
+                Mostrando
+
+                <strong id="paginationStart">
+                    0
+                </strong>
+
+                -
+
+                <strong id="paginationEnd">
+                    0
+                </strong>
+
+                de
+
+                <strong id="paginationTotal">
+                    0
+                </strong>
+
+                pacientes
+
             </div>
-            <div class="phc-pagination-controls">
-                <button class="phc-page-btn" disabled>‹</button>
-                <button class="phc-page-btn active">1</button>
-                <button class="phc-page-btn">2</button>
-                <button class="phc-page-btn">3</button>
-                <button class="phc-page-btn">...</button>
-                <button class="phc-page-btn">25</button>
-                <button class="phc-page-btn">›</button>
+
+
+            <div
+                class="phc-pagination-controls"
+                id="paginationControls"
+            >
             </div>
+
         </div>
+
     </div>
+
 </div>
 
-<!-- Modal Detalhes do Paciente -->
-<div class="modal fade phc-modal" id="patientModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+
+
+<!-- =========================================================
+     MODAL DETALHES DO PACIENTE
+========================================================= -->
+
+<div
+    class="modal fade phc-modal"
+    id="patientModal"
+    tabindex="-1"
+    aria-hidden="true"
+>
+
+    <div
+        class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+    >
+
         <div class="modal-content">
+
+
+            <!-- HEADER -->
+
             <div class="phc-modal-header">
+
                 <div class="phc-modal-patient-info">
-                    <div class="phc-modal-avatar" id="modalAvatar">--</div>
+
+                    <div
+                        class="phc-modal-avatar"
+                        id="modalAvatar"
+                    >
+                        --
+                    </div>
+
+
                     <div>
-                        <h3 class="phc-modal-name" id="modalName">Nome do Paciente</h3>
-                        <p class="phc-modal-subtitle" id="modalSubtitle">Prontuário #00000</p>
+
+                        <h3
+                            class="phc-modal-name"
+                            id="modalName"
+                        >
+                            Nome do Paciente
+                        </h3>
+
+
+                        <p class="phc-modal-subtitle">
+
+                            <span
+                                class="material-symbols-rounded"
+                                style="font-size: 1rem;"
+                            >
+                                badge
+                            </span>
+
+                            <span id="modalSubtitle">
+                                Paciente
+                            </span>
+
+                        </p>
+
                     </div>
+
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                ></button>
+
             </div>
+
+
+
+            <!-- BODY -->
+
             <div class="phc-modal-body">
-                <!-- Dados pessoais -->
-                <div class="phc-modal-section-title">
-                    <span class="material-symbols-rounded">badge</span>
-                    Dados pessoais
-                </div>
-                <div class="phc-info-grid">
-                    <div class="phc-info-item">
-                        <span class="phc-info-label">Nome completo</span>
-                        <span class="phc-info-value" id="modalFullName">—</span>
+
+
+                <!-- DADOS PESSOAIS -->
+
+                <div class="phc-modal-section">
+
+                    <div class="phc-modal-section-title">
+
+                        <span class="material-symbols-rounded">
+                            person_outline
+                        </span>
+
+                        Dados Pessoais
+
                     </div>
-                    <div class="phc-info-item">
-                        <span class="phc-info-label">Idade</span>
-                        <span class="phc-info-value" id="modalAge">—</span>
+
+
+                    <div class="phc-info-grid">
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                Nome completo
+                            </span>
+
+                            <span
+                                class="phc-info-value"
+                                id="modalFullName"
+                            >
+                                —
+                            </span>
+
+                        </div>
+
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                CPF
+                            </span>
+
+                            <span
+                                class="phc-info-value"
+                                id="modalCpf"
+                            >
+                                —
+                            </span>
+
+                        </div>
+
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                Sexo
+                            </span>
+
+                            <span
+                                class="phc-info-value"
+                                id="modalGender"
+                            >
+                                —
+                            </span>
+
+                        </div>
+
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                Tipo sanguíneo
+                            </span>
+
+                            <span
+                                class="phc-info-value"
+                                id="modalBlood"
+                            >
+                                —
+                            </span>
+
+                        </div>
+
                     </div>
-                    <div class="phc-info-item">
-                        <span class="phc-info-label">Sexo</span>
-                        <span class="phc-info-value" id="modalGender">—</span>
-                    </div>
-                    <div class="phc-info-item">
-                        <span class="phc-info-label">Tipo sanguíneo</span>
-                        <span class="phc-info-value" id="modalBlood">—</span>
-                    </div>
+
                 </div>
 
-                <!-- Contato e convênio -->
-                <div class="phc-modal-section-title">
-                    <span class="material-symbols-rounded">contact_phone</span>
-                    Contato e convênio
-                </div>
-                <div class="phc-info-grid">
-                    <div class="phc-info-item">
-                        <span class="phc-info-label">Telefone</span>
-                        <span class="phc-info-value">
-                            <span class="material-symbols-rounded">phone</span>
-                            <span id="modalPhone">—</span>
+
+
+                <!-- CONTATO -->
+
+                <div class="phc-modal-section">
+
+                    <div class="phc-modal-section-title">
+
+                        <span class="material-symbols-rounded">
+                            contact_phone
                         </span>
+
+                        Contato
+
                     </div>
-                    <div class="phc-info-item">
-                        <span class="phc-info-label">E-mail</span>
-                        <span class="phc-info-value">
-                            <span class="material-symbols-rounded">mail</span>
-                            <span id="modalEmail">—</span>
-                        </span>
+
+
+                    <div class="phc-info-grid">
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                E-mail
+                            </span>
+
+                            <span class="phc-info-value">
+
+                                <span class="material-symbols-rounded">
+                                    mail
+                                </span>
+
+                                <span id="modalEmail">
+                                    —
+                                </span>
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                Cidade
+                            </span>
+
+                            <span class="phc-info-value">
+
+                                <span class="material-symbols-rounded">
+                                    location_on
+                                </span>
+
+                                <span id="modalCity">
+                                    —
+                                </span>
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                Estado
+                            </span>
+
+                            <span
+                                class="phc-info-value"
+                                id="modalState"
+                            >
+                                —
+                            </span>
+
+                        </div>
+
                     </div>
-                    <div class="phc-info-item">
-                        <span class="phc-info-label">Convênio</span>
-                        <span class="phc-info-value">
-                            <span class="material-symbols-rounded">health_and_safety</span>
-                            <span id="modalInsurance">—</span>
-                        </span>
-                    </div>
+
                 </div>
 
-                <!-- Alergias -->
-                <div class="phc-modal-section-title">
-                    <span class="material-symbols-rounded">warning</span>
-                    Alergias
-                </div>
-                <div class="phc-tag-list" id="modalAllergies" style="margin-bottom: 1.5rem;">
-                    <!-- Tags geradas via JS -->
+
+
+                <!-- OBSERVAÇÕES -->
+
+                <div class="phc-modal-section">
+
+                    <div class="phc-modal-section-title">
+
+                        <span class="material-symbols-rounded">
+                            notes
+                        </span>
+
+                        Observações
+
+                    </div>
+
+
+                    <div
+                        class="phc-info-value"
+                        id="modalNotes"
+                    >
+                        —
+                    </div>
+
                 </div>
 
-                <!-- Medicamentos -->
-                <div class="phc-modal-section-title">
-                    <span class="material-symbols-rounded">medication</span>
-                    Medicamentos em uso
+
+
+                <!-- VÍNCULO -->
+
+                <div class="phc-modal-section">
+
+                    <div class="phc-modal-section-title">
+
+                        <span class="material-symbols-rounded">
+                            link
+                        </span>
+
+                        Vínculo profissional
+
+                    </div>
+
+
+                    <div class="phc-info-grid">
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                Status
+                            </span>
+
+                            <span
+                                class="phc-info-value"
+                                id="modalRelationshipStatus"
+                            >
+                                —
+                            </span>
+
+                        </div>
+
+
+                        <div class="phc-info-item">
+
+                            <span class="phc-info-label">
+                                ID do vínculo
+                            </span>
+
+                            <span
+                                class="phc-info-value"
+                                id="modalRelationshipId"
+                            >
+                                —
+                            </span>
+
+                        </div>
+
+                    </div>
+
                 </div>
-                <div class="phc-tag-list" id="modalMedications">
-                    <!-- Tags geradas via JS -->
-                </div>
+
+
             </div>
+
+
+
+            <!-- FOOTER -->
+
             <div class="phc-modal-footer">
-                <button type="button" class="phc-modal-btn phc-modal-btn-secondary" data-bs-dismiss="modal">
-                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">close</span>
+
+                <button
+                    type="button"
+                    class="phc-modal-btn phc-modal-btn-secondary"
+                    data-bs-dismiss="modal"
+                >
                     Fechar
                 </button>
-                <button type="button" class="phc-modal-btn phc-modal-btn-primary">
-                    <span class="material-symbols-rounded" style="font-size: 1.1rem;">description</span>
+
+
+                <button
+                    type="button"
+                    class="phc-modal-btn phc-modal-btn-primary"
+                    id="openMedicalRecordButton"
+                >
+
+                    <span
+                        class="material-symbols-rounded"
+                        style="font-size: 1.1rem;"
+                    >
+                        description
+                    </span>
+
                     Abrir prontuário completo
+
                 </button>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
-<script>
-    // Dados fictícios dos pacientes
-    const patients = [
-        {
-            initials: 'MS', name: 'Mariana Souza', cpf: '123.456.789-00', age: 34,
-            lastDate: '24/07/2026', lastSub: 'Retorno clínico',
-            nextDate: '15/08/2026', nextSub: '10:00', status: 'stable',
-            fullName: 'Mariana Silva Souza', gender: 'Feminino', blood: 'O+',
-            phone: '(11) 98765-4321', email: 'mariana.souza@email.com',
-            insurance: 'Unimed Nacional',
-            allergies: ['Dipirona', 'Penicilina'],
-            medications: ['Losartana 50mg', 'Metformina 500mg']
-        },
-        {
-            initials: 'CO', name: 'Carlos Oliveira', cpf: '234.567.890-11', age: 52,
-            lastDate: '28/07/2026', lastSub: 'Avaliação cardiológica',
-            nextDate: '05/08/2026', nextSub: '14:30', status: 'monitoring',
-            fullName: 'Carlos Eduardo Oliveira', gender: 'Masculino', blood: 'A+',
-            phone: '(21) 99876-5432', email: 'carlos.oliveira@email.com',
-            insurance: 'Bradesco Saúde',
-            allergies: ['AINEs'],
-            medications: ['Atenolol 50mg', 'AAS 100mg', 'Sinvastatina 20mg']
-        },
-        {
-            initials: 'AM', name: 'Ana Martins', cpf: '345.678.901-22', age: 28,
-            lastDate: '20/07/2026', lastSub: 'Exames laboratoriais',
-            nextDate: '22/08/2026', nextSub: '09:00', status: 'stable',
-            fullName: 'Ana Carolina Martins', gender: 'Feminino', blood: 'B+',
-            phone: '(31) 98888-7777', email: 'ana.martins@email.com',
-            insurance: 'SulAmérica',
-            allergies: ['Nenhuma conhecida'],
-            medications: ['Anticoncepcional']
-        },
-        {
-            initials: 'RL', name: 'Roberto Lima', cpf: '456.789.012-33', age: 67,
-            lastDate: '15/07/2026', lastSub: 'Acompanhamento diabetes',
-            nextDate: '02/08/2026', nextSub: '11:00', status: 'critical',
-            fullName: 'Roberto Almeida Lima', gender: 'Masculino', blood: 'AB-',
-            phone: '(41) 97777-6666', email: 'roberto.lima@email.com',
-            insurance: 'Amil',
-            allergies: ['Sulfas', 'Iodo'],
-            medications: ['Insulina NPH', 'Metformina 850mg', 'Enalapril 10mg', 'AAS 100mg']
-        },
-        {
-            initials: 'JF', name: 'Juliana Ferreira', cpf: '567.890.123-44', age: 41,
-            lastDate: '10/07/2026', lastSub: 'Consulta dermatológica',
-            nextDate: '—', nextSub: 'Não agendada', status: 'monitoring',
-            fullName: 'Juliana Costa Ferreira', gender: 'Feminino', blood: 'O-',
-            phone: '(51) 96666-5555', email: 'juliana.ferreira@email.com',
-            insurance: 'Particular',
-            allergies: ['Látex'],
-            medications: ['Levotiroxina 50mcg']
-        },
-        {
-            initials: 'PR', name: 'Paulo Ribeiro', cpf: '678.901.234-55', age: 58,
-            lastDate: '30/07/2026', lastSub: 'Retorno ortopédico',
-            nextDate: '12/08/2026', nextSub: '15:00', status: 'stable',
-            fullName: 'Paulo Henrique Ribeiro', gender: 'Masculino', blood: 'A-',
-            phone: '(61) 95555-4444', email: 'paulo.ribeiro@email.com',
-            insurance: 'Unimed Regional',
-            allergies: ['Nenhuma conhecida'],
-            medications: ['Omeprazol 20mg']
-        },
-        {
-            initials: 'BS', name: 'Beatriz Santos', cpf: '789.012.345-66', age: 23,
-            lastDate: '25/07/2026', lastSub: 'Check-up anual',
-            nextDate: '25/07/2027', nextSub: '08:30', status: 'stable',
-            fullName: 'Beatriz Almeida Santos', gender: 'Feminino', blood: 'B-',
-            phone: '(71) 94444-3333', email: 'beatriz.santos@email.com',
-            insurance: 'Bradesco Saúde',
-            allergies: ['Poeira', 'Ácaros'],
-            medications: ['Loratadina 10mg (uso contínuo)']
-        },
-        {
-            initials: 'FA', name: 'Fernando Alves', cpf: '890.123.456-77', age: 45,
-            lastDate: '18/07/2026', lastSub: 'Avaliação clínica',
-            nextDate: '08/08/2026', nextSub: '16:00', status: 'monitoring',
-            fullName: 'Fernando Augusto Alves', gender: 'Masculino', blood: 'O+',
-            phone: '(81) 93333-2222', email: 'fernando.alves@email.com',
-            insurance: 'SulAmérica',
-            allergies: ['Dipirona'],
-            medications: ['Atenolol 25mg', 'Hidroclorotiazida 25mg']
-        },
-        {
-            initials: 'LC', name: 'Luciana Costa', cpf: '901.234.567-88', age: 36,
-            lastDate: '22/07/2026', lastSub: 'Acompanhamento gestacional',
-            nextDate: '06/08/2026', nextSub: '10:30', status: 'stable',
-            fullName: 'Luciana Pereira Costa', gender: 'Feminino', blood: 'A+',
-            phone: '(85) 92222-1111', email: 'luciana.costa@email.com',
-            insurance: 'Unimed Nacional',
-            allergies: ['Nenhuma conhecida'],
-            medications: ['Ácido fólico', 'Sulfato ferroso']
-        },
-        {
-            initials: 'GM', name: 'Gustavo Mendes', cpf: '012.345.678-99', age: 71,
-            lastDate: '29/07/2026', lastSub: 'Emergência cardiológica',
-            nextDate: '01/08/2026', nextSub: '09:00', status: 'critical',
-            fullName: 'Gustavo Henrique Mendes', gender: 'Masculino', blood: 'AB+',
-            phone: '(48) 91111-0000', email: 'gustavo.mendes@email.com',
-            insurance: 'Amil',
-            allergies: ['AAS', 'Iodo', 'Penicilina'],
-            medications: ['Warfarina 5mg', 'Carvedilol 12,5mg', 'Furosemida 40mg', 'Digoxina 0,25mg']
-        }
-    ];
 
-    const statusLabels = {
-        stable: { text: 'Estável', class: 'phc-badge-stable' },
-        monitoring: { text: 'Acompanhamento', class: 'phc-badge-monitoring' },
-        critical: { text: 'Crítico', class: 'phc-badge-critical' }
-    };
 
-    // Renderizar tabela
-    function renderTable() {
-        const tbody = document.getElementById('patientsTableBody');
-        tbody.innerHTML = patients.map((p, idx) => `
-            <tr>
-                <td>
-                    <div class="phc-photo-cell">${p.initials}</div>
-                </td>
-                <td>
-                    <div class="phc-name-text">${p.name}</div>
-                    <div class="phc-name-cpf">CPF: ${p.cpf}</div>
-                </td>
-                <td>${p.age} anos</td>
-                <td>
-                    <div class="phc-date-cell">
-                        <span class="phc-date-main">${p.lastDate}</span>
-                        <span class="phc-date-sub">${p.lastSub}</span>
+<!-- =========================================================
+     MODAL ADICIONAR PACIENTE
+========================================================= -->
+
+<div
+    class="modal fade phc-modal"
+    id="addPatientModal"
+    tabindex="-1"
+    aria-labelledby="addPatientModalLabel"
+    aria-hidden="true"
+>
+
+    <div
+        class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+    >
+
+        <div class="modal-content" style="background-color: var(--phc-white);">
+
+
+            <!-- HEADER -->
+
+            <div class="modal-header border-bottom-0 pb-0">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div
+                        class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center"
+                    >
+
+                        <span
+                            class="material-symbols-rounded"
+                            style="color: var(--phc-primary);"
+                        >
+                            person_add
+                        </span>
+
                     </div>
-                </td>
-                <td>
-                    <div class="phc-date-cell">
-                        <span class="phc-date-main">${p.nextDate}</span>
-                        <span class="phc-date-sub">${p.nextSub}</span>
+
+
+                    <div>
+
+                        <h5
+                            class="modal-title fw-bold mb-1"
+                            id="addPatientModalLabel"
+                        >
+                            Adicionar paciente
+                        </h5>
+
+                        <p
+                            class="text-muted small mb-0"
+                            style="color: var(--phc-text-secondary);"
+                        >
+                            Encontre um paciente e envie uma solicitação
+                            de vínculo.
+                        </p>
+
                     </div>
-                </td>
-                <td>
-                    <span class="phc-badge ${statusLabels[p.status].class}">
-                        <span class="phc-badge-dot"></span>
-                        ${statusLabels[p.status].text}
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    id="addPatientCloseButton"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                ></button>
+
+            </div>
+
+
+            <!-- BODY -->
+
+            <div class="modal-body">
+
+
+                <!-- PESQUISA -->
+
+                <div class="mb-4">
+
+                    <label
+                        for="addPatientSearch"
+                        class="phc-filter-label"
+                    >
+                        Pesquisa
+                    </label>
+
+                    <div class="input-group">
+
+                        <span
+                            class="input-group-text bg-white border-end-0"
+                            style="border-color: var(--phc-border);"
+                        >
+
+                            <span
+                                class="material-symbols-rounded"
+                                style="color: var(--phc-text-secondary);"
+                            >
+                                search
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="text"
+                            class="form-control border-start-0 ps-0 phc-filter-input"
+                            id="addPatientSearch"
+                            placeholder="Buscar por nome ou CPF..."
+                            autocomplete="off"
+                            style="border-color: var(--phc-border);"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- CARREGANDO -->
+
+                <div
+                    id="addPatientLoading"
+                    class="text-center py-5 d-none"
+                >
+
+                    <div
+                        class="spinner-border"
+                        role="status"
+                        style="color: var(--phc-primary);"
+                    >
+
+                        <span class="visually-hidden">
+                            Carregando...
+                        </span>
+
+                    </div>
+
+                    <p
+                        class="text-muted mt-2 mb-0"
+                        style="color: var(--phc-text-secondary);"
+                    >
+                        Carregando pacientes...
+                    </p>
+
+                </div>
+
+
+                <!-- ERRO -->
+
+                <div
+                    id="addPatientError"
+                    class="alert d-none"
+                    role="alert"
+                    style="
+                        background-color: var(--phc-danger-bg);
+                        color: var(--phc-danger-text);
+                        border-color: #FECACA;
+                    "
+                >
+                    Não foi possível carregar os pacientes.
+                </div>
+
+
+                <!-- VAZIO -->
+
+                <div
+                    id="addPatientEmpty"
+                    class="text-center py-5 d-none"
+                >
+
+                    <span
+                        class="material-symbols-rounded"
+                        style="
+                            font-size: 3rem;
+                            color: var(--phc-text-secondary);
+                        "
+                    >
+                        person_search
                     </span>
-                </td>
-                <td class="text-end">
-                    <button class="phc-btn-record" onclick="openPatientModal(${idx})">
-                        <span class="material-symbols-rounded">description</span>
-                        Abrir Prontuário
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+
+                    <p
+                        class="text-muted mt-2 mb-0"
+                        style="color: var(--phc-text-secondary);"
+                    >
+                        Nenhum paciente encontrado.
+                    </p>
+
+                </div>
+
+
+                <!-- LISTA -->
+
+                <div
+                    id="addPatientList"
+                    class="d-flex flex-column gap-3"
+                >
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    /* =========================================================
+       DADOS VINDOS DA ROTA WEB
+    ========================================================= */
+
+    const patients = {{ patients | tojson }};
+
+    /*
+       IMPORTANTE:
+
+       A rota Flask envia:
+
+           professional=professional
+           professional_id=professional_id
+
+       Portanto NÃO usamos mais:
+
+           current_professional
+
+       O ID vem diretamente de professional_id.
+    */
+
+    const professionalId = {{ professional_id | tojson }};
+
+
+    /* =========================================================
+       CONFIGURAÇÃO
+    ========================================================= */
+
+    const ITEMS_PER_PAGE = 10;
+
+    let currentPage = 1;
+
+    let filteredPatients = [...patients];
+
+    let selectedPatient = null;
+
+    let searchTimeout = null;
+
+    let requestedPatientIds = new Set();
+
+
+    /* =========================================================
+       URLS WEB
+    ========================================================= */
+
+    const searchPatientsUrl =
+        "{{ url_for('web.search_patients') }}";
+
+
+    /*
+       IMPORTANTE:
+
+       NÃO devemos chamar diretamente:
+
+           /patient-professional/create
+
+       porque essa é uma rota da API.
+
+       A Web deve possuir uma rota que consome essa API.
+
+       Por enquanto usamos:
+
+           /profession/patients/create
+
+       Essa rota Web deve ser criada no web.py.
+    */
+
+    const createPatientLinkUrl =
+        "{{ url_for('web.create_patient_link') }}";
+
+
+    /* =========================================================
+       STATUS
+    ========================================================= */
+
+    function getStatus(patient) {
+
+        if (patient.relationship_status === "active") {
+
+            return {
+                text: "Ativo",
+                class: "phc-status-stable"
+            };
+
+        }
+
+        if (patient.relationship_status === "pending") {
+
+            return {
+                text: "Aguardando aprovação",
+                class: "phc-status-warning"
+            };
+
+        }
+
+        return {
+            text: "Inativo",
+            class: "phc-status-critical"
+        };
     }
 
-    // Abrir modal com dados do paciente
-    function openPatientModal(idx) {
-        const p = patients[idx];
-        document.getElementById('modalAvatar').textContent = p.initials;
-        document.getElementById('modalName').textContent = p.name;
-        document.getElementById('modalSubtitle').textContent = `Prontuário #${String(10000 + idx).padStart(5, '0')} • ${p.cpf}`;
-        document.getElementById('modalFullName').textContent = p.fullName;
-        document.getElementById('modalAge').textContent = `${p.age} anos`;
-        document.getElementById('modalGender').textContent = p.gender;
-        document.getElementById('modalBlood').textContent = p.blood;
-        document.getElementById('modalPhone').textContent = p.phone;
-        document.getElementById('modalEmail').textContent = p.email;
-        document.getElementById('modalInsurance').textContent = p.insurance;
 
-        // Alergias
-        const allergiesEl = document.getElementById('modalAllergies');
-        allergiesEl.innerHTML = p.allergies.map(a => {
-            const isCritical = a.toLowerCase() !== 'nenhuma conhecida';
-            return `<span class="phc-tag ${isCritical ? 'critical' : ''}">
-                <span class="material-symbols-rounded">${isCritical ? 'warning' : 'check_circle'}</span>
-                ${a}
-            </span>`;
-        }).join('');
+    /* =========================================================
+       INICIAIS
+    ========================================================= */
 
-        // Medicamentos
-        const medsEl = document.getElementById('modalMedications');
-        medsEl.innerHTML = p.medications.map(m => `
-            <span class="phc-tag">
-                <span class="material-symbols-rounded">medication</span>
-                ${m}
+    function getInitials(name) {
+
+        if (!name) {
+            return "--";
+        }
+
+        const parts = name
+            .trim()
+            .split(/\s+/);
+
+        if (parts.length === 1) {
+
+            return parts[0]
+                .substring(0, 2)
+                .toUpperCase();
+
+        }
+
+        return (
+            parts[0][0] +
+            parts[parts.length - 1][0]
+        ).toUpperCase();
+
+    }
+
+
+    /* =========================================================
+       ESCAPAR HTML
+    ========================================================= */
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =========================================================
+       RENDER TABELA
+    ========================================================= */
+
+    function renderTable() {
+
+        const tbody =
+            document.getElementById(
+                "patientsTableBody"
+            );
+
+        const start =
+            (currentPage - 1) *
+            ITEMS_PER_PAGE;
+
+        const end =
+            start +
+            ITEMS_PER_PAGE;
+
+        const pagePatients =
+            filteredPatients.slice(
+                start,
+                end
+            );
+
+
+        if (pagePatients.length === 0) {
+
+            tbody.innerHTML = `
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="text-center"
+                        style="padding: 40px;"
+                    >
+
+                        <span
+                            class="material-symbols-rounded"
+                            style="font-size: 2.5rem;"
+                        >
+                            person_search
+                        </span>
+
+                        <div style="margin-top: 10px;">
+                            Nenhum paciente encontrado.
+                        </div>
+
+                    </td>
+
+                </tr>
+            `;
+
+            updatePagination();
+
+            return;
+        }
+
+
+        tbody.innerHTML =
+            pagePatients.map(
+                (patient, index) => {
+
+                    const realIndex =
+                        start + index;
+
+                    const name =
+                        patient.full_name ||
+                        "Paciente";
+
+                    const initials =
+                        getInitials(name);
+
+                    const status =
+                        getStatus(patient);
+
+
+                    return `
+                        <tr>
+
+                            <td>
+
+                                <div class="phc-avatar">
+                                    ${escapeHtml(initials)}
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="phc-patient-name">
+                                    ${escapeHtml(name)}
+                                </div>
+
+                                <div class="phc-patient-cpf">
+                                    Paciente #${escapeHtml(patient.patient_id)}
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                ${escapeHtml(patient.cpf || "—")}
+                            </td>
+
+
+                            <td>
+                                ${escapeHtml(patient.email || "—")}
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="phc-status-badge ${status.class}"
+                                >
+
+                                    <span class="phc-status-dot"></span>
+
+                                    ${escapeHtml(status.text)}
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="text-end">
+
+                                <button
+                                    type="button"
+                                    class="phc-btn-record"
+                                    onclick="openPatientModal(${realIndex})"
+                                >
+
+                                    <span class="material-symbols-rounded">
+                                        description
+                                    </span>
+
+                                    Prontuário
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
+            ).join("");
+
+
+        updatePagination();
+
+    }
+
+
+    /* =========================================================
+       PAGINAÇÃO
+    ========================================================= */
+
+    function updatePagination() {
+
+        const total =
+            filteredPatients.length;
+
+        const totalPages =
+            Math.ceil(
+                total / ITEMS_PER_PAGE
+            );
+
+        const start =
+            total === 0
+                ? 0
+                : ((currentPage - 1) *
+                    ITEMS_PER_PAGE) + 1;
+
+        const end =
+            Math.min(
+                currentPage *
+                ITEMS_PER_PAGE,
+                total
+            );
+
+
+        document.getElementById(
+            "paginationStart"
+        ).textContent = start;
+
+
+        document.getElementById(
+            "paginationEnd"
+        ).textContent = end;
+
+
+        document.getElementById(
+            "paginationTotal"
+        ).textContent = total;
+
+
+        document.getElementById(
+            "resultsCount"
+        ).textContent =
+            `Exibindo ${total} paciente${total === 1 ? "" : "s"}`;
+
+
+        const controls =
+            document.getElementById(
+                "paginationControls"
+            );
+
+        controls.innerHTML = "";
+
+
+        if (totalPages <= 1) {
+            return;
+        }
+
+
+        const previous =
+            document.createElement("button");
+
+        previous.className =
+            "phc-page-btn";
+
+        previous.innerHTML = `
+            <span
+                class="material-symbols-rounded"
+                style="font-size: 1.2rem;"
+            >
+                chevron_left
             </span>
-        `).join('');
+        `;
 
-        const modal = new bootstrap.Modal(document.getElementById('patientModal'));
-        modal.show();
+        previous.disabled =
+            currentPage === 1;
+
+
+        previous.onclick =
+            function() {
+
+                if (currentPage > 1) {
+
+                    currentPage--;
+
+                    renderTable();
+
+                }
+
+            };
+
+
+        controls.appendChild(previous);
+
+
+        for (
+            let page = 1;
+            page <= totalPages;
+            page++
+        ) {
+
+            if (
+                page <= 3 ||
+                page === totalPages ||
+                Math.abs(
+                    page - currentPage
+                ) <= 1
+            ) {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.className =
+                    "phc-page-btn";
+
+
+                if (
+                    page === currentPage
+                ) {
+
+                    button.classList.add(
+                        "active"
+                    );
+
+                }
+
+
+                button.textContent =
+                    page;
+
+
+                button.onclick =
+                    function() {
+
+                        currentPage =
+                            page;
+
+                        renderTable();
+
+                    };
+
+
+                controls.appendChild(
+                    button
+                );
+
+            } else if (
+                page === 4 &&
+                totalPages > 5
+            ) {
+
+                const dots =
+                    document.createElement(
+                        "button"
+                    );
+
+                dots.className =
+                    "phc-page-btn";
+
+                dots.disabled = true;
+
+                dots.innerHTML = `
+                    <span
+                        class="material-symbols-rounded"
+                        style="font-size: 1.2rem;"
+                    >
+                        more_horiz
+                    </span>
+                `;
+
+                controls.appendChild(
+                    dots
+                );
+
+            }
+
+        }
+
+
+        const next =
+            document.createElement("button");
+
+        next.className =
+            "phc-page-btn";
+
+        next.innerHTML = `
+            <span
+                class="material-symbols-rounded"
+                style="font-size: 1.2rem;"
+            >
+                chevron_right
+            </span>
+        `;
+
+        next.disabled =
+            currentPage === totalPages;
+
+
+        next.onclick =
+            function() {
+
+                if (
+                    currentPage <
+                    totalPages
+                ) {
+
+                    currentPage++;
+
+                    renderTable();
+
+                }
+
+            };
+
+
+        controls.appendChild(next);
+
     }
 
-    // Inicializar
+
+    /* =========================================================
+       BUSCA / FILTROS
+    ========================================================= */
+
+    function applyFilters() {
+
+        const search =
+            document.getElementById(
+                "patientSearch"
+            ).value
+                .trim()
+                .toLowerCase();
+
+
+        const status =
+            document.getElementById(
+                "patientStatus"
+            ).value;
+
+
+        filteredPatients =
+            patients.filter(
+                function(patient) {
+
+                    const name =
+                        (
+                            patient.full_name ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const cpf =
+                        (
+                            patient.cpf ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const matchesSearch =
+                        !search ||
+                        name.includes(search) ||
+                        cpf.includes(search);
+
+
+                    const matchesStatus =
+                        !status ||
+                        patient.relationship_status === status;
+
+
+                    return (
+                        matchesSearch &&
+                        matchesStatus
+                    );
+
+                }
+            );
+
+
+        currentPage = 1;
+
+        renderTable();
+
+    }
+
+
+    function clearFilters() {
+
+        document.getElementById(
+            "patientSearch"
+        ).value = "";
+
+
+        document.getElementById(
+            "patientStatus"
+        ).value = "";
+
+
+        filteredPatients =
+            [...patients];
+
+
+        currentPage = 1;
+
+        renderTable();
+
+    }
+
+
+    /* =========================================================
+       MODAL DO PACIENTE
+    ========================================================= */
+
+    function openPatientModal(index) {
+
+        const patient =
+            filteredPatients[index];
+
+
+        if (!patient) {
+            return;
+        }
+
+
+        selectedPatient =
+            patient;
+
+
+        const name =
+            patient.full_name ||
+            "Paciente";
+
+
+        document.getElementById(
+            "modalAvatar"
+        ).textContent =
+            getInitials(name);
+
+
+        document.getElementById(
+            "modalName"
+        ).textContent =
+            name;
+
+
+        document.getElementById(
+            "modalSubtitle"
+        ).textContent =
+            `Paciente #${patient.patient_id}`;
+
+
+        document.getElementById(
+            "modalFullName"
+        ).textContent =
+            patient.full_name || "—";
+
+
+        document.getElementById(
+            "modalCpf"
+        ).textContent =
+            patient.cpf || "—";
+
+
+        document.getElementById(
+            "modalGender"
+        ).textContent =
+            patient.gender || "—";
+
+
+        document.getElementById(
+            "modalBlood"
+        ).textContent =
+            patient.blood_type || "—";
+
+
+        document.getElementById(
+            "modalEmail"
+        ).textContent =
+            patient.email || "—";
+
+
+        document.getElementById(
+            "modalCity"
+        ).textContent =
+            patient.city || "—";
+
+
+        document.getElementById(
+            "modalState"
+        ).textContent =
+            patient.state || "—";
+
+
+        document.getElementById(
+            "modalNotes"
+        ).textContent =
+            patient.notes ||
+            "Nenhuma observação registrada.";
+
+
+        const relationshipStatus =
+            getStatus(patient);
+
+
+        document.getElementById(
+            "modalRelationshipStatus"
+        ).textContent =
+            relationshipStatus.text;
+
+
+        document.getElementById(
+            "modalRelationshipId"
+        ).textContent =
+            patient.relationship_id ||
+            "—";
+
+
+        const medicalRecordButton =
+            document.getElementById(
+                "openMedicalRecordButton"
+            );
+
+
+        medicalRecordButton.onclick =
+            function() {
+
+                if (
+                    !selectedPatient ||
+                    !selectedPatient.patient_id
+                ) {
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "Abrir prontuário:",
+                    selectedPatient.patient_id
+                );
+
+            };
+
+
+        const modalElement =
+            document.getElementById(
+                "patientModal"
+            );
+
+
+        const modal =
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    modalElement
+                );
+
+
+        modal.show();
+
+    }
+
+
+    /* =========================================================
+       EVENTOS PRINCIPAIS
+    ========================================================= */
+
+    document
+        .getElementById("searchButton")
+        .addEventListener(
+            "click",
+            applyFilters
+        );
+
+
+    document
+        .getElementById("clearButton")
+        .addEventListener(
+            "click",
+            clearFilters
+        );
+
+
+    document
+        .getElementById("patientStatus")
+        .addEventListener(
+            "change",
+            applyFilters
+        );
+
+
+    document
+        .getElementById("patientSearch")
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    applyFilters();
+
+                }
+
+            }
+        );
+
+
     renderTable();
 
-    // Paginação
-    document.querySelectorAll('.phc-page-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            if (!this.disabled && !this.textContent.includes('...')) {
-                document.querySelectorAll('.phc-page-btn').forEach(b => b.classList.remove('active'));
-                if (!isNaN(this.textContent)) {
-                    this.classList.add('active');
-                }
+
+    /* =========================================================
+       ABRIR MODAL ADICIONAR PACIENTE
+    ========================================================= */
+
+    function openAddPatientModal() {
+
+        const modalElement =
+            document.getElementById(
+                "addPatientModal"
+            );
+
+
+        const modal =
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    modalElement
+                );
+
+
+        document.getElementById(
+            "addPatientSearch"
+        ).value = "";
+
+
+        requestedPatientIds.clear();
+
+
+        modal.show();
+
+
+        loadPatients("");
+
+    }
+
+
+    /* =========================================================
+       CARREGAR PACIENTES PARA ADICIONAR
+    ========================================================= */
+
+    async function loadPatients(searchTerm) {
+
+        const loadingEl =
+            document.getElementById(
+                "addPatientLoading"
+            );
+
+
+        const errorEl =
+            document.getElementById(
+                "addPatientError"
+            );
+
+
+        const emptyEl =
+            document.getElementById(
+                "addPatientEmpty"
+            );
+
+
+        const listEl =
+            document.getElementById(
+                "addPatientList"
+            );
+
+
+        loadingEl.classList.remove(
+            "d-none"
+        );
+
+
+        errorEl.classList.add(
+            "d-none"
+        );
+
+
+        emptyEl.classList.add(
+            "d-none"
+        );
+
+
+        listEl.classList.add(
+            "d-none"
+        );
+
+
+        try {
+
+            const url =
+                new URL(
+                    searchPatientsUrl,
+                    window.location.origin
+                );
+
+
+            if (searchTerm) {
+
+                url.searchParams.append(
+                    "search",
+                    searchTerm
+                );
+
             }
-        });
-    });
+
+
+            const response =
+                await fetch(
+                    url.toString(),
+                    {
+                        method: "GET",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        },
+
+                        credentials:
+                            "include"
+                    }
+                );
+
+
+            if (
+                response.status === 401
+            ) {
+
+                window.location.href =
+                    "{{ url_for('web.login') }}";
+
+                return;
+
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Falha na requisição"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            loadingEl.classList.add(
+                "d-none"
+            );
+
+
+            if (
+                data.success &&
+                Array.isArray(
+                    data.patients
+                )
+            ) {
+
+                if (
+                    data.patients.length === 0
+                ) {
+
+                    emptyEl.classList.remove(
+                        "d-none"
+                    );
+
+                } else {
+
+                    listEl.classList.remove(
+                        "d-none"
+                    );
+
+                    renderPatients(
+                        data.patients
+                    );
+
+                }
+
+            } else {
+
+                throw new Error(
+                    "Formato de resposta inválido"
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao carregar pacientes:",
+                error
+            );
+
+
+            loadingEl.classList.add(
+                "d-none"
+            );
+
+
+            errorEl.classList.remove(
+                "d-none"
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       RENDER DOS PACIENTES PARA ADICIONAR
+    ========================================================= */
+
+    function renderPatients(
+        patients
+    ) {
+
+        const listEl =
+            document.getElementById(
+                "addPatientList"
+            );
+
+
+        listEl.innerHTML = "";
+
+
+        patients.forEach(
+            patient => {
+
+                const isRequested =
+                    requestedPatientIds.has(
+                        String(
+                            patient.patient_id
+                        )
+                    );
+
+
+                const fullName =
+                    patient.full_name ||
+                    "Paciente sem nome";
+
+
+                const initials =
+                    getInitials(
+                        fullName
+                    );
+
+
+                const cpf =
+                    patient.cpf
+                        ? escapeHtml(
+                            patient.cpf
+                        )
+                        : "CPF não informado";
+
+
+                const email =
+                    escapeHtml(
+                        patient.email ||
+                        "E-mail não informado"
+                    );
+
+
+                const location = [];
+
+
+                if (patient.city) {
+
+                    location.push(
+                        escapeHtml(
+                            patient.city
+                        )
+                    );
+
+                }
+
+
+                if (patient.state) {
+
+                    location.push(
+                        escapeHtml(
+                            patient.state
+                        )
+                    );
+
+                }
+
+
+                const locationStr =
+                    location.length > 0
+                        ? location.join(" - ")
+                        : "Localização não informada";
+
+
+                const patientId =
+                    String(
+                        patient.patient_id
+                    );
+
+
+                const photoHtml =
+                    patient.profile_photo
+
+                        ? `
+                            <img
+                                src="${escapeHtml(patient.profile_photo)}"
+                                alt="Foto"
+                                class="rounded-circle object-fit-cover"
+                                width="48"
+                                height="48"
+                            >
+                        `
+
+                        : `
+                            <div
+                                class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                style="
+                                    width: 48px;
+                                    height: 48px;
+                                    font-size: 0.9rem;
+                                    background-color: var(--phc-light);
+                                    color: var(--phc-primary);
+                                "
+                            >
+                                ${escapeHtml(initials)}
+                            </div>
+                        `;
+
+
+                const buttonHtml =
+                    isRequested
+
+                        ? `
+                            <button
+                                class="btn btn-sm w-100"
+                                disabled
+                                style="
+                                    background-color: var(--phc-bg);
+                                    color: var(--phc-text-secondary);
+                                    border: 1px solid var(--phc-border);
+                                "
+                                data-patient-id="${escapeHtml(patientId)}"
+                            >
+                                Solicitação enviada
+                            </button>
+                        `
+
+                        : `
+                            <button
+                                class="btn btn-sm w-100 phc-btn-filter"
+                                style="
+                                    width: 100%;
+                                    height: auto;
+                                    padding: 0.5rem 0.9rem;
+                                "
+                                data-patient-id="${escapeHtml(patientId)}"
+                                onclick="requestPatientLink(${JSON.stringify(patientId)})"
+                            >
+                                Solicitar vínculo
+                            </button>
+                        `;
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "phc-card";
+
+
+                card.style.padding =
+                    "1rem";
+
+
+                card.innerHTML = `
+
+                    <div
+                        class="d-flex align-items-start gap-3"
+                    >
+
+                        <div class="flex-shrink-0">
+                            ${photoHtml}
+                        </div>
+
+
+                        <div
+                            class="flex-grow-1 min-width-0"
+                        >
+
+                            <h6
+                                class="mb-1 fw-bold text-truncate"
+                                style="color: var(--phc-text);"
+                                title="${escapeHtml(fullName)}"
+                            >
+                                ${escapeHtml(fullName)}
+                            </h6>
+
+
+                            <div
+                                class="small mb-1"
+                                style="color: var(--phc-text-secondary);"
+                            >
+
+                                <span
+                                    class="d-block text-truncate"
+                                    title="${cpf}"
+                                >
+                                    CPF: ${cpf}
+                                </span>
+
+
+                                <span
+                                    class="d-block text-truncate"
+                                    title="${email}"
+                                >
+                                    ${email}
+                                </span>
+
+
+                                <span
+                                    class="d-block text-truncate"
+                                    title="${locationStr}"
+                                >
+                                    ${locationStr}
+                                </span>
+
+
+                                <span
+                                    class="d-block fst-italic"
+                                    style="
+                                        font-size: 0.75rem;
+                                        color: var(--phc-text-secondary);
+                                    "
+                                >
+                                    ID: ${escapeHtml(patientId)}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="flex-shrink-0"
+                            style="min-width: 130px;"
+                        >
+
+                            ${buttonHtml}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                listEl.appendChild(
+                    card
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       SOLICITAR VÍNCULO
+    ========================================================= */
+
+    async function requestPatientLink(
+        patientId
+    ) {
+
+        if (!professionalId) {
+
+            showToast(
+                "Erro: ID do profissional não encontrado. Recarregue a página.",
+                "danger"
+            );
+
+            return;
+
+        }
+
+
+        const button =
+            document.querySelector(
+                `button[data-patient-id="${patientId}"]`
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const originalHtml =
+            button.innerHTML;
+
+
+        const originalClass =
+            button.className;
+
+
+        const originalStyle =
+            button.getAttribute(
+                "style"
+            );
+
+
+        button.disabled = true;
+
+
+        button.innerHTML = `
+
+            <span
+                class="spinner-border spinner-border-sm me-1"
+                role="status"
+                aria-hidden="true"
+            ></span>
+
+            Enviando...
+
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    createPatientLinkUrl,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Accept":
+                                "application/json"
+                        },
+
+                        credentials:
+                            "include",
+
+                        body:
+                            JSON.stringify({
+
+                                patient_id:
+                                    patientId,
+
+                                professional_id:
+                                    professionalId
+
+                            })
+
+                    }
+                );
+
+
+            if (
+                response.status === 401
+            ) {
+
+                window.location.href =
+                    "{{ url_for('web.login') }}";
+
+                return;
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (data.success) {
+
+                requestedPatientIds.add(
+                    String(patientId)
+                );
+
+
+                button.className =
+                    "btn btn-sm w-100";
+
+
+                button.setAttribute(
+                    "style",
+                    `
+                    background-color: var(--phc-bg);
+                    color: var(--phc-text-secondary);
+                    border: 1px solid var(--phc-border);
+                    `
+                );
+
+
+                button.innerHTML =
+                    "Solicitação enviada";
+
+
+                showToast(
+                    "Solicitação enviada com sucesso.",
+                    "success"
+                );
+
+            } else {
+
+                const message =
+                    data.message || "";
+
+
+                if (
+                    message
+                        .toLowerCase()
+                        .includes(
+                            "relationship already exists"
+                        )
+                ) {
+
+                    requestedPatientIds.add(
+                        String(patientId)
+                    );
+
+
+                    button.className =
+                        "btn btn-sm w-100";
+
+
+                    button.setAttribute(
+                        "style",
+                        `
+                        background-color: var(--phc-bg);
+                        color: var(--phc-text-secondary);
+                        border: 1px solid var(--phc-border);
+                        `
+                    );
+
+
+                    button.innerHTML =
+                        "Solicitação enviada";
+
+
+                    showToast(
+                        "Este paciente já possui um vínculo ou solicitação pendente.",
+                        "warning"
+                    );
+
+                } else {
+
+                    button.disabled =
+                        false;
+
+
+                    button.className =
+                        originalClass;
+
+
+                    if (
+                        originalStyle !== null
+                    ) {
+
+                        button.setAttribute(
+                            "style",
+                            originalStyle
+                        );
+
+                    }
+
+
+                    button.innerHTML =
+                        originalHtml;
+
+
+                    showToast(
+                        message ||
+                        "Não foi possível enviar a solicitação.",
+                        "danger"
+                    );
+
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao solicitar vínculo:",
+                error
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.className =
+                originalClass;
+
+
+            if (
+                originalStyle !== null
+            ) {
+
+                button.setAttribute(
+                    "style",
+                    originalStyle
+                );
+
+            }
+
+
+            button.innerHTML =
+                originalHtml;
+
+
+            showToast(
+                "Erro de conexão ao enviar a solicitação.",
+                "danger"
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+
+    function showToast(
+        message,
+        type = "success"
+    ) {
+
+        const container =
+            document.getElementById(
+                "toast-container"
+            ) ||
+            createToastContainer();
+
+
+        let bgClass =
+            "background-color: var(--phc-success-bg); color: var(--phc-success-text); border-color: #BBF7D0;";
+
+
+        if (type === "warning") {
+
+            bgClass =
+                "background-color: var(--phc-warning-bg); color: var(--phc-warning-text); border-color: #FDE68A;";
+
+        } else if (
+            type === "danger"
+        ) {
+
+            bgClass =
+                "background-color: var(--phc-danger-bg); color: var(--phc-danger-text); border-color: #FECACA;";
+
+        }
+
+
+        const toastId =
+            "toast-" +
+            Date.now();
+
+
+        const toastHtml = `
+
+            <div
+                id="${toastId}"
+                class="toast align-items-center border-0"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+                style="${bgClass}"
+            >
+
+                <div class="d-flex">
+
+                    <div class="toast-body">
+                        ${escapeHtml(message)}
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="btn-close me-2 m-auto"
+                        data-bs-dismiss="toast"
+                        aria-label="Fechar"
+                        style="opacity: 0.7;"
+                    ></button>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.insertAdjacentHTML(
+            "beforeend",
+            toastHtml
+        );
+
+
+        const toastElement =
+            document.getElementById(
+                toastId
+            );
+
+
+        const toast =
+            new bootstrap.Toast(
+                toastElement,
+                {
+                    delay: 3000
+                }
+            );
+
+
+        toast.show();
+
+
+        toastElement.addEventListener(
+            "hidden.bs.toast",
+            () => {
+
+                toastElement.remove();
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       CONTAINER DE TOAST
+    ========================================================= */
+
+    function createToastContainer() {
+
+        const container =
+            document.createElement(
+                "div"
+            );
+
+
+        container.id =
+            "toast-container";
+
+
+        container.className =
+            "toast-container position-fixed bottom-0 end-0 p-3";
+
+
+        container.style.zIndex =
+            "1090";
+
+
+        document.body.appendChild(
+            container
+        );
+
+
+        return container;
+
+    }
+
+
+    /* =========================================================
+       PESQUISA DO MODAL
+    ========================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            const searchInput =
+                document.getElementById(
+                    "addPatientSearch"
+                );
+
+
+            if (searchInput) {
+
+                searchInput.addEventListener(
+                    "input",
+                    (e) => {
+
+                        const searchTerm =
+                            e.target.value
+                                .trim();
+
+
+                        if (
+                            searchTimeout
+                        ) {
+
+                            clearTimeout(
+                                searchTimeout
+                            );
+
+                        }
+
+
+                        searchTimeout =
+                            setTimeout(
+                                () => {
+
+                                    loadPatients(
+                                        searchTerm
+                                    );
+
+                                },
+                                400
+                            );
+
+                    }
+                );
+
+            }
+
+        }
+    );
+
 </script>
 
 {% endblock %}

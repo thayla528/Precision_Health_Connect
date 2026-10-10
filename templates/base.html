@@ -38,24 +38,9 @@ rel="stylesheet">
 
 
 
-.glass-card{
-    background:var(--gradient-card);
-    backdrop-filter:blur(16px);
-    border:1px solid rgba(255,255,255,.45);
-    border-radius:20px;
-}
+.
 
-.btn-primary-custom,
-.btn-primary{
-    background:var(--gradient-button);
-    border:none;
-    color:white;
-}
 
-.btn-primary-custom:hover,
-.btn-primary:hover{
-    background:linear-gradient(135deg,#6d28d9,#a855f7);
-}
 
 .table thead{
     background:linear-gradient(135deg,#500989,#7c3aed);
@@ -87,14 +72,7 @@ footer{
     background:var(--gradient-card);
 }
 
-.alert-success,
-.alert-danger,
-.alert-warning,
-.alert-info{
-    background:linear-gradient(135deg,#ede9fe,#ffffff);
-    color:#500989;
-    border:1px solid #a855f7;
-}
+
 
 .material-symbols-outlined{
     color:#7c3aed;
@@ -657,6 +635,204 @@ a {
 
 }
 
+<style>
+
+/* =========================
+   ESTRUTURA DA PÁGINA
+========================= */
+
+html,
+body {
+
+    height:100%;
+
+    margin:0;
+
+    overflow:hidden;
+
+}
+
+
+/* =========================
+   CONTEÚDO PRINCIPAL
+========================= */
+
+.main-content {
+
+    margin-left:260px;
+
+    margin-top:80px;
+
+    width:calc(100% - 260px);
+
+    min-height:calc(100vh - 80px);
+
+    padding:30px;
+
+    box-sizing:border-box;
+
+    transition:.3s ease;
+
+}
+
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+
+    width:260px;
+
+    position:fixed;
+
+    top:80px;
+
+    bottom:0;
+
+    left:0;
+
+    background:
+    rgba(255,255,255,0.45);
+
+    backdrop-filter:blur(20px);
+
+    border-right:
+    1px solid var(--glass-border);
+
+    padding:25px 15px;
+
+    transition:.3s ease;
+
+    z-index:1000;
+
+    box-sizing:border-box;
+
+
+    /* =========================
+       SCROLL DA SIDEBAR
+    ========================= */
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+}
+
+
+/* =========================
+   SCROLLBAR DA SIDEBAR
+   CHROME / EDGE
+========================= */
+
+.sidebar::-webkit-scrollbar {
+
+    width:8px;
+
+}
+
+
+.sidebar::-webkit-scrollbar-track {
+
+    background:transparent;
+
+}
+
+
+.sidebar::-webkit-scrollbar-thumb {
+
+    background:#b8b8b8;
+
+    border-radius:10px;
+
+}
+
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+
+    background:#888;
+
+}
+
+
+/* =========================
+   SCROLLBAR FIREFOX
+========================= */
+
+.sidebar {
+
+    scrollbar-width:thin;
+
+    scrollbar-color:
+        #b8b8b8
+        transparent;
+
+}
+
+
+/* =========================
+   SIDEBAR RECOLHIDA
+========================= */
+
+.sidebar.collapsed {
+
+    transform:translateX(-260px);
+
+}
+
+
+/* =========================
+   CONTEÚDO EXPANDIDO
+========================= */
+
+.main-content.expanded {
+
+    margin-left:0;
+
+    width:100%;
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:992px) {
+
+
+    /* SIDEBAR ESCONDIDA */
+
+    .sidebar {
+
+        transform:translateX(-260px);
+
+    }
+
+
+    /* SIDEBAR ABERTA */
+
+    .sidebar.mobile-open {
+
+        transform:translateX(0);
+
+    }
+
+
+    /* CONTEÚDO */
+
+    .main-content {
+
+        margin-left:0;
+
+        width:100%;
+
+        min-height:calc(100vh - 80px);
+
+    }
+
+}
+
 </style>
 
 </head>
@@ -686,44 +862,77 @@ NAVBAR SUPERIOR
 
 <div class="d-flex align-items-center gap-3">
 
+    <div
+        style="
+            width:42px;
+            height:42px;
+            border-radius:50%;
+            overflow:hidden;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:var(--primary-purple);
+        "
+    >
 
-{% if session.get("role") == "administrator" %}
+        {% if session.get("profile_photo") %}
 
-<span class="fw-semibold">
-Administrador
-</span>
+            <img
+                src="{{ session.get('profile_photo') }}"
+                alt="Foto de perfil"
+                style="
+                    width:100%;
+                    height:100%;
+                    object-fit:cover;
+                "
+            >
 
-{% elif session.get("role") == "professional" %}
+        {% else %}
 
-<span class="fw-semibold">
-Profissional de Saúde
-</span>
+            <span
+                class="material-symbols-outlined"
+                style="font-size:25px;color:white;"
+            >
+                person
+            </span>
 
-{% else %}
+        {% endif %}
 
-<span class="fw-semibold">
-Paciente
-</span>
-
-{% endif %}
-
-
-
-
-<a href="{{ url_for('auth.logout') }}"
-class="text-decoration-none"
-style="color:var(--primary-purple);">
+    </div>
 
 
-<span class="material-symbols-outlined">
+    {% if session.get("role") == "administrator" %}
 
-logout
+        <span class="fw-semibold">
+            Administrador
+        </span>
 
-</span>
+    {% elif session.get("role") == "professional" %}
+
+        <span class="fw-semibold">
+            Profissional de Saúde
+        </span>
+
+    {% else %}
+
+        <span class="fw-semibold">
+            Paciente
+        </span>
+
+    {% endif %}
 
 
-</a>
+    <a
+        href="{{ url_for('auth.logout') }}"
+        class="text-decoration-none"
+        style="color:var(--primary-purple);"
+    >
 
+        <span class="material-symbols-outlined">
+            logout
+        </span>
+
+    </a>
 
 </div>
 
@@ -746,308 +955,265 @@ SIDEBAR
 
 <aside class="sidebar" id="sidebar">
 
+    <!-- =========================
+    PERFIL LATERAL
+    ========================= -->
 
+    <div class="text-center mb-4">
 
-<!-- PERFIL LATERAL -->
+        <div
+            class="profile-icon mx-auto mb-3"
+            style="
+                width:100px;
+                height:100px;
+                overflow:hidden;
+                border-radius:50%;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            "
+        >
 
+            {% if session.get("profile_photo") %}
 
-<div class="text-center mb-4">
+                <img
+                    src="{{ session.get('profile_photo') }}"
+                    alt="Foto de perfil"
+                    style="
+                        width:100%;
+                        height:100%;
+                        object-fit:cover;
+                        border-radius:50%;
+                    "
+                >
 
+            {% else %}
 
-<div class="profile-icon mx-auto mb-3"
-style="width:100px;height:100px;">
+                <span
+                    class="material-symbols-outlined"
+                    style="font-size:55px;"
+                >
+                    person
+                </span>
 
+            {% endif %}
 
-<span class="material-symbols-outlined"
-style="font-size:55px;">
+        </div>
 
-person
 
-</span>
+        <!-- TIPO DE USUÁRIO -->
 
+        {% if session.get("role") == "administrator" %}
 
-</div>
+            <h5 class="headline mb-0">
+                Administrador
+            </h5>
 
+            <small class="text-muted">
+                Painel administrativo
+            </small>
 
-{% if session.get("role") == "administrator" %}
 
-<h5 class="headline mb-0">
-Administrador
-</h5>
+        {% elif session.get("role") == "professional" %}
 
-<small class="text-muted">
-Painel administrativo
-</small>
+            <h5 class="headline mb-0">
+                Profissional de Saúde
+            </h5>
 
+            <small class="text-muted">
+                Área profissional
+            </small>
 
-{% elif session.get("role") == "professional" %}
 
-<h5 class="headline mb-0">
-Profissional de Saúde
-</h5>
+        {% else %}
 
-<small class="text-muted">
-Área profissional
-</small>
+            <h5 class="headline mb-0">
+                Paciente
+            </h5>
 
+            <small class="text-muted">
+                Área do paciente
+            </small>
 
-{% else %}
+        {% endif %}
+
+    </div>
 
-<h5 class="headline mb-0">
-Paciente
-</h5>
 
-<small class="text-muted">
-Área do paciente
-</small>
+    <!-- =========================
+    MENU
+    ========================= -->
 
-{% endif %}
+    <nav class="nav flex-column">
+
+        {% if session.get("role") == "administrator" %}
 
-
-
-</div>
-
-<nav class="nav flex-column">
-
-{% if session.get("role") == "administrator" %}
-
-
-<!-- =====================
-MENU ADMIN
-===================== -->
-
-<a href="/admin/profile" class="nav-link">
-    <span class="material-symbols-outlined">
-        account_circle
-    </span>
-    Meu Perfil
-</a>
-
-
-
-<a href="{{ url_for('web.admin_invitations') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-dashboard
-</span>
-
-Dashboard
-
-</a>
-
-
-
-<a href="{{ url_for('web.users') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-groups
-</span>
-
-Usuários
-
-</a>
-
-<a href="{{ url_for('web.admin') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-shield_person
-</span>
-
-Administradores
-
-</a>
-
-
-
-<a href="{{ url_for('web.recent_logins') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-history
-</span>
-
-Últimos Logins
-
-</a>
-
-<a href="{{ url_for('web.logs') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-receipt_long
-</span>
-
-Logs
-
-</a>
-
-<a href="{{ url_for('web.settings') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-settings
-</span>
-
-Configurações
-
-</a>
-
-{% elif session.get("role") == "professional" %}
-
-<!-- =====================
-MENU PROFISSIONAL
-===================== -->
-
-<a href="{{ url_for('web.health_professional_dashboard') }}" class="nav-link">
-    <span class="material-symbols-outlined">space_dashboard</span>
-    Dashboard
-</a>
-
-<a href="{{ url_for('web.professional_patients') }}" class="nav-link">
-    <span class="material-symbols-outlined">groups</span>
-    Pacientes
-</a>
-
-<a href="{{ url_for('web.professional_medical_record') }}" class="nav-link">
-    <span class="material-symbols-outlined">folder_shared</span>
-    Prontuários
-</a>
-
-<a href="{{ url_for('web.professional_calendar') }}" class="nav-link">
-    <span class="material-symbols-outlined">calendar_month</span>
-    Agenda
-</a>
-
-<a href="{{ url_for('web.professional_appointments') }}" class="nav-link">
-    <span class="material-symbols-outlined">event_available</span>
-    Consultas
-</a>
-
-<a href="{{ url_for('web.professional_prescriptions') }}" class="nav-link">
-    <span class="material-symbols-outlined">medication</span>
-    Receitas
-</a>
-
-<a href="{{ url_for('web.professional_exams') }}" class="nav-link">
-    <span class="material-symbols-outlined">lab_profile</span>
-    Exames
-</a>
-
-<a href="{{ url_for('web.professional_messages') }}" class="nav-link">
-    <span class="material-symbols-outlined">forum</span>
-    Mensagens
-</a>
-
-<a href="{{ url_for('web.professional_history') }}" class="nav-link">
-    <span class="material-symbols-outlined">history</span>
-    Histórico
-</a>
-
-<a href="{{ url_for('web.professional_reports') }}" class="nav-link">
-    <span class="material-symbols-outlined">analytics</span>
-    Relatórios
-</a>
-
-<a href="{{ url_for('web.professional_profile') }}" class="nav-link">
-    <span class="material-symbols-outlined">account_circle</span>
-    Meu Perfil
-</a>
-
-<a href="{{ url_for('web.professional_settings') }}" class="nav-link">
-    <span class="material-symbols-outlined">settings</span>
-    Configurações
-</a>
-
-
-{% else %}
-
-<!-- =====================
-MENU PACIENTE
-===================== -->
-
-<a href="{{ url_for('web.patient_dashboard') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-space_dashboard
-</span>
-
-Dashboard
-
-</a>
-
-<a href="{{ url_for('web.patient_profile') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-account_circle
-</span>
-
-Meu Perfil
-
-</a>
-
-<a href="{{ url_for('web.appointments') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-event_available
-</span>
-
-Consultas
-
-</a>
-
-<a href="{{ url_for('web.medical_record') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-folder_shared
-</span>
-
-Prontuário
-
-</a>
-
-<a href="{{ url_for('web.exams') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-lab_profile
-</span>
-
-Exames
-
-</a>
-
-<a href="{{ url_for('web.recipes') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-medication
-</span>
-
-Receitas
-
-</a>
-
-<a href="{{ url_for('web.messages') }}"
-class="nav-link">
-
-<span class="material-symbols-outlined">
-forum
-</span>
-
-Mensagens
-
-</a>
-
-{% endif %}
-
-</nav>
+            <!-- MENU ADMIN -->
+
+            <a href="/admin/profile" class="nav-link">
+                <span class="material-symbols-outlined">
+                    account_circle
+                </span>
+                Meu Perfil
+            </a>
+
+            <a href="{{ url_for('web.admin_invitations') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    dashboard
+                </span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('web.users') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    groups
+                </span>
+                Usuários
+            </a>
+
+            <a href="{{ url_for('web.admin') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    shield_person
+                </span>
+                Administradores
+            </a>
+
+            <a href="{{ url_for('web.logs') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    receipt_long
+                </span>
+                Logs
+            </a>
+
+            <a href="{{ url_for('web.settings') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    settings
+                </span>
+                Configurações
+            </a>
+
+
+        {% elif session.get("role") == "professional" %}
+
+            <!-- MENU PROFISSIONAL -->
+
+            <a href="{{ url_for('web.health_professional_dashboard') }}" class="nav-link">
+                <span class="material-symbols-outlined">space_dashboard</span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('web.professional_patients') }}" class="nav-link">
+                <span class="material-symbols-outlined">groups</span>
+                Pacientes
+            </a>
+
+            <a href="{{ url_for('web.professional_medical_record') }}" class="nav-link">
+                <span class="material-symbols-outlined">folder_shared</span>
+                Prontuários
+            </a>
+
+            <a href="{{ url_for('web.professional_calendar') }}" class="nav-link">
+                <span class="material-symbols-outlined">calendar_month</span>
+                Agenda
+            </a>
+
+            <a href="{{ url_for('web.professional_appointments') }}" class="nav-link">
+                <span class="material-symbols-outlined">event_available</span>
+                Consultas
+            </a>
+
+            <a href="{{ url_for('web.professional_prescriptions') }}" class="nav-link">
+                <span class="material-symbols-outlined">medication</span>
+                Receitas
+            </a>
+
+            <a href="{{ url_for('web.professional_exams') }}" class="nav-link">
+                <span class="material-symbols-outlined">lab_profile</span>
+                Exames
+            </a>
+
+            <a href="{{ url_for('web.professional_messages') }}" class="nav-link">
+                <span class="material-symbols-outlined">forum</span>
+                Mensagens
+            </a>
+
+            <a href="{{ url_for('web.professional_history') }}" class="nav-link">
+                <span class="material-symbols-outlined">history</span>
+                Histórico
+            </a>
+
+            <a href="{{ url_for('web.professional_reports') }}" class="nav-link">
+                <span class="material-symbols-outlined">analytics</span>
+                Relatórios
+            </a>
+
+            <a href="{{ url_for('web.professional_profile') }}" class="nav-link">
+                <span class="material-symbols-outlined">account_circle</span>
+                Meu Perfil
+            </a>
+
+            <a href="{{ url_for('web.professional_settings') }}" class="nav-link">
+                <span class="material-symbols-outlined">settings</span>
+                Configurações
+            </a>
+
+
+        {% else %}
+
+            <!-- MENU PACIENTE -->
+
+            <a href="{{ url_for('web.patient_dashboard') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    space_dashboard
+                </span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('web.patient_profile') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    account_circle
+                </span>
+                Meu Perfil
+            </a>
+
+            <a href="{{ url_for('web.appointments') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    event_available
+                </span>
+                Consultas
+            </a>
+
+            <a href="{{ url_for('web.medical_record') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    folder_shared
+                </span>
+                Prontuário
+            </a>
+
+            <a href="{{ url_for('web.exams') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    lab_profile
+                </span>
+                Exames
+            </a>
+
+            <a href="{{ url_for('web.recipes') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    medication
+                </span>
+                Receitas
+            </a>
+
+            <a href="{{ url_for('web.messages') }}" class="nav-link">
+                <span class="material-symbols-outlined">
+                    forum
+                </span>
+                Mensagens
+            </a>
+
+        {% endif %}
+
+    </nav>
 
 </aside>
 

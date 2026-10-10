@@ -300,15 +300,26 @@ def login():
                     "login.html"
                 )
 
+
             session["user_id"] = user["id"]
             session["user_name"] = user["full_name"]
             session["user_email"] = user["email"]
             session["role"] = user["role"]
             session["profile_type"] = user["profile_type"]
 
+            # Foto de perfil
+            # Foto de perfil
+            profile_photo = user.get("profile_photo")
+
+            if profile_photo:
+                session["profile_photo"] = (
+                    f"{API_URL}/uploads/profile_photos/{profile_photo}"
+                )
+            else:
+                session["profile_photo"] = None
+
             session["access_token"] = result.get("access_token")
             session["refresh_token"] = result.get("refresh_token")
-
 
             flash(
                 f"Bem-vindo(a), {session['user_name']}!",

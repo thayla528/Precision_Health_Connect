@@ -1144,15 +1144,28 @@ Administradores | Precision Health Connect
 
             <!-- HEADER -->
             <div class="modal-header modal-header-custom">
-                <h5 class="modal-title fw-bold" id="addAdminModalLabel" style="color: var(--phc-primary);">
+
+                <h5
+                    class="modal-title fw-bold"
+                    id="addAdminModalLabel"
+                    style="color: var(--phc-primary);"
+                >
                     Adicionar Administrador
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                ></button>
+
             </div>
+
 
             <!-- BODY -->
             <div class="modal-body modal-body-custom">
-                <!-- Todo o conteúdo e os botões de ação ficam estritamente DENTRO do <form> -->
+
                 <form
                     id="addAdminForm"
                     method="POST"
@@ -1160,198 +1173,233 @@ Administradores | Precision Health Connect
                     class="needs-validation"
                     novalidate
                 >
-                    <!-- Proteções obrigatórias contra erros de CSRF e identificador de ação -->
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="action" value="create_admin">
+
+                    <!-- CSRF -->
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{ csrf_token() }}"
+                    >
+
+                    <!-- IDENTIFICADOR DA AÇÃO -->
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="create_admin"
+                    >
+
+
+                    <!-- INFORMAÇÃO -->
+                    <div
+                        class="mb-4"
+                        style="
+                            padding: 14px 16px;
+                            background-color: #f5f7f9;
+                            border: 1px solid #e8ecef;
+                            border-radius: 10px;
+                            font-size: .875rem;
+                            line-height: 1.6;
+                            color: #68747c;
+                        "
+                    >
+
+                        <strong
+                            style="
+                                color: var(--phc-text-main);
+                            "
+                        >
+                            Convite para administrador
+                        </strong>
+
+                        <br>
+
+                        Preencha os dados abaixo. Um código de convite
+                        será enviado para o e-mail informado.
+
+                    </div>
+
 
                     <div class="row g-3 mb-4">
+
+
                         <!-- NOME -->
                         <div class="col-12">
-                            <label for="adminName" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: .875rem;">Nome Completo</label>
-                            <input type="text" class="form-control-custom w-100" id="adminName" name="full_name" placeholder="Digite o nome completo" required>
+
+                            <label
+                                for="adminName"
+                                class="form-label fw-semibold"
+                                style="
+                                    color: var(--phc-text-main);
+                                    font-size: .875rem;
+                                "
+                            >
+                                Nome Completo
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control-custom w-100"
+                                id="adminName"
+                                name="full_name"
+                                placeholder="Digite o nome completo"
+                                required
+                                autocomplete="name"
+                            >
+
+                            <div class="invalid-feedback">
+                                Informe o nome completo.
+                            </div>
+
                         </div>
+
 
                         <!-- EMAIL -->
                         <div class="col-md-6">
-                            <label for="adminEmail" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: .875rem;">Email</label>
-                            <input type="email" class="form-control-custom w-100" id="adminEmail" name="email" placeholder="email@precisionhealth.com" required>
+
+                            <label
+                                for="adminEmail"
+                                class="form-label fw-semibold"
+                                style="
+                                    color: var(--phc-text-main);
+                                    font-size: .875rem;
+                                "
+                            >
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                class="form-control-custom w-100"
+                                id="adminEmail"
+                                name="email"
+                                placeholder="email@precisionhealth.com"
+                                required
+                                autocomplete="email"
+                            >
+
+                            <div class="invalid-feedback">
+                                Informe um e-mail válido.
+                            </div>
+
                         </div>
+
 
                         <!-- TELEFONE -->
                         <div class="col-md-6">
-                            <label for="adminPhone" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: .875rem;">Telefone</label>
-                            <input type="tel" class="form-control-custom w-100" id="adminPhone" name="phone" placeholder="(11) 99999-9999">
+
+                            <label
+                                for="adminPhone"
+                                class="form-label fw-semibold"
+                                style="
+                                    color: var(--phc-text-main);
+                                    font-size: .875rem;
+                                "
+                            >
+                                Telefone
+                            </label>
+
+                            <input
+                                type="tel"
+                                class="form-control-custom w-100"
+                                id="adminPhone"
+                                name="phone"
+                                placeholder="(11) 99999-9999"
+                                autocomplete="tel"
+                            >
+
                         </div>
 
-                        <!-- SENHA -->
-                        <div class="col-md-6">
-                            <label for="adminPassword" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: .875rem;">Senha</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control-custom" id="adminPassword" name="password" placeholder="••••••••" required minlength="8" style="border-radius: 12px 0 0 12px;">
-                                <button class="btn-toggle-password" type="button" onclick="togglePassword('adminPassword', this)">
-                                    <span class="material-symbols-rounded">visibility</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- CONFIRMAR SENHA -->
-                        <div class="col-md-6">
-                            <label for="adminConfirmPassword" class="form-label fw-semibold" style="color: var(--phc-text-main); font-size: .875rem;">Confirmar Senha</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control-custom" id="adminConfirmPassword" name="confirm_password" placeholder="••••••••" required minlength="8" style="border-radius: 12px 0 0 12px;">
-                                <button class="btn-toggle-password" type="button" onclick="togglePassword('adminConfirmPassword', this)">
-                                    <span class="material-symbols-rounded">visibility</span>
-                                </button>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- RODAPÉ INTEGRADO: Sem divisão externa de Footer do Modal -->
-                    <div class="modal-footer modal-footer-custom px-0 pb-0" style="border-top: none;">
-                        <button type="button" class="btn-custom-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn-custom-primary">
-                            <span class="material-symbols-rounded">person_add</span>
-                            Adicionar Administrador
+
+                    <!-- RODAPÉ -->
+                    <div
+                        class="modal-footer modal-footer-custom px-0 pb-0"
+                        style="border-top: none;"
+                    >
+
+                        <button
+                            type="button"
+                            class="btn-custom-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            Cancelar
                         </button>
+
+                        <button
+                            type="submit"
+                            class="btn-custom-primary"
+                        >
+
+                            <span class="material-symbols-rounded">
+                                mail
+                            </span>
+
+                            Enviar Convite
+
+                        </button>
+
                     </div>
+
                 </form>
+
             </div>
 
         </div>
     </div>
 </div>
 
+
 <script>
-    // =====================================================
-    // 1. VALIDAÇÃO DE CAMPOS E CONFIRMAÇÃO DE SENHAS
-    // =====================================================
-    document.getElementById("addAdminForm").addEventListener("submit", function(event) {
-        const form = this;
-        const password = document.getElementById("adminPassword");
-        const confirmPassword = document.getElementById("adminConfirmPassword");
-
-        // Verifica se as senhas digitadas são idênticas
-        if (password.value !== confirmPassword.value) {
-            confirmPassword.setCustomValidity("As senhas não coincidem.");
-        } else {
-            confirmPassword.setCustomValidity("");
-        }
-
-        // Impede o envio se houver campos inválidos ou senhas curtas (menos de 8 caracteres)
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-
-        form.classList.add("was-validated");
-    });
 
     // =====================================================
-    // 2. ALTERAR VISIBILIDADE DA SENHA (OLHINHO)
+    // VALIDAÇÃO DO FORMULÁRIO
     // =====================================================
-    function togglePassword(inputId, button) {
-        const input = document.getElementById(inputId);
-        const icon = button.querySelector(".material-symbols-rounded");
 
-        if (input.type === "password") {
-            input.type = "text";
-            icon.textContent = "visibility_off";
-        } else {
-            input.type = "password";
-            icon.textContent = "visibility";
-        }
-    }
+    document
+        .getElementById("addAdminForm")
+        .addEventListener("submit", function(event) {
 
-    // =====================================================
-    // 3. INTEGRADO: BUSCAR DETALHES VIA ROTAS WEB DO FLASK
-    // =====================================================
-    document.querySelectorAll('.open-admin-details').forEach(button => {
-        button.addEventListener('click', function() {
-            const adminId = this.getAttribute('data-id');
+            const form = this;
 
-            // Bate na rota local de ponte (Porta 5000), sem URLs fixas ou problemas de CORS
-            fetch(`/api/administrators/${adminId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Erro HTTP! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success && data.administrator) {
-                        const admin = data.administrator;
+            if (!form.checkValidity()) {
 
-                        // Preenche as tags identificadas por ID no modal
-                        document.getElementById('detailsName').textContent = admin.full_name || '--';
-                        document.getElementById('detailsEmail').textContent = admin.email || '--';
-                        document.getElementById('detailsPhone').textContent = admin.phone || 'Não informado';
-                        document.getElementById('detailsRole').textContent = admin.role || 'Administrador';
-                        document.getElementById('detailsCreatedAt').textContent = admin.created_at || '--';
-                        document.getElementById('detailsLastLogin').textContent = admin.last_login || 'Nunca';
+                event.preventDefault();
+                event.stopPropagation();
 
-                        // Gera o círculo com as iniciais do nome no avatar dinamicamente
-                        const avatarContainer = document.getElementById('detailsAvatarContainer');
-                        if (avatarContainer) {
-                            if (admin.profile_photo && admin.profile_photo.trim() !== "") {
-                                // Limpa caminhos absolutos antigos do Windows se houver no banco
-                                const filename = admin.profile_photo.split('\\').pop().split('/').pop();
+            }
 
-                                // CORREÇÃO DINÂMICA: Detecta o Host atual e aponta fixo para a porta 5001 da API
-                                const currentHostname = window.location.hostname;
-                                const apiUrlImg = `http://${currentHostname}:5001/uploads/profile_photos/${filename}`;
+            form.classList.add("was-validated");
 
-                                avatarContainer.innerHTML = `<img src="${apiUrlImg}" alt="Foto de ${admin.full_name}" class="admin-avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-                            } else {
-                                const nameParts = admin.full_name.trim().split(/\s+/);
-                                let initials = "";
-                                if (nameParts.length > 1) {
-                                    // CORREÇÃO: Adicionado o seletor [0] no sobrenome para capturar apenas a primeira letra da string
-                                    initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
-                                } else if (nameParts[0]) {
-                                    initials = nameParts[0].substring(0, 2).toUpperCase();
-                                } else {
-                                    initials = "--";
-                                }
-                                avatarContainer.innerHTML = `<div class="modal-avatar-initials">${initials}</div>`;
-                            }
-                        }
-
-                        // Atualiza os Badges de Status do modal de detalhes
-                        const statusBadge = document.getElementById('detailsStatusAccount');
-                        const detailsStatus = document.getElementById('detailsStatus');
-
-                        const isActive = (admin.active === 1 || admin.active === true);
-                        const statusText = isActive ? 'Ativo' : 'Inativo';
-                        const statusClass = isActive ? 'badge-status badge-active' : 'badge-status badge-inactive';
-
-                        if (statusBadge) {
-                            statusBadge.textContent = statusText;
-                            statusBadge.className = statusClass;
-                        }
-                        if (detailsStatus) {
-                            detailsStatus.textContent = statusText;
-                            detailsStatus.className = statusClass + ' d-inline-block';
-                        }
-                    }
-                })
-                .catch(err => {
-                    console.error('Erro ao processar requisição de detalhes:', err);
-                    alert('Não foi possível carregar os detalhes do administrador.');
-                });
         });
-    });
+
 
     // =====================================================
-    // 4. AUTO-FECHAR ALERTAS FLASH
+    // AUTO-FECHAR ALERTAS FLASH
     // =====================================================
-    document.addEventListener("DOMContentLoaded", function() {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
-            setTimeout(function() {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            }, 4000);
-        });
-    });
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            const alerts =
+                document.querySelectorAll(".alert");
+
+            alerts.forEach(function(alert) {
+
+                setTimeout(function() {
+
+                    const bsAlert =
+                        new bootstrap.Alert(alert);
+
+                    bsAlert.close();
+
+                }, 4000);
+
+            });
+
+        }
+    );
+
 </script>
 {% endblock %}

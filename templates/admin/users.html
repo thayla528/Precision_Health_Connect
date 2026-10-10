@@ -1023,10 +1023,18 @@ Usuários | Precision Health Connect
 
                             {% if user.profile_photo %}
 
+                                {% set filename = user.profile_photo.split('\\')[-1].split('/')[-1] %}
+
                                 <img
-                                    src="{{ user.profile_photo }}"
+                                    src="http://127.0.0.1:5001/uploads/profile_photos/{{ filename }}"
                                     alt="Foto de {{ user.full_name }}"
                                     class="modal-avatar"
+                                    style="
+                                        width: 100px;
+                                        height: 100px;
+                                        object-fit: cover;
+                                        border-radius: 50%;
+                                    "
                                 >
 
                             {% else %}

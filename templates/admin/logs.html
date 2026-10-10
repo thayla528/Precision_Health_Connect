@@ -305,11 +305,15 @@ Logs do Sistema | Precision Health Connect
     <!-- ===================================================== -->
 
     <div class="page-header">
-        <h1 class="page-title">Logs do Sistema</h1>
+
+        <h1 class="page-title">
+            Logs do Sistema
+        </h1>
 
         <p class="page-subtitle">
             Acompanhe todas as ações administrativas realizadas dentro da plataforma.
         </p>
+
     </div>
 
 
@@ -329,7 +333,7 @@ Logs do Sistema | Precision Health Connect
             class="row g-3 mb-4"
         >
 
-            <!-- Pesquisa -->
+            <!-- PESQUISA -->
 
             <div class="col-12 col-md-6 col-lg-4">
 
@@ -360,7 +364,7 @@ Logs do Sistema | Precision Health Connect
             </div>
 
 
-            <!-- Administrador -->
+            <!-- ADMINISTRADOR -->
 
             <div class="col-12 col-md-6 col-lg-3">
 
@@ -386,7 +390,7 @@ Logs do Sistema | Precision Health Connect
             </div>
 
 
-            <!-- Tipo da ação -->
+            <!-- TIPO DA AÇÃO -->
 
             <div class="col-12 col-md-6 col-lg-3">
 
@@ -489,7 +493,7 @@ Logs do Sistema | Precision Health Connect
             </div>
 
 
-            <!-- Período -->
+            <!-- PERÍODO -->
 
             <div class="col-12 col-md-6 col-lg-2">
 
@@ -644,9 +648,7 @@ Logs do Sistema | Precision Health Connect
 
                     <tr>
 
-                        <th>Data</th>
-
-                        <th>Hora</th>
+                        <th>Data e Hora</th>
 
                         <th>Administrador</th>
 
@@ -673,117 +675,100 @@ Logs do Sistema | Precision Health Connect
 
                         <tr>
 
-                            <!-- DATA -->
+                            <!-- ================================= -->
+                            <!-- DATA E HORA -->
+                            <!-- ================================= -->
 
                             <td class="text-muted">
 
-                                {{ log.date or log.created_at or "-" }}
+                                {{ log.created_at or "-" }}
 
                             </td>
 
 
-                            <!-- HORA -->
-
-                            <td class="text-muted">
-
-                                {{ log.time or "-" }}
-
-                            </td>
-
-
+                            <!-- ================================= -->
                             <!-- ADMINISTRADOR -->
+                            <!-- ================================= -->
 
                             <td class="fw-semibold">
 
-                                {{ log.admin or log.admin_name or "-" }}
+                                {% if log.administrator %}
 
-                            </td>
-
-
-                            <!-- AÇÃO -->
-
-                            <td>
-
-                                <span class="badge-action">
-
-                                    <span class="material-symbols-rounded">
-
-                                        {{ log.action_icon or "history" }}
-
-                                    </span>
-
-                                    {{ log.action or log.action_type or "-" }}
-
-                                </span>
-
-                            </td>
-
-
-                            <!-- USUÁRIO AFETADO -->
-
-                            <td class="text-muted">
-
-                                {{ log.affected_user or log.user_name or "-" }}
-
-                            </td>
-
-
-                            <!-- RESULTADO -->
-
-                            <td>
-
-                                {% set result = (log.result or log.status or "") | lower %}
-
-                                {% if result in ["success", "sucesso", "successful"] %}
-
-                                    <span class="badge-result badge-success">
-
-                                        <span class="material-symbols-rounded">
-                                            check_circle
-                                        </span>
-
-                                        Sucesso
-
-                                    </span>
-
-                                {% elif result in ["warning", "aviso", "pending"] %}
-
-                                    <span class="badge-result badge-warning">
-
-                                        <span class="material-symbols-rounded">
-                                            warning
-                                        </span>
-
-                                        Aviso
-
-                                    </span>
-
-                                {% elif result in ["error", "erro", "failed", "failure"] %}
-
-                                    <span class="badge-result badge-error">
-
-                                        <span class="material-symbols-rounded">
-                                            error
-                                        </span>
-
-                                        Erro
-
-                                    </span>
+                                    {{ log.administrator.name or "-" }}
 
                                 {% else %}
 
-                                    <span class="badge-result">
-
-                                        {{ log.result or log.status or "-" }}
-
-                                    </span>
+                                    -
 
                                 {% endif %}
 
                             </td>
 
 
+                            <!-- ================================= -->
+                            <!-- AÇÃO -->
+                            <!-- ================================= -->
+
+                            <td>
+
+                                <span class="badge-action">
+
+                                    <span class="material-symbols-rounded">
+                                        history
+                                    </span>
+
+                                    {{ log.action or "-" }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ================================= -->
+                            <!-- USUÁRIO AFETADO -->
+                            <!-- ================================= -->
+
+                            <td class="text-muted">
+
+                                {% if log.affected_user %}
+
+                                    {{ log.affected_user.name or "-" }}
+
+                                {% elif log.invitation %}
+
+                                    {{ log.invitation.name or "-" }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ================================= -->
+                            <!-- RESULTADO -->
+                            <!-- ================================= -->
+
+                            <td>
+
+                                <span class="badge-result badge-success">
+
+                                    <span class="material-symbols-rounded">
+                                        check_circle
+                                    </span>
+
+                                    Sucesso
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ================================= -->
                             <!-- DETALHES -->
+                            <!-- ================================= -->
 
                             <td class="text-end">
 
@@ -813,7 +798,7 @@ Logs do Sistema | Precision Health Connect
                         <tr>
 
                             <td
-                                colspan="7"
+                                colspan="6"
                                 class="text-center py-5"
                             >
 
@@ -855,9 +840,6 @@ Logs do Sistema | Precision Health Connect
 
             <ul class="pagination pagination-custom justify-content-end mb-0">
 
-
-                <!-- ANTERIOR -->
-
                 {% if pagination.has_prev %}
 
                 <li class="page-item">
@@ -873,9 +855,7 @@ Logs do Sistema | Precision Health Connect
                             period=period
                         ) }}"
                     >
-
                         Anterior
-
                     </a>
 
                 </li>
@@ -892,8 +872,6 @@ Logs do Sistema | Precision Health Connect
 
                 {% endif %}
 
-
-                <!-- PÁGINAS -->
 
                 {% if pagination.iter_pages %}
 
@@ -926,9 +904,7 @@ Logs do Sistema | Precision Health Connect
                                         period=period
                                     ) }}"
                                 >
-
                                     {{ page_num }}
-
                                 </a>
 
                             </li>
@@ -952,8 +928,6 @@ Logs do Sistema | Precision Health Connect
                 {% endif %}
 
 
-                <!-- PRÓXIMO -->
-
                 {% if pagination.has_next %}
 
                 <li class="page-item">
@@ -969,9 +943,7 @@ Logs do Sistema | Precision Health Connect
                             period=period
                         ) }}"
                     >
-
                         Próximo
-
                     </a>
 
                 </li>
@@ -998,297 +970,198 @@ Logs do Sistema | Precision Health Connect
 
 </div>
 
+
+<!-- ========================================================= -->
+<!-- MODAIS DE DETALHES -->
+<!-- ========================================================= -->
+
 {% if logs %}
-{% for log in logs %}
-<div
-    class="modal fade"
-    id="logDetailsModal{{ loop.index }}"
-    tabindex="-1"
-    aria-labelledby="logDetailsModalLabel{{ loop.index }}"
-    aria-hidden="true"
->
 
-    <div class="modal-dialog modal-xl-custom modal-dialog-centered">
+    {% for log in logs %}
 
-        <div class="modal-content modal-content-custom">
+    <div
+        class="modal fade"
+        id="logDetailsModal{{ loop.index }}"
+        tabindex="-1"
+        aria-labelledby="logDetailsModalLabel{{ loop.index }}"
+        aria-hidden="true"
+    >
 
+        <div class="modal-dialog modal-xl-custom modal-dialog-centered">
 
-            <!-- ================================================= -->
-            <!-- CABEÇALHO -->
-            <!-- ================================================= -->
-
-            <div class="modal-header modal-header-custom">
-
-                <h5
-                    class="modal-title fw-bold"
-                    id="logDetailsModalLabel{{ loop.index }}"
-                    style="color: var(--phc-primary);"
-                >
-
-                    Detalhes do Log
-
-                </h5>
+            <div class="modal-content modal-content-custom">
 
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fechar"
-                ></button>
+                <!-- ============================================= -->
+                <!-- CABEÇALHO -->
+                <!-- ============================================= -->
 
-            </div>
+                <div class="modal-header modal-header-custom">
 
-
-            <!-- ================================================= -->
-            <!-- CORPO -->
-            <!-- ================================================= -->
-
-            <div class="modal-body modal-body-custom">
-
-                <div class="row g-3">
+                    <h5
+                        class="modal-title fw-bold"
+                        id="logDetailsModalLabel{{ loop.index }}"
+                        style="color: var(--phc-primary);"
+                    >
+                        Detalhes do Log
+                    </h5>
 
 
-                    <!-- ========================================= -->
-                    <!-- INFORMAÇÕES DA AÇÃO -->
-                    <!-- ========================================= -->
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Fechar"
+                    ></button>
 
-                    <div class="col-lg-6">
-
-                        <div class="section-title">
-                            Informações da Ação
-                        </div>
-
-
-                        <div class="row g-2">
+                </div>
 
 
-                            <!-- DATA -->
+                <!-- ============================================= -->
+                <!-- CORPO -->
+                <!-- ============================================= -->
 
-                            <div class="col-6">
+                <div class="modal-body modal-body-custom">
 
-                                <div class="detail-label">
-                                    Data
-                                </div>
+                    <div class="row g-3">
 
-                                <div class="detail-value">
 
-                                    {{ log.date or log.created_at or "-" }}
+                        <!-- ===================================== -->
+                        <!-- INFORMAÇÕES DA AÇÃO -->
+                        <!-- ===================================== -->
 
-                                </div>
+                        <div class="col-lg-6">
 
+                            <div class="section-title">
+                                Informações da Ação
                             </div>
 
 
-                            <!-- HORA -->
-
-                            <div class="col-6">
-
-                                <div class="detail-label">
-                                    Hora
-                                </div>
-
-                                <div class="detail-value">
-
-                                    {{ log.time or "-" }}
-
-                                </div>
-
-                            </div>
+                            <div class="row g-2">
 
 
-                            <!-- ADMIN -->
+                                <!-- DATA E HORA -->
 
-                            <div class="col-12">
+                                <div class="col-12">
 
-                                <div class="detail-label">
-                                    Administrador Responsável
-                                </div>
+                                    <div class="detail-label">
+                                        Data e Hora
+                                    </div>
 
-                                <div class="detail-value fw-semibold">
+                                    <div class="detail-value">
 
-                                    {{ log.admin or log.admin_name or "-" }}
+                                        {{ log.created_at or "-" }}
+
+                                    </div>
 
                                 </div>
 
-                            </div>
 
+                                <!-- ADMINISTRADOR -->
 
-                            <!-- EMAIL ADMIN -->
+                                <div class="col-12">
 
-                            <div class="col-12">
+                                    <div class="detail-label">
+                                        Administrador Responsável
+                                    </div>
 
-                                <div class="detail-label">
-                                    Email do Administrador
+                                    <div class="detail-value fw-semibold">
+
+                                        {% if log.administrator %}
+
+                                            {{ log.administrator.name or "-" }}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </div>
+
                                 </div>
 
-                                <div class="detail-value text-break">
 
-                                    {{ log.admin_email or "-" }}
+                                <!-- EMAIL ADMINISTRADOR -->
+
+                                <div class="col-12">
+
+                                    <div class="detail-label">
+                                        Email do Administrador
+                                    </div>
+
+                                    <div class="detail-value text-break">
+
+                                        {% if log.administrator %}
+
+                                            {{ log.administrator.email or "-" }}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </div>
 
                                 </div>
 
-                            </div>
 
+                                <!-- AÇÃO -->
 
-                            <!-- AÇÃO -->
+                                <div class="col-12">
 
-                            <div class="col-12">
+                                    <div class="detail-label">
+                                        Tipo da Ação
+                                    </div>
 
-                                <div class="detail-label">
-                                    Tipo da Ação
-                                </div>
+                                    <div class="detail-value">
 
-                                <div class="detail-value">
+                                        <span class="badge-action">
 
-                                    <span class="badge-action">
+                                            <span class="material-symbols-rounded">
+                                                history
+                                            </span>
 
-                                        <span class="material-symbols-rounded">
-
-                                            {{ log.action_icon or "history" }}
+                                            {{ log.action or "-" }}
 
                                         </span>
 
-                                        {{ log.action or log.action_type or "-" }}
-
-                                    </span>
+                                    </div>
 
                                 </div>
 
-                            </div>
 
+                                <!-- TABELA -->
 
-                            <!-- DESCRIÇÃO -->
+                                <div class="col-12">
 
-                            <div class="col-12">
+                                    <div class="detail-label">
+                                        Tabela Afetada
+                                    </div>
 
-                                <div class="detail-label mb-2">
-                                    Descrição Completa
-                                </div>
+                                    <div class="detail-value">
 
-                                <div class="description-box">
+                                        {{ log.table_name or "-" }}
 
-                                    {{ log.description or "Nenhuma descrição disponível." }}
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- ========================================= -->
-                    <!-- USUÁRIO AFETADO -->
-                    <!-- ========================================= -->
-
-                    <div class="col-lg-6">
-
-                        <div class="section-title">
-                            Usuário Afetado
-                        </div>
-
-
-                        <div class="row g-2 mb-3">
-
-
-                            <!-- NOME -->
-
-                            <div class="col-12">
-
-                                <div class="detail-label">
-                                    Nome
-                                </div>
-
-                                <div class="detail-value fw-semibold">
-
-                                    {{ log.affected_user or log.user_name or "-" }}
+                                    </div>
 
                                 </div>
 
-                            </div>
 
+                                <!-- ID DO REGISTRO -->
 
-                            <!-- EMAIL -->
+                                <div class="col-12">
 
-                            <div class="col-12">
+                                    <div class="detail-label">
+                                        ID do Registro
+                                    </div>
 
-                                <div class="detail-label">
-                                    Email
-                                </div>
+                                    <div class="detail-value">
 
-                                <div class="detail-value text-break">
+                                        {{ log.record_id or "-" }}
 
-                                    {{ log.affected_email or log.user_email or "-" }}
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- RESULTADO -->
-
-                            <div class="col-12">
-
-                                <div class="detail-label">
-                                    Resultado
-                                </div>
-
-                                <div class="detail-value">
-
-                                    {% set result = (log.result or log.status or "") | lower %}
-
-
-                                    {% if result in ["success", "sucesso", "successful"] %}
-
-                                    <span class="badge-result badge-success">
-
-                                        <span class="material-symbols-rounded">
-                                            check_circle
-                                        </span>
-
-                                        Sucesso
-
-                                    </span>
-
-
-                                    {% elif result in ["warning", "aviso", "pending"] %}
-
-                                    <span class="badge-result badge-warning">
-
-                                        <span class="material-symbols-rounded">
-                                            warning
-                                        </span>
-
-                                        Aviso
-
-                                    </span>
-
-
-                                    {% elif result in ["error", "erro", "failed", "failure"] %}
-
-                                    <span class="badge-result badge-error">
-
-                                        <span class="material-symbols-rounded">
-                                            error
-                                        </span>
-
-                                        Erro
-
-                                    </span>
-
-
-                                    {% else %}
-
-                                    <span class="badge-result">
-
-                                        {{ log.result or log.status or "-" }}
-
-                                    </span>
-
-                                    {% endif %}
+                                    </div>
 
                                 </div>
 
@@ -1297,69 +1170,160 @@ Logs do Sistema | Precision Health Connect
                         </div>
 
 
+                        <!-- ===================================== -->
+                        <!-- USUÁRIO AFETADO -->
+                        <!-- ===================================== -->
 
-                        <!-- ========================================= -->
-                        <!-- DADOS TÉCNICOS -->
-                        <!-- ========================================= -->
+                        <div class="col-lg-6">
 
-                        <div class="section-title">
-                            Dados Técnicos
-                        </div>
-
-
-                        <div class="row g-2">
+                            <div class="section-title">
+                                Usuário Afetado
+                            </div>
 
 
-                            <!-- IP -->
+                            <div class="row g-2 mb-3">
 
-                            <div class="col-12">
 
-                                <div class="detail-label">
-                                    Endereço IP
+                                <!-- NOME -->
+
+                                <div class="col-12">
+
+                                    <div class="detail-label">
+                                        Nome
+                                    </div>
+
+                                    <div class="detail-value fw-semibold">
+
+                                        {% if log.affected_user %}
+
+                                            {{ log.affected_user.name or "-" }}
+
+                                        {% elif log.invitation %}
+
+                                            {{ log.invitation.name or "-" }}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </div>
+
                                 </div>
 
-                                <div
-                                    class="detail-value"
-                                    style="font-family: monospace;"
-                                >
 
-                                    {{ log.ip or ip or "-" }}
+                                <!-- EMAIL -->
+
+                                <div class="col-12">
+
+                                    <div class="detail-label">
+                                        Email
+                                    </div>
+
+                                    <div class="detail-value text-break">
+
+                                        {% if log.affected_user %}
+
+                                            {{ log.affected_user.email or "-" }}
+
+                                        {% elif log.invitation %}
+
+                                            {{ log.invitation.email or "-" }}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </div>
 
                                 </div>
+
+
+                                <!-- PERFIL DO CONVITE -->
+
+                                {% if log.invitation %}
+
+                                <div class="col-12">
+
+                                    <div class="detail-label">
+                                        Tipo de Perfil
+                                    </div>
+
+                                    <div class="detail-value">
+
+                                        {{ log.invitation.profile_type or "-" }}
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- STATUS DO CONVITE -->
+
+                                <div class="col-12">
+
+                                    <div class="detail-label">
+                                        Status
+                                    </div>
+
+                                    <div class="detail-value">
+
+                                        {{ log.invitation.status or "-" }}
+
+                                    </div>
+
+                                </div>
+
+                                {% endif %}
 
                             </div>
 
 
-                            <!-- BROWSER -->
+                            <!-- ===================================== -->
+                            <!-- DADOS ANTIGOS -->
+                            <!-- ===================================== -->
 
-                            <div class="col-6">
+                            <div class="section-title">
+                                Dados Anteriores
+                            </div>
 
-                                <div class="detail-label">
-                                    Navegador
-                                </div>
+                            <div class="description-box">
 
-                                <div class="detail-value">
+                                {% if log.old_data %}
 
-                                    {{ log.browser or "-" }}
+                                    <pre class="mb-0">{{ log.old_data | tojson(indent=2) }}</pre>
 
-                                </div>
+                                {% else %}
+
+                                    Nenhum dado anterior.
+
+                                {% endif %}
 
                             </div>
 
 
-                            <!-- OS -->
+                            <!-- ===================================== -->
+                            <!-- NOVOS DADOS -->
+                            <!-- ===================================== -->
 
-                            <div class="col-6">
+                            <div class="section-title mt-3">
+                                Dados Novos
+                            </div>
 
-                                <div class="detail-label">
-                                    Sistema Operacional
-                                </div>
+                            <div class="description-box">
 
-                                <div class="detail-value">
+                                {% if log.new_data %}
 
-                                    {{ log.os or "-" }}
+                                    <pre class="mb-0">{{ log.new_data | tojson(indent=2) }}</pre>
 
-                                </div>
+                                {% else %}
+
+                                    Nenhum dado novo.
+
+                                {% endif %}
 
                             </div>
 
@@ -1369,24 +1333,22 @@ Logs do Sistema | Precision Health Connect
 
                 </div>
 
-            </div>
 
+                <!-- ============================================= -->
+                <!-- RODAPÉ -->
+                <!-- ============================================= -->
 
-            <!-- ================================================= -->
-            <!-- RODAPÉ -->
-            <!-- ================================================= -->
+                <div class="modal-footer modal-footer-custom">
 
-            <div class="modal-footer modal-footer-custom">
+                    <button
+                        type="button"
+                        class="btn-custom-secondary px-4"
+                        data-bs-dismiss="modal"
+                    >
+                        Fechar
+                    </button>
 
-                <button
-                    type="button"
-                    class="btn-custom-secondary px-4"
-                    data-bs-dismiss="modal"
-                >
-
-                    Fechar
-
-                </button>
+                </div>
 
             </div>
 
@@ -1394,7 +1356,9 @@ Logs do Sistema | Precision Health Connect
 
     </div>
 
-</div>
+
+
+
 {% endfor %}
 {% endif %}
 {% endblock %}
