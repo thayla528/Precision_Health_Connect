@@ -1,4 +1,3 @@
-from click import style
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, abort, jsonify
 import requests
 
@@ -59,16 +58,11 @@ class Pagination:
 
                 last = num
 
-
-
 @web_bp.route('/')
 def home():
     return redirect(
         url_for('web.public_page')
     )
-
-
-
 
 @web_bp.route("/api/password/forgot", methods=["POST"])
 def web_password_forgot():
@@ -193,7 +187,6 @@ def web_password_forgot():
     # -------------------------------------------------
 
     return jsonify(result), response.status_code
-
 
 # =====================================================
 # REDEFINIÇÃO DE SENHA
@@ -382,24 +375,17 @@ def web_password_reset():
 
     return jsonify(result), response.status_code
 
-
-
-
-
 @web_bp.route('/public_page')
 def public_page():
     return render_template(
         'public_page.html'
     )
 
-
 @web_bp.route('/login')
 def login():
     return render_template(
         'login.html'
     )
-
-
 
 @web_bp.route("/invitations/<int:id>")
 def view_invitation(id):
@@ -449,8 +435,6 @@ def reject_invitation(id):
         url_for("web.admin_invitations")
     )
 
-
-
 def approve_invitation(id):
 
     response = requests.post(
@@ -469,8 +453,6 @@ def approve_invitation(id):
     return redirect(
         url_for("web.admin_invitations")
     )
-
-
 
 @web_bp.route(
     "/admin/invitations/<int:id>/approve",
@@ -494,8 +476,6 @@ def approve_invitation(id):
     return redirect(
         url_for("web.admin_invitations")
     )
-
-
 
 @web_bp.route("/admin/invitations")
 @admin_required
@@ -1961,15 +1941,11 @@ def health_professional_zone():
         url_for("web.health_professional_dashboard")
     )
 
-
-
-
 @web_bp.route("/admin/settings")
 def settings():
     return render_template(
         "admin/settings.html"
     )
-
 
 # ============================
 # DASHBOARD PROFISSIONAL
@@ -2603,8 +2579,6 @@ def professional_patients():
 
         api_error=None
     )
-
-
 # =========================================================
 # BUSCAR PACIENTES PARA ADICIONAR
 # =========================================================
@@ -2757,27 +2731,71 @@ def search_patients():
 
     return jsonify(data), 200
 
-
-
-
 # ============================
 # PRONTUÁRIO MÉDICO
 # ============================
 
+
 @web_bp.route("/profession/medical-record")
 def professional_medical_record():
-
     if session.get("role") != "professional":
         abort(403)
 
+    token = session.get("access_token")
+    user_id = session.get("user_id")
+
+    if not token or not user_id:
+        session.clear()
+        flash("Sua sessão expirou. Faça login novamente.", "warning")
+        return redirect(url_for("auth.login"))
+
+    patient_id = request.args.get("patient_id", type=int)
+
+    if not patient_id:
+        flash("Selecione um paciente para consultar os documentos.", "warning")
+        return render_template(
+            "profession/professional_medical_record.html",
+            documents=[],
+            patient_id=None
+        )
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        response = requests.get(
+            f"{API_URL}/medical-documents/patient/{patient_id}",
+            headers=headers,
+            timeout=10
+        )
+
+        result = response.json()
+
+        if response.status_code == 200 and result.get("success", True):
+            documents = result.get("documents", [])
+        else:
+            documents = []
+            flash(
+                result.get("message", "Não foi possível consultar os documentos."),
+                "danger"
+            )
+
+    except requests.RequestException:
+        documents = []
+        flash("Não foi possível conectar à API.", "danger")
+    except ValueError:
+        documents = []
+        flash("A API retornou uma resposta inválida.", "danger")
+
     return render_template(
-        "profession/professional_medical_record.html"
+        "profession/professional_medical_record.html",
+        documents=documents,
+        patient_id=patient_id
     )
 
-@web_bp.route(
-    "/profession/appointments/<int:appointment_id>/reschedule",
-    methods=["PUT"]
-)
+
 def professional_reschedule_appointment(appointment_id):
 
     # =====================================================
@@ -3436,8 +3454,6 @@ def professional_cancel_appointment(appointment_id):
 # RECEITAS
 # ============================
 
-
-
 @web_bp.route("/profession/patients/data", methods=["GET"])
 def professional_patients_data():
 
@@ -3800,7 +3816,6 @@ def professional_prescriptions(
         api_error=None
     )
 
-
 @web_bp.route("/profession/prescriptions/data", methods=["GET"])
 def professional_prescriptions_data():
 
@@ -3883,8 +3898,6 @@ def professional_prescriptions_data():
         }), 500
 
     return jsonify(data), 200
-
-
 
 # ============================
 # EXAMES
@@ -4051,9 +4064,6 @@ def professional_messages():
         messages=messages
     )
 
-
-
-
 # ============================
 # HISTÓRICO
 # ============================
@@ -4068,7 +4078,6 @@ def professional_history():
         "profession/professional_history.html"
     )
 
-
 # ============================
 # RELATÓRIOS
 # ============================
@@ -4082,7 +4091,6 @@ def professional_reports():
     return render_template(
         "profession/professional_reports.html"
     )
-
 
 # ============================
 # PERFIL PROFISSIONAL
@@ -4659,6 +4667,152 @@ def professional_profile():
 
 
 
+@web_bp.route("/notifications")
+def notifications():
+
+    # =====================================================
+    # VERIFICAR AUTENTICAÇÃO
+    # =====================================================
+
+    if not session.get("user_id"):
+        abort(403)
+
+    # =====================================================
+    # TOKEN JWT
+    # =====================================================
+
+    access_token = session.get("access_token")
+
+    if not access_token:
+        session.clear()
+        return redirect(url_for("web.login"))
+
+    # =====================================================
+    # BUSCAR NOTIFICAÇÕES DO USUÁRIO
+    # =====================================================
+
+    try:
+
+        notifications_response = requests.get(
+            f"{API_URL}/notifications/my",
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            },
+            timeout=10
+        )
+
+    except requests.RequestException as e:
+
+        print(
+            "ERRO AO CONSUMIR API /notifications/my:",
+            e
+        )
+
+        return render_template(
+            "notifications/notifications.html",
+            notifications=[],
+            api_error="Não foi possível conectar à API."
+        )
+
+    # =====================================================
+    # TOKEN INVÁLIDO / EXPIRADO
+    # =====================================================
+
+    if notifications_response.status_code in [401, 422]:
+
+        session.clear()
+
+        return redirect(url_for("web.login"))
+
+    # =====================================================
+    # ACESSO NEGADO
+    # =====================================================
+
+    if notifications_response.status_code == 403:
+
+        return render_template(
+            "notifications/notifications.html",
+            notifications=[],
+            api_error="Acesso não autorizado."
+        )
+
+    # =====================================================
+    # OUTRO ERRO
+    # =====================================================
+
+    if notifications_response.status_code != 200:
+
+        print(
+            "ERRO API NOTIFICAÇÕES:",
+            notifications_response.status_code,
+            notifications_response.text
+        )
+
+        return render_template(
+            "notifications/notifications.html",
+            notifications=[],
+            api_error="Não foi possível carregar as notificações."
+        )
+
+    # =====================================================
+    # CONVERTER RESPOSTA JSON
+    # =====================================================
+
+    try:
+
+        notifications_data = notifications_response.json()
+
+    except ValueError:
+
+        return render_template(
+            "notifications/notifications.html",
+            notifications=[],
+            api_error="Resposta inválida da API."
+        )
+
+    # =====================================================
+    # VALIDAR RESPOSTA
+    # =====================================================
+
+    if not notifications_data.get("success"):
+
+        return render_template(
+            "notifications/notifications.html",
+            notifications=[],
+            api_error=notifications_data.get(
+                "message",
+                "Não foi possível carregar as notificações."
+            )
+        )
+
+    # =====================================================
+    # NOTIFICAÇÕES
+    # =====================================================
+
+    notifications_list = notifications_data.get(
+        "notifications",
+        []
+    )
+
+    # =====================================================
+    # DEBUG
+    # =====================================================
+
+    print("\n========= USER NOTIFICATIONS =========")
+    print("User ID:", session.get("user_id"))
+    print("Total de notificações:", len(notifications_list))
+    print("======================================\n")
+
+    # =====================================================
+    # RENDER
+    # =====================================================
+
+    return render_template(
+        "notifications/notifications.html",
+        notifications=notifications_list,
+        api_error=None
+    )
+
 
 # ============================
 # CONFIGURAÇÕES
@@ -4687,9 +4841,6 @@ def recipes():
     return render_template(
         "patient/recipes.html"
     )
-
-
-
 
 @web_bp.route("/profession/clinical-records", methods=["GET", "POST"])
 def professional_clinical_records():
@@ -4824,13 +4975,355 @@ def messages():
         unread_messages=total_unread,
         current_user_id=user_id
     )
+"""Integrate these routes into your existing web routes module.
+
+This snippet assumes your project already defines `web_bp` and `API_URL`, and
+uses `session['access_token']` like your existing web routes. Do not register a
+second web blueprint if you already have one.
+"""
+
+@web_bp.route("/patient/institutions-map", methods=["GET"])
+def patient_institutions_map():
+    if not session.get("access_token") or not session.get("user_id"):
+        return redirect(url_for("auth.login"))
+
+    return render_template(
+        "patient/institutions_map.html",
+        nearby_url=url_for(".nearby_institutions_web"),
+    )
+
+
+@web_bp.route("/patient/institutions-nearby", methods=["POST"])
+def nearby_institutions_web():
+    token = session.get("access_token")
+    if not token or not session.get("user_id"):
+        return jsonify({"success": False, "message": "Your session has expired. Please sign in again."}), 401
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"success": False, "message": "JSON body is required."}), 400
+
+    latitude = data.get("latitude")
+    longitude = data.get("longitude")
+    radius_km = data.get("radius_km", 25)
+
+    try:
+        response = requests.get(
+            f"{API_URL}/institutions/nearby",
+            params={
+                "latitude": latitude,
+                "longitude": longitude,
+                "radius_km": radius_km,
+            },
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=10,
+        )
+    except requests.RequestException:
+        return jsonify({"success": False, "message": "Could not connect to the health API."}), 502
+
+    try:
+        payload = response.json()
+    except ValueError:
+        return jsonify({"success": False, "message": "The health API returned an invalid response."}), 502
+
+    return jsonify(payload), response.status_code
+
 
 @web_bp.route("/patient/prescriptions")
 def prescriptions():
 
-    return render_template(
-        "patient/prescriptions.html"
+    # =====================================================
+    # VERIFICAR AUTENTICAÇÃO / PERFIL
+    # =====================================================
+
+    if session.get("role") != "patient":
+        abort(403)
+
+    # =====================================================
+    # TOKEN JWT E USER ID
+    # =====================================================
+
+    access_token = session.get("access_token")
+    user_id = session.get("user_id")
+
+    if not access_token or not user_id:
+        session.clear()
+        return redirect(url_for("web.login"))
+
+    # =====================================================
+    # BUSCAR PERFIL DO PACIENTE
+    # =====================================================
+
+    try:
+
+        profile_response = requests.get(
+            f"{API_URL}/api/patient/profile/{user_id}",
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            },
+            timeout=10
+        )
+
+    except requests.RequestException as e:
+
+        print(
+            "ERRO AO CONSUMIR API /api/patient/profile:",
+            e
+        )
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=None,
+            patient_id=None,
+            api_error="Não foi possível conectar à API."
+        )
+
+    # =====================================================
+    # TOKEN INVÁLIDO / EXPIRADO
+    # =====================================================
+
+    if profile_response.status_code in [401, 422]:
+
+        session.clear()
+
+        return redirect(url_for("web.login"))
+
+    # =====================================================
+    # ACESSO NEGADO
+    # =====================================================
+
+    if profile_response.status_code == 403:
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=None,
+            patient_id=None,
+            api_error="Acesso não autorizado."
+        )
+
+    # =====================================================
+    # OUTRO ERRO
+    # =====================================================
+
+    if profile_response.status_code != 200:
+
+        print(
+            "ERRO API PERFIL DO PACIENTE:",
+            profile_response.status_code,
+            profile_response.text
+        )
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=None,
+            patient_id=None,
+            api_error="Não foi possível carregar o perfil do paciente."
+        )
+
+    # =====================================================
+    # CONVERTER RESPOSTA DO PERFIL
+    # =====================================================
+
+    try:
+
+        profile_data = profile_response.json()
+
+    except ValueError:
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=None,
+            patient_id=None,
+            api_error="Resposta inválida da API do paciente."
+        )
+
+    # =====================================================
+    # OBTER PERFIL
+    # =====================================================
+
+    patient = profile_data.get("profile")
+
+    if not isinstance(patient, dict) or not patient:
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=None,
+            patient_id=None,
+            api_error="Perfil do paciente não encontrado."
+        )
+
+    # =====================================================
+    # ID DO PACIENTE
+    # =====================================================
+
+    # Confirme que esses campos correspondem ao ID
+    # do registro de paciente, e não ao ID do usuário.
+
+    patient_id = patient.get("patient_id")
+
+    if patient_id is None:
+        patient_id = patient.get("id")
+
+    if patient_id is None:
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=patient,
+            patient_id=None,
+            api_error="ID do paciente não encontrado no perfil."
+        )
+
+    # =====================================================
+    # BUSCAR PRESCRIÇÕES DO PACIENTE
+    # =====================================================
+
+    try:
+
+        prescriptions_response = requests.get(
+            f"{API_URL}/prescriptions/patient/{patient_id}",
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            },
+            timeout=10
+        )
+
+    except requests.RequestException as e:
+
+        print(
+            "ERRO AO CONSUMIR API /prescriptions/patient:",
+            e
+        )
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=patient,
+            patient_id=patient_id,
+            api_error="Não foi possível carregar as prescrições."
+        )
+
+    # =====================================================
+    # TOKEN INVÁLIDO / EXPIRADO
+    # =====================================================
+
+    if prescriptions_response.status_code in [401, 422]:
+
+        session.clear()
+
+        return redirect(url_for("web.login"))
+
+    # =====================================================
+    # ACESSO NEGADO
+    # =====================================================
+
+    if prescriptions_response.status_code == 403:
+
+        print(
+            "403 AO BUSCAR PRESCRIÇÕES:",
+            prescriptions_response.text
+        )
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=patient,
+            patient_id=patient_id,
+            api_error="Acesso não autorizado às prescrições."
+        )
+
+    # =====================================================
+    # OUTRO ERRO
+    # =====================================================
+
+    if prescriptions_response.status_code != 200:
+
+        print(
+            "ERRO API PRESCRIÇÕES:",
+            prescriptions_response.status_code,
+            prescriptions_response.text
+        )
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=patient,
+            patient_id=patient_id,
+            api_error="Não foi possível carregar as prescrições."
+        )
+
+    # =====================================================
+    # CONVERTER JSON DAS PRESCRIÇÕES
+    # =====================================================
+
+    try:
+
+        prescriptions_data = prescriptions_response.json()
+
+    except ValueError:
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=patient,
+            patient_id=patient_id,
+            api_error="Resposta inválida da API de prescrições."
+        )
+
+    # =====================================================
+    # VALIDAR RESPOSTA
+    # =====================================================
+
+    if not prescriptions_data.get("success"):
+
+        return render_template(
+            "patient/prescriptions.html",
+            prescriptions=[],
+            patient=patient,
+            patient_id=patient_id,
+            api_error=prescriptions_data.get(
+                "message",
+                "Não foi possível carregar as prescrições."
+            )
+        )
+
+    # =====================================================
+    # PRESCRIÇÕES
+    # =====================================================
+
+    prescriptions_list = prescriptions_data.get(
+        "prescriptions",
+        []
     )
+
+    # =====================================================
+    # DEBUG
+    # =====================================================
+
+    print("\n========= PATIENT PRESCRIPTIONS =========")
+    print("User ID:", user_id)
+    print("Patient ID:", patient_id)
+    print("Total de prescrições:", len(prescriptions_list))
+    print("Prescrições:", prescriptions_list)
+    print("=========================================\n")
+
+    # =====================================================
+    # RENDER
+    # =====================================================
+
+    return render_template(
+        "patient/prescriptions.html",
+        prescriptions=prescriptions_list,
+        patient=patient,
+        patient_id=patient_id,
+        api_error=None
+    )
+
 
 
 @web_bp.route("/invitation", methods=["GET", "POST"])
@@ -5207,7 +5700,6 @@ def accept_appointment(appointment_id):
 
     return redirect(url_for("web.appointments"))
 
-
 # =====================================================
 # CANCELAR AGENDAMENTO
 # API: PUT /appointments/<id>/cancel
@@ -5243,7 +5735,6 @@ def cancel_appointment(appointment_id):
         flash(result.get("message", "Não foi possível cancelar o agendamento."), "danger")
 
     return redirect(url_for("web.appointments"))
-
 
 # =====================================================
 # ADMINISTRADOR — TODOS OS AGENDAMENTOS
@@ -5289,7 +5780,6 @@ def all_appointments():
         "admin/appointments.html",
         appointments=result.get("appointments", [])
     )
-
 
 @web_bp.route("/verification/email", methods=["POST"])
 def verification_email():
@@ -5821,9 +6311,6 @@ def verification_email():
             )
 
     }), 200
-
-
-
 
 @web_bp.route("/patient/profile")
 def patient_profile():
