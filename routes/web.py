@@ -1964,6 +1964,7 @@ def health_professional_dashboard():
         "pending_documents": 0
     }
 
+
     return render_template(
         "profession/health_professional_dashboard.html",
         stats=stats
